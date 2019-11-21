@@ -6,19 +6,44 @@ import (
 	"os"
 	"io"
 
+	"github.com/gorilla/mux"
+
 	"github.com/oxodao/scinna/services"
+	"github.com/oxodao/scinna/dal"
 )
 
 func RawPictureRoute (prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		img, err := os.Open(prv.PicturePath + "/photo.jpg")
+
+		params := mux.Vars(r)
+		id := params["pict"]
+
+		p, err := dal.GetPicture(prv, id)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if p.Visibility == 2 {
+			/** @TODO Should verify the JWT, if it's given and the picture is private, it should be displayed nonetheless **/
+			/** Usage: In the app or clients, they should be able to retreive the picture **/
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		pictFile, err := os.Open(prv.PicturePath + "/" + id + ".png")
 		if err != nil {
 			fmt.Println(err)
+			w.WriteHeader(http.StatusNotFound)
+			pictFile, err = os.Open("not_found.png")
+			if err != nil {
+				return
+			}
 		}
-		defer img.Close()
+		defer pictFile.Close()
 
-		w.Header().Set("Content-Type", "image/jpeg")
-		io.Copy(w, img)
+		w.Header().Set("Content-Type", "image/png")
+		io.Copy(w, pictFile)
 	}
 }
 

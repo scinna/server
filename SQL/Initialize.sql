@@ -9,7 +9,7 @@ CREATE TABLE APPUSER (
     PASSWORD   VARCHAR(1024)
 );
 
-INSERT INTO APPUSER (EMAIL, USERNAME, PASSWORD) VALUES ('admin@scinna.dev', 'admin', ENCODE(SHA512('admin.admin'), 'hex'));
+INSERT INTO APPUSER (EMAIL, USERNAME, PASSWORD) VALUES ('admin@scinna.dev', 'admin', 'nopass');
 
 CREATE TABLE PICTURES (
     ID         SERIAL         PRIMARY KEY,

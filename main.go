@@ -33,17 +33,27 @@ func main() {
 		panic("No listening port found! (WEB_PORT)")
 	}
 
+	utils.GenerateDefaultPicture();
+
 	// @TODO: Make this abstact to have multiple storage backend (i.e. Filesystem, S3, FTP, ...)
 	picturepath, exists := os.LookupEnv("PICTURE_PATH")
 	if (!exists) {
 		panic("No picture folder found! (PICTURE_PATH")
 	}
 
+	argonParams := &services.ArgonParams{
+        Memory:      64 * 1024,
+        Iterations:  3,
+        Parallelism: 2,
+        SaltLength:  16,
+        KeyLength:   32,
+    }
+
 	db := utils.LoadDatabase()
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, picturepath)
+	prv := services.New(db, argonParams, picturepath)
 
 
 	r := mux.NewRouter().StrictSlash(false)

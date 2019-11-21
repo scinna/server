@@ -11,5 +11,6 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/matoous/go-nanoid v1.1.0
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
+	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba
 	google.golang.org/appengine v1.4.0 // indirect
 )

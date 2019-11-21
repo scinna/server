@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"encoding/json"
 	"github.com/oxodao/scinna/services"
@@ -72,8 +74,69 @@ func MyInfosRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
+type UpdateInfoRequest struct {
+	Username string /** Temporary, won't be needed as soon as JWT is implemented, maybe repurposed to change username later **/
+	Email string
+	Password string
+}
+
 func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("UpdateMyInfosRoute - To be implemented"))
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		var rc UpdateInfoRequest 
+
+		err = json.Unmarshal(body, &rc)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		u, err := dal.GetUser(prv, rc.Username)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		lenMail, lenPass := len(rc.Email), len(rc.Password)
+
+		if lenMail == 0 && lenPass == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		rq := `UPDATE APPUSER
+			   SET EMAIL = ($1::VARCHAR),
+			       PASSWORD = ($2::VARCHAR)
+			   WHERE ID = $3::INTEGER
+		`
+
+		if u.Email != rc.Email && lenMail > 0 {
+			/** @TODO Regex the hell out of it **/
+			u.Email = rc.Email
+		}
+
+		if lenPass > 0 {
+			u.Password, err = prv.HashPassword(rc.Password)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		}
+
+
+		result, err := prv.Db.Exec(rq, u.Email, u.Password, u.ID)
+
+		if result.RowsAffected() == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
 	}
 }

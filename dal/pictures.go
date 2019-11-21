@@ -5,15 +5,15 @@ import (
 	"github.com/oxodao/scinna/services"
 )
 
-func GetPicture(p *services.Provider, id int64) (model.Picture, error) {
+func GetPicture(p *services.Provider, urlId string) (model.Picture, error) {
 	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY,
 				   au.ID AS "creator.id", au.CREATED_AT AS "creator.created_at", au.EMAIL as "creator.email", au.USERNAME AS "creator.username"
 			FROM PICTURES p
 			INNER JOIN APPUSER au ON au.ID = p.CREATOR
-			WHERE p.ID = $1`
+			WHERE p.URL_ID = $1`
 
 	var pict model.Picture
-	err := p.Db.QueryRowx(rq, id).StructScan(&pict)
+	err := p.Db.QueryRowx(rq, urlId).StructScan(&pict)
 	return pict, err
 }
 
