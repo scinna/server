@@ -17,15 +17,19 @@ func GetPicture(p *services.Provider, id int64) (model.Picture, error) {
 	return pict, err
 }
 
-func GetPicturesFromUser(p *services.Provider, user string) ([]model.Picture, error) {
+func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]model.Picture, error) {
 	u, err := GetUser(p, user)
 	if err != nil {
 		return []model.Picture {}, err
 	}
 
-	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY
-			FROM PICTURES p
-			WHERE p.CREATOR = $1`
+	rq := ` SELECT ID, CREATED_AT, TITLE, URL_ID, DESCRIPT, VISIBILITY
+			FROM PICTURES
+			WHERE CREATOR = $1`
+
+	if visibility {
+		rq += " AND VISIBILITY = 0"
+	}
 
 	var pictures []model.Picture
 	rows, err := p.Db.Queryx(rq, u.ID)
@@ -37,7 +41,6 @@ func GetPicturesFromUser(p *services.Provider, user string) ([]model.Picture, er
 		var p model.Picture
 		rows.StructScan(&p)
 
-		p.Creator = u
 		pictures = append(pictures, p)
 	}
 

@@ -8,7 +8,7 @@ type AppUser struct {
 	Model
 	Email          string `db:"email"`
 	Username       string `db:"username"`
-	Password       string `db:"password"`
+	Password       string `db:"password" json:"-"`
 }
 
 /** For debug purposes **/

@@ -19,7 +19,7 @@ type Picture struct {
 	UrlId       string  `db:"url_id"`
 	Description string  `db:"descript"`
 	Visibility  int8    `db:"visibility"`
-	Creator     AppUser `db:"creator"`
+	Creator     *AppUser `db:"creator" json:",omitempty"`
 }
 
 /** For debug purposes **/

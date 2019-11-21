@@ -9,13 +9,14 @@ import (
 )
 
 type Provider struct {
-	Db     *sqlx.DB
+	Db          *sqlx.DB
+	PicturePath string
 }
 
 func (prv *Provider) GenerateUID() (string, error) {
 	alphabet, exists := os.LookupEnv("ID_ALPHABET")
 	if !exists {
-		alphabet = "0123456789_abcdefghijklmnopqrstuvwxyz-ABCEFGHIJKLMNOPQRSTUVWXYZ"
+		alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ"
 	}
 	
 	lengthStr, exists := os.LookupEnv("ID_LENGTH")
@@ -28,8 +29,9 @@ func (prv *Provider) GenerateUID() (string, error) {
 }
 
 // Temporary empty, will contain Postgres connection
-func New(db *sqlx.DB) *Provider {
+func New(db *sqlx.DB, pictPath string) *Provider {
 	return &Provider{
-		Db:     db,
+		Db:          db,
+		PicturePath: pictPath,
 	}
 }
