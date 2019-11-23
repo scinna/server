@@ -1,3 +1,5 @@
 .env
 vendor/
 *.pem
+__debug_bin
+.vscode/

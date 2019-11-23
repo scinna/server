@@ -1,28 +1,29 @@
 package routes
 
 import (
-	"io/ioutil"
-	"net/http"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
-	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/auth"
+	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/services"
 )
 
-type LoginRequest struct {
+type loginRequest struct {
 	Username string
 	Password string
 }
 
-type LoginResponse struct {
+type loginResponse struct {
 	CurrentUser model.AppUser
 	Token       string
 }
 
-func LoginRoute (prv *services.Provider) http.HandlerFunc {
+// LoginRoute is the route that lets the user authenticate: /auth/login
+func LoginRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -30,7 +31,7 @@ func LoginRoute (prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		var rc LoginRequest 
+		var rc loginRequest
 
 		err = json.Unmarshal(body, &rc)
 		if err != nil {
@@ -58,9 +59,9 @@ func LoginRoute (prv *services.Provider) http.HandlerFunc {
 				return
 			}
 
-			response := &LoginResponse {
+			response := &loginResponse{
 				CurrentUser: u,
-				Token: string(token),
+				Token:       string(token),
 			}
 
 			sResponse, err := json.Marshal(response)
@@ -76,7 +77,8 @@ func LoginRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-func RefreshRoute (prv *services.Provider) http.HandlerFunc {
+// RefreshRoute is the route that let the user refresh his JWT token: /auth/refresh
+func RefreshRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("RefreshRoute - To be implemented"))
 	}

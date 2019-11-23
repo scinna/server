@@ -1,18 +1,19 @@
 package routes
 
 import (
-	"net/http"
 	"fmt"
-	"os"
 	"io"
+	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 
-	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/services"
 )
 
-func RawPictureRoute (prv *services.Provider) http.HandlerFunc {
+// RawPictureRoute is the route that render the picture: /{picture id}
+func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := mux.Vars(r)
@@ -28,8 +29,8 @@ func RawPictureRoute (prv *services.Provider) http.HandlerFunc {
 			/** @TODO Should verify the JWT, if it's given and the picture is private, it should be displayed nonetheless **/
 			/** Usage: In the app or clients, they should be able to retreive the picture **/
 			/** Need to think of the correct way to do it since it will prevent it from being directly put in an img tag, this
-				will require a lot more work on the client to display.
-				Yet we can't put it in the GET request since the user could send it to someone else **/
+			will require a lot more work on the client to display.
+			Yet we can't put it in the GET request since the user could send it to someone else **/
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -50,20 +51,23 @@ func RawPictureRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-func PictureInfoRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// PictureInfoRoute returns the informations of the picture like author, date, visibility, ...
+func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("PictureInfoRoute - To be implemented"))
 	}
 }
 
-func UploadPictureRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// UploadPictureRoute is the route that let user upload a picture
+func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("UploadPictureRoute - To be implemented"))
 	}
 }
 
-func DeletePictureRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// DeletePictureRoute is the route that let the user delete one OR MULTIPLE of his picture
+func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("DeletePictureRoute - To be implemented"))
 	}
 }

@@ -1,19 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"net/http"
-	"log"
-	"time"
 	"encoding/base64"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/oxodao/scinna/routes"
 	"github.com/oxodao/scinna/middleware"
+	"github.com/oxodao/scinna/routes"
 	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/utils"
+
+	_ "github.com/lib/pq"
 )
 
 /**
@@ -44,28 +46,27 @@ func main() {
 		panic("BAD JWT SECRET!")
 	}
 
-	utils.GenerateDefaultPicture();
+	utils.GenerateDefaultPicture()
 
 	// @TODO: Make this abstact to have multiple storage backend (i.e. Filesystem, S3, FTP, ...)
 	picturepath, exists := os.LookupEnv("PICTURE_PATH")
-	if (!exists) {
-		panic("No picture folder found! (PICTURE_PATH")
+	if !exists {
+		panic("No picture folder found! (PICTURE_PATH)")
 	}
 
 	argonParams := &services.ArgonParams{
-        Memory:      64 * 1024,
-        Iterations:  3,
-        Parallelism: 2,
-        SaltLength:  16,
-        KeyLength:   32,
-    }
+		Memory:      64 * 1024,
+		Iterations:  3,
+		Parallelism: 2,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
 
 	db := utils.LoadDatabase()
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
 	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath)
-
 
 	r := mux.NewRouter().StrictSlash(false)
 	r.Use(middleware.ContentTypeMiddleware)
@@ -74,8 +75,8 @@ func main() {
 	r.HandleFunc("/", routes.IndexRoute(prv))
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
-	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")      // Login route to get a JWT token
-	authRoutes.HandleFunc("/refresh", routes.RefreshRoute(prv)).Methods("POST")  // Refresh route to refresh the JWT token
+	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")     // Login route to get a JWT token
+	authRoutes.HandleFunc("/refresh", routes.RefreshRoute(prv)).Methods("POST") // Refresh route to refresh the JWT token
 
 	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
 	// For some reason using / forces the trailing slash in the url.. So blanking it out...
@@ -88,7 +89,6 @@ func main() {
 	usersRoutes.HandleFunc("/me", routes.MyInfosRoute(prv)).Methods("GET")
 	usersRoutes.HandleFunc("/me", routes.UpdateMyInfosRoute(prv)).Methods("PUT")
 	usersRoutes.HandleFunc("/{username}/pictures", routes.UserPicturesRoute(prv)).Methods("GET")
-
 
 	// Default route is for picture laoding
 	r.HandleFunc("/{pict}", routes.RawPictureRoute(prv)).Methods("GET")

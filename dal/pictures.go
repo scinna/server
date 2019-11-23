@@ -5,7 +5,8 @@ import (
 	"github.com/oxodao/scinna/services"
 )
 
-func GetPicture(p *services.Provider, urlId string) (model.Picture, error) {
+// GetPicture retreive a picture from the database and its user given an URL ID
+func GetPicture(p *services.Provider, urlID string) (model.Picture, error) {
 	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY,
 				   au.ID AS "creator.id", au.CREATED_AT AS "creator.created_at", au.EMAIL as "creator.email", au.USERNAME AS "creator.username"
 			FROM PICTURES p
@@ -13,14 +14,15 @@ func GetPicture(p *services.Provider, urlId string) (model.Picture, error) {
 			WHERE p.URL_ID = $1`
 
 	var pict model.Picture
-	err := p.Db.QueryRowx(rq, urlId).StructScan(&pict)
+	err := p.Db.QueryRowx(rq, urlID).StructScan(&pict)
 	return pict, err
 }
 
+// GetPicturesFromUser returns all the pictures from a user given its username and whether it report only public pictures
 func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]model.Picture, error) {
 	u, err := GetUser(p, user)
 	if err != nil {
-		return []model.Picture {}, err
+		return []model.Picture{}, err
 	}
 
 	rq := ` SELECT ID, CREATED_AT, TITLE, URL_ID, DESCRIPT, VISIBILITY
@@ -34,7 +36,7 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 	var pictures []model.Picture
 	rows, err := p.Db.Queryx(rq, u.ID)
 	if err != nil {
-		return []model.Picture {}, err
+		return []model.Picture{}, err
 	}
 
 	for rows.Next() {

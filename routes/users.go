@@ -1,17 +1,18 @@
 package routes
 
 import (
-	"io/ioutil"
-	"net/http"
 	"encoding/json"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/serrors"
+	"github.com/oxodao/scinna/services"
+	"io/ioutil"
+	"net/http"
 )
 
-func UserPicturesRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// UserPicturesRoute is the route that list all the given user's picture, and their infos
+func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		picts, err := dal.GetPicturesFromUser(prv, "admin", true)
 
 		if err != nil {
@@ -31,8 +32,9 @@ func UserPicturesRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-func MyPicturesRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// MyPicturesRoute is pretty much the same as UserPicturesRoute but for the current user
+func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		picts, err := dal.GetPicturesFromUser(prv, "admin", false)
 
 		if err != nil {
@@ -52,17 +54,18 @@ func MyPicturesRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-func MyInfosRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// MyInfosRoute returns the user's infos (Username, Mail, Qty of public pictures, ...)
+func MyInfosRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// @TODO: JWT / Get user
 		user, err := auth.ValidateRequest(prv, w, r)
 		if err != nil {
-			if err == serrors.NoTokenError {
+			if err == serrors.ErrorNoToken {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 
-			if err == serrors.BadTokenError {
+			if err == serrors.ErrorBadToken {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
@@ -83,14 +86,15 @@ func MyInfosRoute (prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-type UpdateInfoRequest struct {
+type updateInfoRequest struct {
 	Username string /** Temporary, won't be needed as soon as JWT is implemented, maybe repurposed to change username later **/
-	Email string
+	Email    string
 	Password string
 }
 
-func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+// UpdateMyInfosRoute lets the user change it's infos
+func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -98,7 +102,7 @@ func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		var rc UpdateInfoRequest 
+		var rc updateInfoRequest
 
 		err = json.Unmarshal(body, &rc)
 
@@ -139,7 +143,6 @@ func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 			}
 		}
 
-
 		result, err := prv.Db.Exec(rq, u.Email, u.Password, u.ID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -153,7 +156,7 @@ func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		if  ra == 0 {
+		if ra == 0 {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}

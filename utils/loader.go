@@ -4,8 +4,6 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-
-	_ "github.com/lib/pq"
 )
 
 func LoadDatabase() *sqlx.DB {
@@ -30,7 +28,7 @@ func LoadDatabase() *sqlx.DB {
 func GenerateDefaultPicture() {
 	// @TODO: Generate a default picture if it doesn't exists
 	pict, err := os.Open("not_found.png")
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 	pict.Close()
