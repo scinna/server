@@ -34,12 +34,12 @@ func GenerateJWT(prv *services.Provider, u model.AppUser) (string, error) {
 }
 
 // VerifyJWT check if the JWT is valid. If so, it fetches the corresponding user from the database
-func VerifyJWT(prv *services.Provider, token string) (model.AppUser, error) {
+func VerifyJWT(prv *services.Provider, tokenStr string) (model.AppUser, error) {
 	/**
 	* We verify the JWT token standardly (Syntax OK + not expired)
 	**/
-	parsed, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if ok := token.Method.Alg() == jwt.SigningMethodHS256.Alg(); !ok {
+	parsed, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if ok := token.Method.Alg() == jwt.SigningMethodHS512.Alg(); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 		return prv.JwtKey, nil
@@ -65,7 +65,7 @@ func ValidateRequest(prv *services.Provider, w http.ResponseWriter, r *http.Requ
 		return model.AppUser{}, serrors.ErrorNoToken
 	}
 
-	splitToken := strings.Split(authToken, "Bearer")
+	splitToken := strings.Split(authToken, "Bearer ")
 	if len(splitToken) > 1 {
 		authToken = splitToken[1]
 		return VerifyJWT(prv, authToken)
