@@ -2,18 +2,27 @@ package routes
 
 import (
 	"encoding/json"
-	"github.com/oxodao/scinna/auth"
-	"github.com/oxodao/scinna/dal"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/oxodao/scinna/auth"
+	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/services"
 )
 
 // UserPicturesRoute is the route that list all the given user's picture, and their infos
 func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		picts, err := dal.GetPicturesFromUser(prv, "admin", true)
+		params := mux.Vars(r)
+		username := params["username"]
+
+		if len(username) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		picts, err := dal.GetPicturesFromUser(prv, username, true)
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
@@ -32,10 +41,15 @@ func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// MyPicturesRoute is pretty much the same as UserPicturesRoute but for the current user
+// MyPicturesRoute is pretty much the same as UserPicturesRoute but for the current user - I'll may be deprecating this route in order to have only one that CAN use the auth token
 func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		picts, err := dal.GetPicturesFromUser(prv, "admin", false)
+		user, err := auth.ValidateRequest(prv, w, r)
+		if auth.RespondError(w, err) {
+			return
+		}
+
+		picts, err := dal.GetPicturesFromUser(prv, user.Username, false)
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
@@ -57,20 +71,8 @@ func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
 // MyInfosRoute returns the user's infos (Username, Mail, Qty of public pictures, ...)
 func MyInfosRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// @TODO: JWT / Get user
 		user, err := auth.ValidateRequest(prv, w, r)
-		if err != nil {
-			if err == serrors.ErrorNoToken {
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
-
-			if err == serrors.ErrorBadToken {
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-
-			w.WriteHeader(http.StatusInternalServerError)
+		if auth.RespondError(w, err) {
 			return
 		}
 
@@ -111,9 +113,8 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		u, err := dal.GetUser(prv, rc.Username)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+		u, err := auth.ValidateRequest(prv, w, r)
+		if auth.RespondError(w, err) {
 			return
 		}
 

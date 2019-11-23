@@ -69,22 +69,24 @@ func main() {
 	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath)
 
 	r := mux.NewRouter().StrictSlash(false)
-	r.Use(middleware.ContentTypeMiddleware)
 
 	// the react fontend app
 	r.HandleFunc("/", routes.IndexRoute(prv))
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
+	authRoutes.Use(middleware.ContentTypeMiddleware)
 	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")     // Login route to get a JWT token
 	authRoutes.HandleFunc("/refresh", routes.RefreshRoute(prv)).Methods("POST") // Refresh route to refresh the JWT token
 
 	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
+	picturesRoutes.Use(middleware.ContentTypeMiddleware)
 	// For some reason using / forces the trailing slash in the url.. So blanking it out...
 	picturesRoutes.HandleFunc("", routes.UploadPictureRoute(prv)).Methods("POST")
 	picturesRoutes.HandleFunc("", routes.DeletePictureRoute(prv)).Methods("DELETE")
 	picturesRoutes.HandleFunc("/{URL_ID}", routes.PictureInfoRoute(prv)).Methods("GET")
 
 	usersRoutes := r.PathPrefix("/users").Subrouter().StrictSlash(false)
+	usersRoutes.Use(middleware.ContentTypeMiddleware)
 	usersRoutes.HandleFunc("/me/pictures", routes.MyPicturesRoute(prv)).Methods("GET")
 	usersRoutes.HandleFunc("/me", routes.MyInfosRoute(prv)).Methods("GET")
 	usersRoutes.HandleFunc("/me", routes.UpdateMyInfosRoute(prv)).Methods("PUT")

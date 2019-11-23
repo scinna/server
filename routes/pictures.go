@@ -1,14 +1,18 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 
+	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -18,6 +22,11 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 
 		params := mux.Vars(r)
 		id := params["pict"]
+
+		if len(id) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
 		p, err := dal.GetPicture(prv, id)
 		if err != nil {
@@ -35,7 +44,8 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		pictFile, err := os.Open(prv.PicturePath + "/" + id + ".png")
+		// @TODO Replace with UUID
+		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + id + ".png")
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusNotFound)
@@ -54,7 +64,47 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 // PictureInfoRoute returns the informations of the picture like author, date, visibility, ...
 func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("PictureInfoRoute - To be implemented"))
+
+		params := mux.Vars(r)
+		id := params["URL_ID"]
+
+		if len(id) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		p, err := dal.GetPicture(prv, id)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		user, err := auth.ValidateRequest(prv, w, r)
+		if p.Visibility == 2 {
+			if auth.RespondError(w, err) {
+				return
+			}
+
+			if user.ID != p.Creator.ID {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+		}
+
+		if err != nil || *user.ID != *p.Creator.ID {
+			p.Creator = &model.AppUser{
+				Username: p.Creator.Username,
+			}
+		}
+
+		json, err := json.Marshal(p)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(json)
+
 	}
 }
 

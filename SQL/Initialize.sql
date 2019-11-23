@@ -9,7 +9,8 @@ CREATE TABLE APPUSER (
     PASSWORD   VARCHAR(1024)
 );
 
-INSERT INTO APPUSER (EMAIL, USERNAME, PASSWORD) VALUES ('admin@scinna.dev', 'admin', 'nopass');
+-- Default password is 'password'
+INSERT INTO APPUSER (EMAIL, USERNAME, PASSWORD) VALUES ('admin@scinna.dev', 'admin', '$argon2id$v=19$m=65536,t=3,p=2$D1hPKoAbrexDtJd6uEf3Cg$d1puA1YPJgUkvvTaotKpRWOT2xIMMIUknyl6IeWJsfQ');
 
 CREATE TABLE PICTURES (
     ID         SERIAL         PRIMARY KEY,
