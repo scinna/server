@@ -1,11 +1,12 @@
 package routes
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"encoding/json"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
+	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
 )
 
@@ -46,7 +47,6 @@ func MyPicturesRoute (prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 
 	}
@@ -55,9 +55,19 @@ func MyPicturesRoute (prv *services.Provider) http.HandlerFunc {
 func MyInfosRoute (prv *services.Provider) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
 		// @TODO: JWT / Get user
-		user, err := dal.GetUser(prv, "admin")
+		user, err := auth.ValidateRequest(prv, w, r)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			if err == serrors.NoTokenError {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+
+			if err == serrors.BadTokenError {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -68,7 +78,6 @@ func MyInfosRoute (prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 
 	}
@@ -117,7 +126,7 @@ func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 			   WHERE ID = $3::INTEGER
 		`
 
-		if u.Email != rc.Email && lenMail > 0 {
+		if lenMail > 0 {
 			/** @TODO Regex the hell out of it **/
 			u.Email = rc.Email
 		}
@@ -132,8 +141,19 @@ func UpdateMyInfosRoute (prv *services.Provider) http.HandlerFunc {
 
 
 		result, err := prv.Db.Exec(rq, u.Email, u.Password, u.ID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-		if result.RowsAffected() == 0 {
+		ra, err := result.RowsAffected()
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if  ra == 0 {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}

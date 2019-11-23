@@ -27,6 +27,9 @@ func RawPictureRoute (prv *services.Provider) http.HandlerFunc {
 		if p.Visibility == 2 {
 			/** @TODO Should verify the JWT, if it's given and the picture is private, it should be displayed nonetheless **/
 			/** Usage: In the app or clients, they should be able to retreive the picture **/
+			/** Need to think of the correct way to do it since it will prevent it from being directly put in an img tag, this
+				will require a lot more work on the client to display.
+				Yet we can't put it in the GET request since the user could send it to someone else **/
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

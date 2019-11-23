@@ -15,3 +15,14 @@ func GetUser(p *services.Provider, username string) (model.AppUser, error) {
 
 	return user, err
 }
+
+func GetUserById(p *services.Provider, id int) (model.AppUser, error) {
+	rq := ` SELECT ID, CREATED_AT, EMAIL, USERNAME, PASSWORD
+			FROM APPUSER
+			WHERE ID = $1`
+
+	var user model.AppUser
+	err := p.Db.QueryRowx(rq, id).StructScan(&user)
+
+	return user, err
+}

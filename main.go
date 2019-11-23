@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"log"
 	"time"
+	"encoding/base64"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/oxodao/scinna/routes"
+	"github.com/oxodao/scinna/middleware"
 	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/utils"
 )
@@ -33,6 +35,15 @@ func main() {
 		panic("No listening port found! (WEB_PORT)")
 	}
 
+	jwtSecret, exists := os.LookupEnv("JWT_SECRET")
+	if !exists {
+		panic("No JWT secret found! (JWT_SECRET)\nGenerate one with this command => openssl rand -base64 172 | tr -d '\\n'")
+	}
+	jwtSecretDecoded, err := base64.StdEncoding.DecodeString(jwtSecret)
+	if err != nil {
+		panic("BAD JWT SECRET!")
+	}
+
 	utils.GenerateDefaultPicture();
 
 	// @TODO: Make this abstact to have multiple storage backend (i.e. Filesystem, S3, FTP, ...)
@@ -53,10 +64,11 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, argonParams, picturepath)
+	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath)
 
 
 	r := mux.NewRouter().StrictSlash(false)
+	r.Use(middleware.ContentTypeMiddleware)
 
 	// the react fontend app
 	r.HandleFunc("/", routes.IndexRoute(prv))
