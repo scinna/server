@@ -132,7 +132,6 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 		`
 
 		if lenMail > 0 {
-			/** @TODO Regex the hell out of it **/
 			u.Email = rc.Email
 		}
 

@@ -10,3 +10,6 @@ var ErrorNoToken error = errors.New("No token found in the request")
 
 // ErrorBadToken shows up whenever the request should be authed but the given token is not in the correct format
 var ErrorBadToken error = errors.New("The given token is in the wrong format. It should be 'Bearer [JWT TOKEN]'")
+
+// ErrorPictureNotFound shows up whenever the picture supposedly removed doesn't exists from the DB (Should NEVER happens)
+var ErrorPictureNotFound error = errors.New("The picture can't be removed from the DB since it doesn't exists")

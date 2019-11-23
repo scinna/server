@@ -102,7 +102,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-/** @TODO: Learn about comparing errors & such and give better API error code **/
+/** Errors specific to Scinna **/
 var (
 	ErrInvalidHash         = errors.New("the encoded hash is not in the correct format")
 	ErrIncompatibleVersion = errors.New("incompatible version of argon2")

@@ -19,7 +19,7 @@ import (
 func GenerateJWT(prv *services.Provider, u model.AppUser) (string, error) {
 	currTime := time.Now()
 	tk := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"sub": fmt.Sprintf("%v", u.ID), // For some reason strconv.Itoa doesn't compile @TODO
+		"sub": strconv.FormatInt(*u.ID, 10),
 		"iss": "Scinna-Server",
 		"exp": currTime.Add(20 * time.Minute).Unix(),
 		"iat": currTime.Unix(),

@@ -2,6 +2,7 @@ package dal
 
 import (
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -48,4 +49,22 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 
 	return pictures, nil
 
+}
+
+// DeletePicture removes a picture from the database
+func DeletePicture(prv *services.Provider, pict model.Picture) error {
+	rq := ` DELETE
+			FROM PICTURES
+			WHERE ID = $1`
+	result, err := prv.Db.Exec(rq, pict.ID)
+
+	if err != nil {
+		count, err := result.RowsAffected()
+		if err != nil && count == 0 {
+			// Should never happen
+			return serrors.ErrorPictureNotFound
+		}
+	}
+
+	return err
 }

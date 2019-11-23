@@ -18,11 +18,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-/**
-	 @TODO: Reserver the me username,
-	 nobody can have it since it would conflict with some URLs
-**/
-
 func main() {
 
 	fmt.Println("Scinna Server - V1")
@@ -48,7 +43,6 @@ func main() {
 
 	utils.GenerateDefaultPicture()
 
-	// @TODO: Make this abstact to have multiple storage backend (i.e. Filesystem, S3, FTP, ...)
 	picturepath, exists := os.LookupEnv("PICTURE_PATH")
 	if !exists {
 		panic("No picture folder found! (PICTURE_PATH)")
@@ -82,7 +76,7 @@ func main() {
 	picturesRoutes.Use(middleware.ContentTypeMiddleware)
 	// For some reason using / forces the trailing slash in the url.. So blanking it out...
 	picturesRoutes.HandleFunc("", routes.UploadPictureRoute(prv)).Methods("POST")
-	picturesRoutes.HandleFunc("", routes.DeletePictureRoute(prv)).Methods("DELETE")
+	picturesRoutes.HandleFunc("/{URL_ID}", routes.DeletePictureRoute(prv)).Methods("DELETE")
 	picturesRoutes.HandleFunc("/{URL_ID}", routes.PictureInfoRoute(prv)).Methods("GET")
 
 	usersRoutes := r.PathPrefix("/users").Subrouter().StrictSlash(false)

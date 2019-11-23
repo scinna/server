@@ -22,7 +22,7 @@ type loginResponse struct {
 	Token       string
 }
 
-// LoginRoute is the route that lets the user authenticate: /auth/login - @TODO: Limit rate at 10 attempts per 5 minutes (= Redis optional to offload the DB?)
+// LoginRoute is the route that lets the user authenticate: /auth/login
 func LoginRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
