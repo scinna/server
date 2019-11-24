@@ -36,8 +36,11 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if p.Visibility == 2 {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+			user, err := auth.ValidateRequest(prv, w, r)
+			if err != nil || p.Creator.ID == user.ID {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 		}
 
 		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
@@ -80,7 +83,7 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 				return
 			}
 
-			if user.ID != p.Creator.ID {
+			if *user.ID != *p.Creator.ID {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
