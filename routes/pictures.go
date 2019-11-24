@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/mux"
 
 	"github.com/oxodao/scinna/auth"
@@ -122,7 +123,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		visibInt, err := strconv.Atoi(visib)
 		visibility := int8(visibInt)
 
-		if len(title) == 0 || len(title) > 30 || err != nil || !utils.IsValidVisibility(visibility) {
+		if len(title) == 0 || len(title) > 128 || err != nil || !utils.IsValidVisibility(visibility) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -131,14 +132,19 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
-		file, header, err := r.FormFile("picture")
+		file, _, err := r.FormFile("picture")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		defer file.Close()
 
-		mimeType := header.Header.Get("Content-Type")
+		mimeType, _, err := mimetype.DetectReader(file)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Println("@TODO response client -> Can't understand mimetype")
+			return
+		}
 
 		if !utils.IsValidMimetype(mimeType) {
 			w.WriteHeader(http.StatusBadRequest)

@@ -3,6 +3,7 @@ module github.com/oxodao/scinna
 go 1.13
 
 require (
+	github.com/gabriel-vasile/mimetype v0.3.22
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2
