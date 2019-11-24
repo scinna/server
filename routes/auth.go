@@ -66,7 +66,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if valid {
-			token, err := auth.GenerateJWT(prv, u)
+			token, err := auth.GenerateToken(prv, utils.ReadUserIP(prv, r), u)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

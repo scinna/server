@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,15 +31,6 @@ func main() {
 		panic("No listening port found! (WEB_PORT)")
 	}
 
-	jwtSecret, exists := os.LookupEnv("JWT_SECRET")
-	if !exists {
-		panic("No JWT secret found! (JWT_SECRET)\nGenerate one with this command => openssl rand -base64 172 | tr -d '\\n'")
-	}
-	jwtSecretDecoded, err := base64.StdEncoding.DecodeString(jwtSecret)
-	if err != nil {
-		panic("BAD JWT SECRET!")
-	}
-
 	headerIPField, exists := os.LookupEnv("HEADER_IP_FIELD")
 	if !exists {
 		fmt.Println("The header for the IP field is not set (HEADER_IP_FIELD). If you are using a reverse-proxy please be sure to set it according to its configuration.")
@@ -65,7 +55,7 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath, headerIPField)
+	prv := services.New(db, argonParams, picturepath, headerIPField)
 
 	r := mux.NewRouter().StrictSlash(false)
 

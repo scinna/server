@@ -22,7 +22,6 @@ import (
 type Provider struct {
 	Db            *sqlx.DB
 	ArgonParams   *ArgonParams
-	JwtKey        []byte
 	PicturePath   string
 	HeaderIPField string
 }
@@ -74,11 +73,10 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 }
 
 // New function initializes the the Provider structure
-func New(db *sqlx.DB, ap *ArgonParams, jwtKey []byte, pictPath string, headerIPField string) *Provider {
+func New(db *sqlx.DB, ap *ArgonParams, pictPath string, headerIPField string) *Provider {
 	return &Provider{
 		Db:            db,
 		ArgonParams:   ap,
-		JwtKey:        jwtKey,
 		PicturePath:   pictPath,
 		HeaderIPField: headerIPField,
 	}
