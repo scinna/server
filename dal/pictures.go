@@ -8,7 +8,7 @@ import (
 
 // GetPicture retreive a picture from the database and its user given an URL ID
 func GetPicture(p *services.Provider, urlID string) (model.Picture, error) {
-	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY,
+	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY, p.EXT,
 				   au.ID AS "creator.id", au.CREATED_AT AS "creator.created_at", au.EMAIL as "creator.email", au.USERNAME AS "creator.username"
 			FROM PICTURES p
 			INNER JOIN APPUSER au ON au.ID = p.CREATOR
@@ -26,7 +26,7 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 		return []model.Picture{}, err
 	}
 
-	rq := ` SELECT ID, CREATED_AT, TITLE, URL_ID, DESCRIPT, VISIBILITY
+	rq := ` SELECT ID, CREATED_AT, TITLE, URL_ID, DESCRIPT, VISIBILITY, EXT
 			FROM PICTURES
 			WHERE CREATOR = $1`
 
@@ -49,6 +49,25 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 
 	return pictures, nil
 
+}
+
+// CreatePicture inserts the picture in the database, and returs the URL ID generated
+func CreatePicture(prv *services.Provider, pict model.Picture) (model.Picture, error) {
+	rq := `INSERT INTO PICTURES(TITLE, URL_ID, DESCRIPT, VISIBILITY, CREATOR, EXT) 
+		   VALUES ($1, $2, $3, $4, $5, $6)
+		   RETURNING ID`
+
+	URLID, err := prv.GenerateUID()
+	if err != nil {
+		return pict, err
+	}
+	pict.URLID = URLID
+
+	var lastInsertedID int64 = 0
+	err = prv.Db.QueryRow(rq, pict.Title, pict.URLID, pict.Description, pict.Visibility, pict.Creator.ID, pict.Ext).Scan(&lastInsertedID)
+	pict.ID = &lastInsertedID
+
+	return pict, err
 }
 
 // DeletePicture removes a picture from the database

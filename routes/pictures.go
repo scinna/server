@@ -14,6 +14,7 @@ import (
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/services"
+	"github.com/oxodao/scinna/utils"
 )
 
 // RawPictureRoute is the route that render the picture: /{picture id}
@@ -39,7 +40,7 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + ".png")
+		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusNotFound)
@@ -105,7 +106,93 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 // UploadPictureRoute is the route that let user upload a picture
 func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("UploadPictureRoute - To be implemented"))
+		user, err := auth.ValidateRequest(prv, w, r)
+		if auth.RespondError(w, err) {
+			return
+		}
+
+		r.ParseMultipartForm(10 << 20) // 10 meg max
+
+		title := r.FormValue("title")
+		desc := r.FormValue("description")
+		visib := r.FormValue("visibility")
+		visibInt, err := strconv.Atoi(visib)
+		visibility := int8(visibInt)
+
+		if len(title) == 0 || len(title) > 30 || err != nil || !utils.IsValidVisibility(visibility) {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+
+		file, header, err := r.FormFile("picture")
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		mimeType := header.Header.Get("Content-Type")
+
+		if !utils.IsValidMimetype(mimeType) {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		parentFolder := prv.PicturePath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
+
+		_, err = os.Stat(parentFolder)
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(parentFolder, os.ModePerm)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		}
+
+		pict := model.Picture{
+			Title:       title,
+			Description: desc,
+			Creator:     &user,
+			Visibility:  visibility,
+			Ext:         utils.GetExtForMimetype(mimeType),
+		}
+
+		pict, err = dal.CreatePicture(prv, pict)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		outputFile, err := os.Create(parentFolder + strconv.FormatInt(*pict.ID, 10) + "." + pict.Ext)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			dal.DeletePicture(prv, pict)
+		}
+		defer outputFile.Close()
+
+		_, err = io.Copy(outputFile, file)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+
+		// Clearing out the fields we don't want to send
+		pict.ID = nil
+		pict.Ext = ""
+
+		json, err := json.Marshal(pict)
+		if err != nil {
+			// The picture is uploaded but something went wrong while encoding the response
+			w.WriteHeader(http.StatusAccepted)
+		}
+
+		w.Write(json)
 	}
 }
 

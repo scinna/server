@@ -12,6 +12,7 @@ type Picture struct {
 	Description string   `db:"descript"`
 	Visibility  int8     `db:"visibility"`
 	Creator     *AppUser `db:"creator" json:",omitempty"`
+	Ext         string   `db:"ext" json:",omitempty"`
 }
 
 // ToString is a debug method to print one picture, should be removed
