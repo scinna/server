@@ -10,6 +10,7 @@ import (
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/services"
+	"github.com/oxodao/scinna/utils"
 )
 
 type loginRequest struct {
@@ -45,6 +46,18 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		hasReachedMaxAttempts, err := dal.ReachedMaxAttempts(prv, u)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if hasReachedMaxAttempts {
+			w.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
+
 		valid, err := prv.VerifyPassword(rc.Password, u.Password)
 		if err != nil {
 			fmt.Println(err)
@@ -74,6 +87,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusUnauthorized)
+		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv, r))
 	}
 }
 

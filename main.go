@@ -41,6 +41,11 @@ func main() {
 		panic("BAD JWT SECRET!")
 	}
 
+	headerIPField, exists := os.LookupEnv("HEADER_IP_FIELD")
+	if !exists {
+		fmt.Println("The header for the IP field is not set (HEADER_IP_FIELD). If you are using a reverse-proxy please be sure to set it according to its configuration.")
+	}
+
 	utils.GenerateDefaultPicture()
 
 	picturepath, exists := os.LookupEnv("PICTURE_PATH")
@@ -60,7 +65,7 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath)
+	prv := services.New(db, argonParams, jwtSecretDecoded, picturepath, headerIPField)
 
 	r := mux.NewRouter().StrictSlash(false)
 

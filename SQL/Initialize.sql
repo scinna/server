@@ -1,3 +1,4 @@
+DROP TABLE LOGIN_ATTEMPT;
 DROP TABLE PICTURES;
 DROP TABLE APPUSER;
 
@@ -23,32 +24,9 @@ CREATE TABLE PICTURES (
     EXT        VARCHAR(8)
 );
 
-INSERT INTO PICTURES (TITLE, URL_ID, DESCRIPT, VISIBILITY, CREATOR, EXT)
-VALUES (
-    'Ma photo',
-    'dJe8g2-FjC',
-    'Ceci est une photo que j.ai uploadé',
-    0,
-    (SELECT ID FROM APPUSER WHERE USERNAME = 'admin'),
-    'png'
-);
-
-INSERT INTO PICTURES (TITLE, URL_ID, DESCRIPT, VISIBILITY, CREATOR, EXT)
-VALUES (
-    'Ma photo 2',
-    'sFueG_Hl23',
-    'Autre de mes photos, mais non-listée',
-    1,
-    (SELECT ID FROM APPUSER WHERE USERNAME = 'admin'),
-    'jpg'
-);
-
-INSERT INTO PICTURES (TITLE, URL_ID, DESCRIPT, VISIBILITY, CREATOR, EXT)
-VALUES (
-    'Ma photo 3',
-    'qKJbcD_73f',
-    'Une petite dernière en privée',
-    2,
-    (SELECT ID FROM APPUSER WHERE USERNAME = 'admin'),
-    'jpg'
-);
+CREATE TABLE LOGIN_ATTEMPT (
+    ID           INTEGER      REFERENCES APPUSER(ID),
+    CREATED_AT   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    IP           VARCHAR(45),
+    PRIMARY KEY (ID, CREATED_AT)
+)

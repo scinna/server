@@ -1,5 +1,11 @@
 package utils
 
+import (
+	"net/http"
+
+	"github.com/oxodao/scinna/services"
+)
+
 var mimetypes = map[string]string{
 	"image/jpeg": "jpg",
 	"image/png":  "png",
@@ -38,4 +44,13 @@ func IsValidVisibility(vis int8) bool {
 		}
 	}
 	return false
+}
+
+// ReadUserIP retreive the IP from the client, whether its coming directly or through a properly configured reverse-proxy
+func ReadUserIP(prv *services.Provider, r *http.Request) string {
+	if len(prv.HeaderIPField) > 0 {
+		return r.Header.Get(prv.HeaderIPField)
+	}
+
+	return r.RemoteAddr
 }

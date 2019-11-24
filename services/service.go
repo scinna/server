@@ -20,10 +20,11 @@ import (
 
 // Provider is the struct that carry all the parameters / connections for the software
 type Provider struct {
-	Db          *sqlx.DB
-	ArgonParams *ArgonParams
-	JwtKey      []byte
-	PicturePath string
+	Db            *sqlx.DB
+	ArgonParams   *ArgonParams
+	JwtKey        []byte
+	PicturePath   string
+	HeaderIPField string
 }
 
 // GenerateUID function generates an ID for the pictures
@@ -73,12 +74,13 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 }
 
 // New function initializes the the Provider structure
-func New(db *sqlx.DB, ap *ArgonParams, jwtKey []byte, pictPath string) *Provider {
+func New(db *sqlx.DB, ap *ArgonParams, jwtKey []byte, pictPath string, headerIPField string) *Provider {
 	return &Provider{
-		Db:          db,
-		ArgonParams: ap,
-		JwtKey:      jwtKey,
-		PicturePath: pictPath,
+		Db:            db,
+		ArgonParams:   ap,
+		JwtKey:        jwtKey,
+		PicturePath:   pictPath,
+		HeaderIPField: headerIPField,
 	}
 }
 
