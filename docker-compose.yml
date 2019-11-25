@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+
+    database:
+        image: postgres
+        volumes:
+            - scinnaDB:/var/lib/postgresql/data
+        networks:
+            - scinnaNET
+        environment:
+            - POSTGRES_USER=scinna
+            - POSTGRES_PASSWORD=scinna
+
+
+    scinna:
+        build:
+            context: .
+        image: scinna:git
+        networks:
+            - scinnaNET
+        volumes:
+            - /tmp/scinna/pictures:/pictures
+        ports:
+            - "8080:8080"
+        environment:
+            - POSTGRES_DNS="postgres://scinna:scinna@database/scinna"
+            - ID_ALPHABET="0123456789abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ"
+            - ID_SIZE=10
+            - WEB_PORT=8080
+            - PICTURE_PATH=/pictures
+
+    adminer:
+        image: adminer
+        restart: always
+        networks:
+            - scinnaNET
+        ports: 
+            - 8081:8080
+
+
+networks:
+    scinnaNET:
+
+volumes:
+    scinnaDB:
