@@ -58,6 +58,11 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		if !u.Validated {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		valid, err := prv.VerifyPassword(rc.Password, u.Password)
 		if err != nil {
 			fmt.Println(err)

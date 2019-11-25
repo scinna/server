@@ -3,8 +3,10 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/routes"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -68,6 +70,22 @@ func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) (bool, error) {
 func InsertFailedLoginAttempt(prv *services.Provider, u model.AppUser, ip string) error {
 	rq := ` INSERT INTO LOGIN_ATTEMPT(ID, IP) 
 			VALUES ($1, $2)`
-	_, err := prv.Db.Exec(rq, u.ID, ip)
+	_, err := prv.Db.Exec(rq, u.ID, strings.Split(ip, ":")[0])
 	return err
+}
+
+// RegisterUser inserts a non validated user in the DB
+func RegisterUser(prv *services.Provider, rc *routes.RegisterRequest) error {
+
+	hPass, err := prv.HashPassword(rc.Password)
+	if err != nil {
+		return err
+	}
+
+	rq := ` INSERT INTO APPUSER(USERNAME, EMAIL, PASSWORD) 
+			VALUES ($1, $2, $3)`
+	_, err = prv.Db.Exec(rq, rc.Username, rc.Email, hPass)
+
+	return err
+
 }

@@ -163,3 +163,64 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 
 	}
 }
+
+// IsRegisterAvailableRoute is 200 when you can register, and 403 when you cant
+func IsRegisterAvailableRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !prv.RegistrationAllowed {
+			w.WriteHeader(http.StatusForbidden)
+		}
+	}
+}
+
+// RegisterRequest reprensent the request that let users register
+type RegisterRequest struct {
+	Username string
+	Email    string
+	Password string
+}
+
+// RegisterRoute lets someone register on the server
+func RegisterRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if prv.RegistrationAllowed {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		var rc RegisterRequest
+
+		err = json.Unmarshal(body, &rc)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if len(rc.Username) == 0 || rc.Username == "me" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		_, err = dal.GetUser(prv, rc.Username)
+		if err == nil { // User exists
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
+
+		err = dal.RegisterUser(prv, &rc)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			// @TODO better error handling
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+
+	}
+}

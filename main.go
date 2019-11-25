@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -33,7 +34,18 @@ func main() {
 
 	headerIPField, exists := os.LookupEnv("HEADER_IP_FIELD")
 	if !exists {
-		fmt.Println("The header for the IP field is not set (HEADER_IP_FIELD). If you are using a reverse-proxy please be sure to set it according to its configuration.")
+		fmt.Println("The header for the IP field is not set (HEADER_IP_FIELD). If you are using a reverse-proxy please be sure to set it according to its configuration.\nTo disable this message, add the environment variable with an empty value.")
+	}
+
+	registrationAllowed, exists := os.LookupEnv("REGISTRATION_ALLOWED")
+	var registrationAllowedBool bool
+	if !exists {
+		fmt.Println("Registration is allowed by default. You can't hide this message or turn it off by filling the \"REGISTRATION_ALLOWED\" environment variable.")
+	} else {
+		registrationAllowedBool, err := strconv.ParseBool(registrationAllowed)
+		if err != nil {
+			panic("Can't parse REGISTRATION_ALLOWED. It should be either true or false")
+		}
 	}
 
 	utils.GenerateDefaultPicture()
@@ -55,7 +67,7 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, argonParams, picturepath, headerIPField)
+	prv := services.New(db, argonParams, picturepath, headerIPField, registrationAllowedBool)
 
 	r := mux.NewRouter().StrictSlash(false)
 
@@ -64,8 +76,10 @@ func main() {
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
 	authRoutes.Use(middleware.ContentTypeMiddleware)
-	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")     // Login route to get a JWT token
-	authRoutes.HandleFunc("/refresh", routes.RefreshRoute(prv)).Methods("POST") // Refresh route to refresh the JWT token
+	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")
+	authRoutes.HandleFunc("/register", routes.IsRegisterAvailableRoute(prv)).Methods("GET")
+	authRoutes.HandleFunc("/register", routes.RegisterRoute(prv)).Methods("POST")
+	authRoutes.HandleFunc("/register/{VALIDATION_TOKEN}", routes.ValidationRoute(prv)).Methods("POST")
 
 	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
 	picturesRoutes.Use(middleware.ContentTypeMiddleware)
