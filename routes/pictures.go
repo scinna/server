@@ -151,6 +151,12 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		_, err = file.Seek(0, io.SeekStart)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		parentFolder := prv.PicturePath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
 
 		_, err = os.Stat(parentFolder)
