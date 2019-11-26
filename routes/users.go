@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/serrors"
@@ -88,7 +89,6 @@ func MyInfosRoute(prv *services.Provider) http.HandlerFunc {
 }
 
 type updateInfoRequest struct {
-	Username string /** Temporary, won't be needed as soon as JWT is implemented, maybe repurposed to change username later **/
 	Email    string
 	Password string
 }
@@ -149,6 +149,11 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 
 		result, err := prv.Db.Exec(rq, u.Email, u.Password, u.ID)
 		if err != nil {
+			if _, ok := err.(*pq.Error); ok {
+				serrors.ErrorRegExistingMail.Write(w)
+				return
+			}
+
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -161,7 +166,7 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if ra == 0 {
-			w.WriteHeader(http.StatusNotFound)
+			serrors.WriteError(w, serrors.ErrorUserNotFound)
 			return
 		}
 

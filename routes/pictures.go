@@ -57,8 +57,7 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 		}
 		defer pictFile.Close()
 
-		// @TODO fetch correct content type
-		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Type", utils.GetMimetypeForExt(p.Ext))
 		io.Copy(w, pictFile)
 	}
 }
@@ -131,25 +130,20 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
+			return
 		}
 
 		file, _, err := r.FormFile("picture")
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 		defer file.Close()
 
 		mimeType, _, err := mimetype.DetectReader(file)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Println("@TODO response client -> Can't understand mimetype")
-			return
-		}
-
-		if !utils.IsValidMimetype(mimeType) {
-			w.WriteHeader(http.StatusBadRequest)
+		if err != nil || !utils.IsValidMimetype(mimeType) {
+			serrors.ErrorInvalidMimetype.Write(w)
 			return
 		}
 
@@ -165,7 +159,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		if os.IsNotExist(err) {
 			err = os.MkdirAll(parentFolder, os.ModePerm)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
+				serrors.WriteLoggableError(w, err)
 				return
 			}
 		}
@@ -179,15 +173,15 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		pict, err = dal.CreatePicture(prv, pict)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+		if serrors.WriteError(w, err) {
 			return
 		}
 
 		outputFile, err := os.Create(parentFolder + strconv.FormatInt(*pict.ID, 10) + "." + pict.Ext)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			serrors.WriteLoggableError(w, err)
 			dal.DeletePicture(prv, pict)
+			return
 		}
 		defer outputFile.Close()
 
@@ -207,6 +201,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		if err != nil {
 			// The picture is uploaded but something went wrong while encoding the response
 			w.WriteHeader(http.StatusAccepted)
+			return
 		}
 
 		w.Write(json)
@@ -225,29 +220,27 @@ func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 		id := params["URL_ID"]
 
 		if len(id) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorMissingURLID.Write(w)
 			return
 		}
 
 		p, err := dal.GetPicture(prv, id)
-		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+		if serrors.WriteError(w, err) {
 			return
 		}
 
 		if *p.Creator.ID != *user.ID {
-			w.WriteHeader(http.StatusForbidden)
+			serrors.ErrorWrongOwner.Write(w)
 			return
 		}
-		err = os.Remove(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + ".png")
+		err = os.Remove(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
+			// @TODO: Log in database
 			fmt.Println(err)
 		}
 
 		err = dal.DeletePicture(prv, p)
-
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+		if serrors.WriteError(w, err) {
 			return
 		}
 

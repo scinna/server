@@ -86,7 +86,6 @@ func DeletePicture(prv *services.Provider, pict model.Picture) error {
 	if err != nil {
 		count, err := result.RowsAffected()
 		if err != nil && count == 0 {
-			// Should never happen
 			return serrors.ErrorPictureNotFound
 		}
 	}

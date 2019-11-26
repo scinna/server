@@ -25,6 +25,17 @@ func GetExtForMimetype(mt string) string {
 	return mimetypes[mt]
 }
 
+// GetMimetypeForExt returns the mimetype that correspond to the extension
+func GetMimetypeForExt(ext string) string {
+	for k, v := range mimetypes {
+		if v == ext {
+			return k
+		}
+	}
+
+	return ""
+}
+
 var validVisibility = [...]int8{
 	// Public
 	0,

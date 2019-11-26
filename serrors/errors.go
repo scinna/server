@@ -99,7 +99,7 @@ var ErrorRevoked *SError = New("This token has been revoked and can no longer be
 var ErrorPictureNotFound *SError = New("Picture not found", 404, http.StatusNotFound)
 
 // ErrorBadRequest shows up whenever the client sends a malformated request (Can't read the body, bad JSON, etc...)
-var ErrorBadRequest *SError = New("The server can't parse your request!", 405, http.StatusBadRequest)
+var ErrorBadRequest *SError = New("The server can't parse your request! (Are you sure all required fields were filled ?)", 405, http.StatusBadRequest)
 
 // ErrorDatabase is just to throw when there is an error inserting/deleting but we don't care about it that much
 var ErrorDatabase *SError = New("There was a database error!", 406, http.StatusInternalServerError)
@@ -131,6 +131,12 @@ var ErrorInvalidCredentials *SError = New("Invalid credentials", 414, http.Statu
 // ErrorPrivatePicture is thrown when the user asks for a private picture that he doesn't own
 var ErrorPrivatePicture *SError = New("This picture is private", 415, http.StatusForbidden)
 
+// ErrorMissingURLID happens when the client request a route that requires a URL ID and doesn't feed it
+var ErrorMissingURLID *SError = New("Request is missing the picture ID!", 418, http.StatusBadRequest)
+
+// ErrorInvalidMimetype happens when you send a file that can't be uploaded to the server
+var ErrorInvalidMimetype *SError = New("This file type can't be uploaded (Only jpeg, png or gif)", 419, http.StatusBadRequest)
+
 /////// Registration errors
 
 // ErrorRegDisabled gets thrown when a user tries to register while the registration are disabled
@@ -139,17 +145,20 @@ var ErrorRegDisabled *SError = New("Registration are disabled", 460, http.Status
 // ErrorRegExistingUser gets thrown when the user already exists
 var ErrorRegExistingUser *SError = New("This username is already taken", 465, http.StatusConflict)
 
+// ErrorRegExistingMail gets thrown when the user already exists
+var ErrorRegExistingMail *SError = New("This email is already in use", 466, http.StatusConflict)
+
 // ErrorRegBadUsername gets thrown when the user wants to register an invalid username (Either empty or blacklisted one)
-var ErrorRegBadUsername *SError = New("This username is invalid (Either is empty or equals to 'me')", 466, http.StatusBadRequest)
+var ErrorRegBadUsername *SError = New("This username is invalid (Either is empty or equals to 'me')", 467, http.StatusBadRequest)
 
 // ErrorRegBadEmail gets thrown when the user wants to register an invalid username (Either empty or blacklisted one)
-var ErrorRegBadEmail *SError = New("This email is invalid", 467, http.StatusBadRequest)
+var ErrorRegBadEmail *SError = New("This email is invalid", 468, http.StatusBadRequest)
 
 // ErrorAlreadyValidated shows up when you try to activate an already activated user
-var ErrorAlreadyValidated *SError = New("This account is already activated", 468, http.StatusAlreadyReported)
+var ErrorAlreadyValidated *SError = New("This account is already activated", 469, http.StatusAlreadyReported)
 
 // ErrorNoAccountValidation shows up when you try to activate a non existing validation token
-var ErrorNoAccountValidation *SError = New("This activation token does not exists.", 469, http.StatusAlreadyReported)
+var ErrorNoAccountValidation *SError = New("This activation token does not exists.", 470, http.StatusAlreadyReported)
 
 // ErrorNotValidated shows up when the user account is not activated
-var ErrorNotValidated *SError = New("This account is not activated", 470, http.StatusForbidden)
+var ErrorNotValidated *SError = New("This account is not activated", 471, http.StatusForbidden)
