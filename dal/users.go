@@ -3,7 +3,6 @@ package dal
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/lib/pq"
@@ -14,12 +13,16 @@ import (
 
 // GetUser fetches one user from the database given its username
 func GetUser(p *services.Provider, username string) (model.AppUser, error) {
-	rq := ` SELECT ID, CREATED_AT, EMAIL, USERNAME, PASSWORD
+	rq := ` SELECT ID, CREATED_AT, EMAIL, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN
 			FROM APPUSER
 			WHERE USERNAME = $1`
 
 	var user model.AppUser
 	err := p.Db.QueryRowx(rq, username).StructScan(&user)
+
+	if err == sql.ErrNoRows {
+		return user, serrors.ErrorUserNotFound
+	}
 
 	return user, err
 }
@@ -37,7 +40,7 @@ func GetUserByID(p *services.Provider, id int) (model.AppUser, error) {
 }
 
 // ReachedMaxAttempts returns whether the user has tried to login more than 10 times in the last five minutes
-func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) (bool, error) {
+func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) error {
 	rq := `
 			SELECT 
 				CASE WHEN (CREATED_AT > CURRENT_TIMESTAMP - INTERVAL '5 min') THEN 
@@ -54,18 +57,21 @@ func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) (bool, error) {
 			ORDER BY CREATED_AT DESC
 			LIMIT 1`
 
-	var canLogIn bool
-	err := prv.Db.Get(&canLogIn, rq, u.ID, 10)
+	var cantLogIn bool
+	err := prv.Db.Get(&cantLogIn, rq, u.ID, 10)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false, nil
+			return nil
 		}
-		fmt.Println(err)
-		return true, err
+		return err
 	}
 
-	return canLogIn, nil
+	if cantLogIn {
+		return serrors.ErrorMaxAttempts
+	}
+
+	return nil
 }
 
 // InsertFailedLoginAttempt inserts in the database a entry to log when a user fails his login attempt

@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -31,7 +30,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
@@ -39,37 +38,33 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 
 		err = json.Unmarshal(body, &rc)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
 		u, err := dal.GetUser(prv, rc.Username)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			if err == serrors.ErrorUserNotFound {
+				serrors.ErrorInvalidCredentials.Write(w)
+				return
+			}
+			serrors.WriteError(w, err)
 			return
 		}
 
-		hasReachedMaxAttempts, err := dal.ReachedMaxAttempts(prv, u)
-		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if hasReachedMaxAttempts {
-			w.WriteHeader(http.StatusTooManyRequests)
+		err = dal.ReachedMaxAttempts(prv, u)
+		if serrors.WriteError(w, err) {
 			return
 		}
 
 		if !u.Validated {
-			w.WriteHeader(http.StatusForbidden)
+			serrors.ErrorNotValidated.Write(w)
 			return
 		}
 
 		valid, err := prv.VerifyPassword(rc.Password, u.Password)
 		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			serrors.WriteLoggableError(w, err)
 			return
 		}
 
@@ -94,7 +89,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 
 			return
 		}
-		w.WriteHeader(http.StatusUnauthorized)
+		serrors.ErrorInvalidCredentials.Write(w)
 		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv.HeaderIPField, r))
 	}
 }
@@ -124,7 +119,7 @@ type RegisterRequest struct {
 // RegisterRoute lets someone register on the server
 func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if prv.RegistrationAllowed {
+		if !prv.RegistrationAllowed {
 			serrors.ErrorRegDisabled.Write(w)
 			return
 		}

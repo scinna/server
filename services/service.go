@@ -66,6 +66,7 @@ func (prv *Provider) HashPassword(password string) (string, error) {
 func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, err error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 	if err != nil {
+		// @TODO Log error in DB
 		return false, err
 	}
 

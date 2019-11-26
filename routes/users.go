@@ -26,7 +26,7 @@ func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 		picts, err := dal.GetPicturesFromUser(prv, username, true)
 
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			serrors.WriteError(w, err)
 			return
 		}
 
@@ -46,21 +46,19 @@ func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
-		if auth.RespondError(w, err) {
+		if serrors.WriteError(w, err) {
 			return
 		}
 
 		picts, err := dal.GetPicturesFromUser(prv, user.Username, false)
 
-		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+		if serrors.WriteLoggableError(w, err) {
 			return
 		}
 
 		json, err := json.Marshal(picts)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+		if serrors.WriteLoggableError(w, err) {
 			return
 		}
 
@@ -73,7 +71,7 @@ func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
 func MyInfosRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
-		if auth.RespondError(w, err) {
+		if serrors.WriteError(w, err) {
 			return
 		}
 
@@ -115,7 +113,7 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		u, err := auth.ValidateRequest(prv, w, r)
-		if auth.RespondError(w, err) {
+		if serrors.WriteError(w, err) {
 			return
 		}
 

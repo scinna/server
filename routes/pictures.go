@@ -14,6 +14,7 @@ import (
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/utils"
 )
@@ -26,35 +27,37 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 		id := params["pict"]
 
 		if len(id) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
 		p, err := dal.GetPicture(prv, id)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			serrors.WriteError(w, err)
 			return
 		}
 
 		if p.Visibility == 2 {
 			user, err := auth.ValidateRequest(prv, w, r)
 			if err != nil || p.Creator.ID == user.ID {
-				w.WriteHeader(http.StatusUnauthorized)
+				serrors.ErrorPrivatePicture.Write(w)
 				return
 			}
 		}
 
 		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusNotFound)
+			serrors.ErrorPictureNotFound.Write(w)
 			pictFile, err = os.Open("not_found.png")
 			if err != nil {
 				return
 			}
+
+			w.Header().Del("Content-Type")
 		}
 		defer pictFile.Close()
 
+		// @TODO fetch correct content type
 		w.Header().Set("Content-Type", "image/png")
 		io.Copy(w, pictFile)
 	}
@@ -73,19 +76,18 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		p, err := dal.GetPicture(prv, id)
-		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+		if serrors.WriteError(w, err) {
 			return
 		}
 
 		user, err := auth.ValidateRequest(prv, w, r)
 		if p.Visibility == 2 {
-			if auth.RespondError(w, err) {
+			if err == serrors.ErrorNoToken && serrors.WriteError(w, serrors.ErrorPrivatePicture) {
 				return
 			}
 
 			if *user.ID != *p.Creator.ID {
-				w.WriteHeader(http.StatusForbidden)
+				serrors.ErrorPrivatePicture.Write(w)
 				return
 			}
 		}
@@ -111,7 +113,7 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
-		if auth.RespondError(w, err) {
+		if serrors.WriteError(w, err) {
 			return
 		}
 
@@ -215,7 +217,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
-		if auth.RespondError(w, err) {
+		if serrors.WriteError(w, err) {
 			return
 		}
 

@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"database/sql"
 	"net/http"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/serrors"
@@ -27,6 +29,7 @@ func GenerateToken(prv *services.Provider, ip string, u model.AppUser) (string, 
 
 // VerifyToken check if the token is valid. If so, it fetches the corresponding user from the database
 func VerifyToken(prv *services.Provider, tokenStr string) (model.AppUser, error) {
+	// @TODO Rewrite everything in this >:(
 	rq := ` SELECT ID, REVOKED
 			FROM LOGIN_TOKENS
 			WHERE TOKEN = $1`
@@ -36,6 +39,18 @@ func VerifyToken(prv *services.Provider, tokenStr string) (model.AppUser, error)
 	row := prv.Db.QueryRow(rq, tokenStr)
 	err := row.Scan(&userID, &revoked)
 	if err != nil {
+
+		if err == sql.ErrNoRows {
+			// Happens when the token doesn't exists on the server
+			// @TODO: Rewrite the token revocation to be IF in the table = revoked, no rows at all in the DB if not revoked (Save space)
+			// Temp fix:
+			return model.AppUser{}, serrors.ErrorNoToken
+		}
+
+		errPost, ok := err.(*pq.Error)
+		if ok && errPost.Code.Name() == serrors.PostgresError["InvalidUID"] {
+			return model.AppUser{}, serrors.ErrorBadToken
+		}
 		return model.AppUser{}, err
 	}
 

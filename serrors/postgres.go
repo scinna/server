@@ -4,4 +4,5 @@ package serrors
 var PostgresError map[string]string = map[string]string{
 
 	"AlreadyExisting": "unique_violation",
+	"InvalidUID":      "invalid_text_representation",
 }

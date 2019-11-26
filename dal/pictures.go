@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
@@ -16,6 +17,10 @@ func GetPicture(p *services.Provider, urlID string) (model.Picture, error) {
 
 	var pict model.Picture
 	err := p.Db.QueryRowx(rq, urlID).StructScan(&pict)
+	if err == sql.ErrNoRows {
+		return pict, serrors.ErrorPictureNotFound
+	}
+
 	return pict, err
 }
 
@@ -34,9 +39,11 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 		rq += " AND VISIBILITY = 0"
 	}
 
-	var pictures []model.Picture
+	// This assignement is needed so that the JSON Marshal does not return nil instead of empty array when the user has no pictures
+	var pictures []model.Picture = []model.Picture{}
 	rows, err := p.Db.Queryx(rq, u.ID)
 	if err != nil {
+		// Should never happen
 		return []model.Picture{}, err
 	}
 
@@ -48,7 +55,6 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 	}
 
 	return pictures, nil
-
 }
 
 // CreatePicture inserts the picture in the database, and returs the URL ID generated

@@ -29,12 +29,31 @@ func (s *SError) JSON() []byte {
 }
 
 func (s *SError) Write(w http.ResponseWriter) {
+	w.Header().Del("Content-Type")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(s.HTTPError)
 	w.Write(s.JSON())
 }
 
 // WriteError writes the error to the response. Return false if there is no error
 func WriteError(w http.ResponseWriter, err error) bool {
+	if err != nil {
+		cast, ok := err.(*SError)
+		if ok {
+			cast.Write(w)
+			return true
+		}
+
+		NewUnknown(err).Write(w)
+		return true
+	}
+
+	return false
+}
+
+// WriteLoggableError writes a generic error and save the real one to the database
+func WriteLoggableError(w http.ResponseWriter, err error) bool {
+	// @TODO Save the error, send a generic message with an error code to send to the admin
 	if err != nil {
 		cast, ok := err.(*SError)
 		if ok {
@@ -98,7 +117,19 @@ var ErrorWrongOwner *SError = New("This picture doesn't belong to you", 409, htt
 var ErrorBadFile *SError = New("The file you are uploading is incorrect (Not an image or more than 10 meg)", 410, http.StatusBadRequest)
 
 // ErrorSendingMail is thrown when the server failed to send an email
-var ErrorSendingMail *SError = New("The server failed to send email. Please contact the administrator if needed", 468, http.StatusInternalServerError)
+var ErrorSendingMail *SError = New("The server failed to send email. Please contact the administrator if needed", 411, http.StatusInternalServerError)
+
+// ErrorMaxAttempts is thrown when the user tries too much to login
+var ErrorMaxAttempts *SError = New("Calm down on login attempts!", 412, http.StatusBadRequest)
+
+// ErrorUserNotFound is thrown when the user can't be found in the database
+var ErrorUserNotFound *SError = New("User not found", 413, http.StatusBadRequest)
+
+// ErrorInvalidCredentials is thrown when the user logs with a wrong password
+var ErrorInvalidCredentials *SError = New("Invalid credentials", 414, http.StatusBadRequest)
+
+// ErrorPrivatePicture is thrown when the user asks for a private picture that he doesn't own
+var ErrorPrivatePicture *SError = New("This picture is private", 415, http.StatusForbidden)
 
 /////// Registration errors
 
@@ -115,7 +146,10 @@ var ErrorRegBadUsername *SError = New("This username is invalid (Either is empty
 var ErrorRegBadEmail *SError = New("This email is invalid", 467, http.StatusBadRequest)
 
 // ErrorAlreadyValidated shows up when you try to activate an already activated user
-var ErrorAlreadyValidated *SError = New("This account is already validated", 468, http.StatusAlreadyReported)
+var ErrorAlreadyValidated *SError = New("This account is already activated", 468, http.StatusAlreadyReported)
 
 // ErrorNoAccountValidation shows up when you try to activate a non existing validation token
 var ErrorNoAccountValidation *SError = New("This activation token does not exists.", 469, http.StatusAlreadyReported)
+
+// ErrorNotValidated shows up when the user account is not activated
+var ErrorNotValidated *SError = New("This account is not activated", 470, http.StatusForbidden)
