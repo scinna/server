@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 	"github.com/oxodao/scinna/utils"
 )
@@ -103,6 +105,12 @@ func IsRegisterAvailableRoute(prv *services.Provider) http.HandlerFunc {
 		if !prv.RegistrationAllowed {
 			w.WriteHeader(http.StatusForbidden)
 		}
+
+		w.Write([]byte(`
+		{
+			"RegisterAllowed": ` + strconv.FormatBool(prv.RegistrationAllowed) + `
+		}
+		`))
 	}
 }
 
@@ -117,13 +125,13 @@ type RegisterRequest struct {
 func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if prv.RegistrationAllowed {
-			w.WriteHeader(http.StatusForbidden)
+			serrors.ErrorRegDisabled.Write(w)
 			return
 		}
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
@@ -131,35 +139,23 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 
 		err = json.Unmarshal(body, &rc)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
 		if len(rc.Username) == 0 || rc.Username == "me" {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorRegBadUsername.Write(w)
 			return
 		}
 
 		if !prv.Mail.IsEmail.MatchString(rc.Email) {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Printf("%v n'est pas une email valide!\n", rc.Email)
-			return
-		}
-
-		_, err = dal.GetUser(prv, rc.Username)
-		if err == nil { // User exists
-			w.WriteHeader(http.StatusConflict)
+			serrors.ErrorRegBadEmail.Write(w)
 			return
 		}
 
 		_, err = dal.RegisterUser(prv, rc.Username, rc.Password, rc.Email)
-		if err != nil {
-			// Berk, @TODO quick!
-			if err.Error() != "Fail mail" {
-				w.WriteHeader(http.StatusBadRequest)
-				// @TODO better error handling
-				return
-			}
+		if serrors.WriteError(w, err) {
+			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
@@ -167,9 +163,11 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 }
 
 type validateRouteResp struct {
-	Title     string
-	Validated bool
-	ErrMsg    string
+	Title            string
+	Validated        bool
+	AlreadyValidated bool
+	NotFound         bool
+	ErrMsg           string
 }
 
 // ValidateUserRoute lets someone register on the server
@@ -182,8 +180,10 @@ func ValidateUserRoute(prv *services.Provider) http.HandlerFunc {
 		err := dal.ValidateUser(prv, token)
 
 		vrr := validateRouteResp{
-			Title:     "Activating user - Scinna",
-			Validated: err == nil,
+			Title:            "Activating user - Scinna",
+			Validated:        err == nil,
+			AlreadyValidated: err == serrors.ErrorAlreadyValidated,
+			NotFound:         err == serrors.ErrorNoAccountValidation,
 		}
 
 		if err != nil {

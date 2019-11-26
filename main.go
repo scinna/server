@@ -41,6 +41,7 @@ func main() {
 	var registrationAllowedBool bool
 	if !exists {
 		fmt.Println("Registration is allowed by default. You can't hide this message or turn it off by filling the \"REGISTRATION_ALLOWED\" environment variable.")
+		registrationAllowedBool = true
 	} else {
 		var err error
 		registrationAllowedBool, err = strconv.ParseBool(registrationAllowed)

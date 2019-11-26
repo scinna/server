@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -100,7 +101,7 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
@@ -109,7 +110,7 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 		err = json.Unmarshal(body, &rc)
 
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 

@@ -2,9 +2,11 @@
 
     {{ if .Validated }}
         <p>You account has been activated. You may now use it!</p>
-    {{ else }}
-        <p>Something went wrong activating your account.</p>
-        <p>Either it is already activated, or it expired? Account not activated after 24h hours are removed</p>
+    {{ else if .AlreadyValidated }}
+        <p>This account is already validated !</p>
+    {{ else if .NotFound }}
+        <p>This account does not exists.</p>
+        <p>Keep in mind that accounts not activated are removed after 24h. If this was the case, you can still create it again.</p>
     {{ end }}
 
 {{end}}

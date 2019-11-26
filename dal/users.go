@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -88,9 +90,13 @@ func RegisterUser(prv *services.Provider, username, password, email string) (str
 		`
 
 	rows, err := prv.Db.Query(rq, username, email, hPass)
-
 	if err != nil {
-		return "", err
+		if errPost, ok := err.(*pq.Error); ok {
+			if errPost.Code.Name() == serrors.PostgresError["AlreadyExisting"] {
+				return "", serrors.ErrorRegExistingUser
+			}
+		}
+		return "", serrors.ErrorBadRequest
 	}
 
 	if rows.Next() {
@@ -99,7 +105,7 @@ func RegisterUser(prv *services.Provider, username, password, email string) (str
 
 		sent, _ := prv.Mail.SendValidationMail(email, token)
 		if !sent {
-			return "Account created, error sending mail. Please contact the administrator", errors.New("Fail mail")
+			return "", serrors.ErrorSendingMail
 		}
 
 		return token, nil
@@ -110,15 +116,28 @@ func RegisterUser(prv *services.Provider, username, password, email string) (str
 
 // ValidateUser lets a user use his account
 func ValidateUser(prv *services.Provider, valTok string) error {
-	rq := ` UPDATE APPUSER SET VALIDATION_TOKEN = '', VALIDATED = true WHERE VALIDATION_TOKEN = $1`
-	rows, err := prv.Db.Exec(rq, valTok)
+
+	rq := `SELECT VALIDATED FROM APPUSER WHERE VALIDATION_TOKEN = $1`
+	row := prv.Db.QueryRow(rq, valTok)
+	var alreadyValid bool
+	err := row.Scan(&alreadyValid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return serrors.ErrorNoAccountValidation
+		}
+		return serrors.ErrorBadRequest
+	}
+
+	if alreadyValid {
+		return serrors.ErrorAlreadyValidated
+	}
+
+	rq = ` UPDATE APPUSER SET VALIDATED = true WHERE VALIDATION_TOKEN = $1`
+	_, err = prv.Db.Exec(rq, valTok)
 
 	if err != nil {
 		return err
 	}
 
-	if a, b := rows.RowsAffected(); b != nil || a == 0 {
-		return errors.New("already_sent")
-	}
 	return err
 }

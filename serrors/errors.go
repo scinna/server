@@ -2,17 +2,120 @@
 package serrors
 
 import (
-	"errors"
+	"encoding/json"
+	"net/http"
 )
 
+// SError is a custom error type for Scinna
+type SError struct {
+	Message   string
+	Errcode   int
+	HTTPError int `json:"-"`
+}
+
+func (s SError) Error() string {
+	return s.Message
+}
+
+// JSON return the error as a JSON to be sent to the client
+func (s *SError) JSON() []byte {
+	tx, err := json.Marshal(s)
+
+	if err != nil {
+		return []byte("{\"message\": \"Something went wrong encoding the error!\", \"errcode\": -1 }")
+	}
+
+	return tx
+}
+
+func (s *SError) Write(w http.ResponseWriter) {
+	w.WriteHeader(s.HTTPError)
+	w.Write(s.JSON())
+}
+
+// WriteError writes the error to the response. Return false if there is no error
+func WriteError(w http.ResponseWriter, err error) bool {
+	if err != nil {
+		cast, ok := err.(*SError)
+		if ok {
+			cast.Write(w)
+			return true
+		}
+
+		NewUnknown(err).Write(w)
+		return true
+	}
+
+	return false
+}
+
+// New creates a new error
+func New(msg string, errCode, err int) *SError {
+	return &SError{
+		Message:   msg,
+		Errcode:   errCode,
+		HTTPError: err,
+	}
+}
+
+// NewUnknown can be used to treat random errors
+func NewUnknown(err error) *SError {
+	return &SError{
+		Message:   err.Error(),
+		Errcode:   -1,
+		HTTPError: http.StatusInternalServerError,
+	}
+}
+
 // ErrorNoToken shows up whenever the request should be authed and is not given any token
-var ErrorNoToken error = errors.New("No token found in the request")
+var ErrorNoToken *SError = New("No token found in the request", 400, http.StatusUnauthorized)
 
 // ErrorBadToken shows up whenever the request should be authed but the given token is not in the correct format
-var ErrorBadToken error = errors.New("The given token is in the wrong format. It should be 'Bearer [JWT TOKEN]'")
+var ErrorBadToken *SError = New("The given token is in the wrong format. It should be 'Bearer [TOKEN]'", 401, http.StatusUnauthorized)
 
 // ErrorRevoked shows up whenever the request should be authed and the given token has been revoked
-var ErrorRevoked error = errors.New("This token has been revoked and can no longer be used")
+var ErrorRevoked *SError = New("This token has been revoked and can no longer be used", 403, http.StatusUnauthorized)
 
 // ErrorPictureNotFound shows up whenever the picture supposedly removed doesn't exists from the DB (Should NEVER happens)
-var ErrorPictureNotFound error = errors.New("The picture can't be removed from the DB since it doesn't exists")
+var ErrorPictureNotFound *SError = New("Picture not found", 404, http.StatusNotFound)
+
+// ErrorBadRequest shows up whenever the client sends a malformated request (Can't read the body, bad JSON, etc...)
+var ErrorBadRequest *SError = New("The server can't parse your request!", 405, http.StatusBadRequest)
+
+// ErrorDatabase is just to throw when there is an error inserting/deleting but we don't care about it that much
+var ErrorDatabase *SError = New("There was a database error!", 406, http.StatusInternalServerError)
+
+// ErrorISE is just to throw when there is an error that is generic (Ex: can't seek to the beginning of a file)
+var ErrorISE *SError = New("There was a server-side error", 407, http.StatusInternalServerError)
+
+// ErrorGenerationUID is when the URL ID generator fails
+var ErrorGenerationUID *SError = New("There was an error generating the unique ID", 408, http.StatusInternalServerError)
+
+// ErrorWrongOwner is when the user request a picture or modify a picture that he doesn't own
+var ErrorWrongOwner *SError = New("This picture doesn't belong to you", 409, http.StatusForbidden)
+
+// ErrorBadFile happens when a user try to send a wrong file
+var ErrorBadFile *SError = New("The file you are uploading is incorrect (Not an image or more than 10 meg)", 410, http.StatusBadRequest)
+
+// ErrorSendingMail is thrown when the server failed to send an email
+var ErrorSendingMail *SError = New("The server failed to send email. Please contact the administrator if needed", 468, http.StatusInternalServerError)
+
+/////// Registration errors
+
+// ErrorRegDisabled gets thrown when a user tries to register while the registration are disabled
+var ErrorRegDisabled *SError = New("Registration are disabled", 460, http.StatusBadRequest)
+
+// ErrorRegExistingUser gets thrown when the user already exists
+var ErrorRegExistingUser *SError = New("This username is already taken", 465, http.StatusConflict)
+
+// ErrorRegBadUsername gets thrown when the user wants to register an invalid username (Either empty or blacklisted one)
+var ErrorRegBadUsername *SError = New("This username is invalid (Either is empty or equals to 'me')", 466, http.StatusBadRequest)
+
+// ErrorRegBadEmail gets thrown when the user wants to register an invalid username (Either empty or blacklisted one)
+var ErrorRegBadEmail *SError = New("This email is invalid", 467, http.StatusBadRequest)
+
+// ErrorAlreadyValidated shows up when you try to activate an already activated user
+var ErrorAlreadyValidated *SError = New("This account is already validated", 468, http.StatusAlreadyReported)
+
+// ErrorNoAccountValidation shows up when you try to activate a non existing validation token
+var ErrorNoAccountValidation *SError = New("This activation token does not exists.", 469, http.StatusAlreadyReported)
