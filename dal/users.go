@@ -2,11 +2,11 @@ package dal
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/routes"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -75,17 +75,50 @@ func InsertFailedLoginAttempt(prv *services.Provider, u model.AppUser, ip string
 }
 
 // RegisterUser inserts a non validated user in the DB
-func RegisterUser(prv *services.Provider, rc *routes.RegisterRequest) error {
+func RegisterUser(prv *services.Provider, username, password, email string) (string, error) {
 
-	hPass, err := prv.HashPassword(rc.Password)
+	hPass, err := prv.HashPassword(password)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	rq := ` INSERT INTO APPUSER(USERNAME, EMAIL, PASSWORD) 
-			VALUES ($1, $2, $3)`
-	_, err = prv.Db.Exec(rq, rc.Username, rc.Email, hPass)
+			VALUES ($1, $2, $3)
+			RETURNING VALIDATION_TOKEN
+		`
 
+	rows, err := prv.Db.Query(rq, username, email, hPass)
+
+	if err != nil {
+		return "", err
+	}
+
+	if rows.Next() {
+		var token string
+		rows.Scan(&token)
+
+		sent, _ := prv.Mail.SendValidationMail(email, token)
+		if !sent {
+			return "Account created, error sending mail. Please contact the administrator", errors.New("Fail mail")
+		}
+
+		return token, nil
+	}
+
+	return "", errors.New("No rows updated")
+}
+
+// ValidateUser lets a user use his account
+func ValidateUser(prv *services.Provider, valTok string) error {
+	rq := ` UPDATE APPUSER SET VALIDATION_TOKEN = '', VALIDATED = true WHERE VALIDATION_TOKEN = $1`
+	rows, err := prv.Db.Exec(rq, valTok)
+
+	if err != nil {
+		fmt.Println("Toto", err)
+	}
+
+	if a, b := rows.RowsAffected(); b != nil || a == 0 {
+		fmt.Println("No rows affected")
+	}
 	return err
-
 }

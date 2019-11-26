@@ -1,0 +1,13 @@
+{{define "content"}}
+
+    {{ if .Validated }}
+        <p>You account has been activated. You may now use it!</p>
+    {{ else }}
+    {{.Validated}}
+        <p>Something went wrong activating your account.</p>
+        <p>Maybe it expired? Account not activated after 24h hours are removed</p>
+        <br />
+        <p>Error: {{ .ErrMsg }}</p>
+    {{ end }}
+
+{{end}}

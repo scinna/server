@@ -42,7 +42,8 @@ func main() {
 	if !exists {
 		fmt.Println("Registration is allowed by default. You can't hide this message or turn it off by filling the \"REGISTRATION_ALLOWED\" environment variable.")
 	} else {
-		registrationAllowedBool, err := strconv.ParseBool(registrationAllowed)
+		var err error
+		registrationAllowedBool, err = strconv.ParseBool(registrationAllowed)
 		if err != nil {
 			panic("Can't parse REGISTRATION_ALLOWED. It should be either true or false")
 		}
@@ -67,7 +68,7 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, argonParams, picturepath, headerIPField, registrationAllowedBool)
+	prv := services.New(db, utils.LoadMail(), argonParams, picturepath, headerIPField, registrationAllowedBool)
 
 	r := mux.NewRouter().StrictSlash(false)
 
@@ -75,11 +76,10 @@ func main() {
 	r.HandleFunc("/", routes.IndexRoute(prv))
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
-	authRoutes.Use(middleware.ContentTypeMiddleware)
-	authRoutes.HandleFunc("/login", routes.LoginRoute(prv)).Methods("POST")
-	authRoutes.HandleFunc("/register", routes.IsRegisterAvailableRoute(prv)).Methods("GET")
-	authRoutes.HandleFunc("/register", routes.RegisterRoute(prv)).Methods("POST")
-	authRoutes.HandleFunc("/register/{VALIDATION_TOKEN}", routes.ValidationRoute(prv)).Methods("POST")
+	authRoutes.HandleFunc("/login", middleware.ContentTypeMiddlewareFunc(routes.LoginRoute(prv))).Methods("POST")
+	authRoutes.HandleFunc("/register", middleware.ContentTypeMiddlewareFunc(routes.IsRegisterAvailableRoute(prv))).Methods("GET")
+	authRoutes.HandleFunc("/register", middleware.ContentTypeMiddlewareFunc(routes.RegisterRoute(prv))).Methods("POST")
+	authRoutes.HandleFunc("/register/{VALIDATION_TOKEN}", routes.ValidateUserRoute(prv))
 
 	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
 	picturesRoutes.Use(middleware.ContentTypeMiddleware)

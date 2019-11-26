@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/model"
@@ -59,7 +60,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if !u.Validated {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 
@@ -71,7 +72,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if valid {
-			token, err := auth.GenerateToken(prv, utils.ReadUserIP(prv, r), u)
+			token, err := auth.GenerateToken(prv, utils.ReadUserIP(prv.HeaderIPField, r), u)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -92,13 +93,95 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusUnauthorized)
-		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv, r))
+		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv.HeaderIPField, r))
 	}
 }
 
-// RefreshRoute is the route that let the user refresh his JWT token: /auth/refresh
-func RefreshRoute(prv *services.Provider) http.HandlerFunc {
+// IsRegisterAvailableRoute is 200 when you can register, and 403 when you cant
+func IsRegisterAvailableRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("RefreshRoute - To be implemented"))
+		if !prv.RegistrationAllowed {
+			w.WriteHeader(http.StatusForbidden)
+		}
+	}
+}
+
+// RegisterRequest reprensent the request that let users register
+type RegisterRequest struct {
+	Username string
+	Email    string
+	Password string
+}
+
+// RegisterRoute lets someone register on the server
+func RegisterRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if prv.RegistrationAllowed {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		var rc RegisterRequest
+
+		err = json.Unmarshal(body, &rc)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if len(rc.Username) == 0 || rc.Username == "me" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		_, err = dal.GetUser(prv, rc.Username)
+		if err == nil { // User exists
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
+
+		_, err = dal.RegisterUser(prv, rc.Username, rc.Password, rc.Email)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			// @TODO better error handling
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+type validateRouteResp struct {
+	Title     string
+	Validated bool
+	ErrMsg    string
+}
+
+// ValidateUserRoute lets someone register on the server
+func ValidateUserRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := mux.Vars(r)
+		token := params["VALIDATION_TOKEN"]
+
+		err := dal.ValidateUser(prv, token)
+
+		vrr := validateRouteResp{
+			Title:     "Activating user - Scinna",
+			Validated: err == nil,
+		}
+
+		if err != nil {
+			vrr.ErrMsg = err.Error()
+		}
+
+		prv.Templates.ExecuteTemplate(w, "layout", vrr)
+
 	}
 }

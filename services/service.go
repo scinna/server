@@ -9,11 +9,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	gonanoid "github.com/matoous/go-nanoid"
+	"github.com/oxodao/scinna/utils"
 
 	"golang.org/x/crypto/argon2"
 )
@@ -21,6 +23,8 @@ import (
 // Provider is the struct that carry all the parameters / connections for the software
 type Provider struct {
 	Db                  *sqlx.DB
+	Mail                utils.MailClient
+	Templates           *template.Template
 	ArgonParams         *ArgonParams
 	PicturePath         string
 	HeaderIPField       string
@@ -74,9 +78,14 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 }
 
 // New function initializes the the Provider structure
-func New(db *sqlx.DB, ap *ArgonParams, pictPath, headerIPField string, registrationAllowed bool) *Provider {
+func New(db *sqlx.DB, mc utils.MailClient, ap *ArgonParams, pictPath, headerIPField string, registrationAllowed bool) *Provider {
+	t := template.New("ScinnaTemplates")
+	t = template.Must(t.ParseFiles("templates/layout.tmpl", "templates/validation_mail.tmpl"))
+
 	return &Provider{
 		Db:                  db,
+		Mail:                mc,
+		Templates:           t,
 		ArgonParams:         ap,
 		PicturePath:         pictPath,
 		HeaderIPField:       headerIPField,

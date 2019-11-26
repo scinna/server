@@ -9,7 +9,8 @@ CREATE TABLE APPUSER (
     USERNAME   VARCHAR(30)   UNIQUE,
     EMAIL      VARCHAR(255)  UNIQUE,
     PASSWORD   VARCHAR(1024),
-    VALIDATED  BOOL          DEFAULT false
+    VALIDATED  BOOL          DEFAULT false,
+    VALIDATION_TOKEN VARCHAR(36) DEFAULT gen_random_uuid()
 );
 
 -- Default password is 'password'

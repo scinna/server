@@ -2,8 +2,6 @@ package utils
 
 import (
 	"net/http"
-
-	"github.com/oxodao/scinna/services"
 )
 
 var mimetypes = map[string]string{
@@ -47,9 +45,9 @@ func IsValidVisibility(vis int8) bool {
 }
 
 // ReadUserIP retreive the IP from the client, whether its coming directly or through a properly configured reverse-proxy
-func ReadUserIP(prv *services.Provider, r *http.Request) string {
-	if len(prv.HeaderIPField) > 0 {
-		return r.Header.Get(prv.HeaderIPField)
+func ReadUserIP(headerIPField string, r *http.Request) string {
+	if len(headerIPField) > 0 {
+		return r.Header.Get(headerIPField)
 	}
 
 	return r.RemoteAddr
