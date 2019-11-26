@@ -125,6 +125,11 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		if !prv.Mail.IsEmail.MatchString(rc.Email) {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		rq := `UPDATE APPUSER
 			   SET EMAIL = ($1::VARCHAR),
 			       PASSWORD = ($2::VARCHAR)

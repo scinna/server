@@ -140,6 +140,12 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		if !prv.Mail.IsEmail.MatchString(rc.Email) {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Printf("%v n'est pas une email valide!\n", rc.Email)
+			return
+		}
+
 		_, err = dal.GetUser(prv, rc.Username)
 		if err == nil { // User exists
 			w.WriteHeader(http.StatusConflict)
@@ -148,9 +154,12 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 
 		_, err = dal.RegisterUser(prv, rc.Username, rc.Password, rc.Email)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			// @TODO better error handling
-			return
+			// Berk, @TODO quick!
+			if err.Error() != "Fail mail" {
+				w.WriteHeader(http.StatusBadRequest)
+				// @TODO better error handling
+				return
+			}
 		}
 
 		w.WriteHeader(http.StatusCreated)

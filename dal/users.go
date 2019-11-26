@@ -114,11 +114,11 @@ func ValidateUser(prv *services.Provider, valTok string) error {
 	rows, err := prv.Db.Exec(rq, valTok)
 
 	if err != nil {
-		fmt.Println("Toto", err)
+		return err
 	}
 
 	if a, b := rows.RowsAffected(); b != nil || a == 0 {
-		fmt.Println("No rows affected")
+		return errors.New("already_sent")
 	}
 	return err
 }
