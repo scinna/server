@@ -91,7 +91,7 @@ func RegisterUser(prv *services.Provider, username, password, email string) (str
 	}
 
 	rq := ` INSERT INTO APPUSER(USERNAME, EMAIL, PASSWORD) 
-			VALUES ($1, $2, $3)
+			VALUES ($1, LOWER($2), $3)
 			RETURNING VALIDATION_TOKEN
 		`
 
