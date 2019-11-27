@@ -3,6 +3,8 @@ package model
 // LoginToken is the token that authenticate the user
 type LoginToken struct {
 	Model
-	Token string `db:"token"`
-	IP    string `db:"ip"`
+	IDUser  int    `db:"id_usr" json:",omitempty"`
+	Token   string `db:"token" json:",omitempty"`
+	IP      string `db:"ip"`
+	Revoked bool   `db:"revoked"`
 }

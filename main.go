@@ -81,6 +81,8 @@ func main() {
 	authRoutes.HandleFunc("/register", middleware.ContentTypeMiddlewareFunc(routes.IsRegisterAvailableRoute(prv))).Methods("GET")
 	authRoutes.HandleFunc("/register", middleware.ContentTypeMiddlewareFunc(routes.RegisterRoute(prv))).Methods("POST")
 	authRoutes.HandleFunc("/register/{VALIDATION_TOKEN}", routes.ValidateUserRoute(prv))
+	authRoutes.HandleFunc("/tokens", middleware.ContentTypeMiddlewareFunc(routes.GetTokensRoute(prv))).Methods("GET")
+	authRoutes.HandleFunc("/tokens/{TOKEN_ID}", middleware.ContentTypeMiddlewareFunc(routes.RevokeTokenRoute(prv))).Methods("DELETE")
 
 	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
 	picturesRoutes.Use(middleware.ContentTypeMiddleware)

@@ -189,3 +189,70 @@ func ValidateUserRoute(prv *services.Provider) http.HandlerFunc {
 
 	}
 }
+
+// GetTokensRoute sends all the user's token
+func GetTokensRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := auth.ValidateRequest(prv, w, r)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		tokens, err := dal.ListTokens(prv, user)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		tks, err := json.Marshal(tokens)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(tks)
+
+	}
+}
+
+// RevokeTokenRoute revoke a token
+func RevokeTokenRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := mux.Vars(r)
+		id := params["TOKEN_ID"]
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			serrors.ErrorBadRequest.Write(w)
+			return
+		}
+
+		u, err := auth.ValidateRequest(prv, w, r)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		rq := `UPDATE LOGIN_TOKENS
+			   SET  REVOKED = true
+			   WHERE ID     = $1::INTEGER
+			   	 AND ID_USR = $2::INTEGER`
+
+		result, err := prv.Db.Exec(rq, idInt, u.ID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		ra, err := result.RowsAffected()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if ra == 0 {
+			serrors.WriteError(w, serrors.ErrorTokenNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusGone)
+	}
+}

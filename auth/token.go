@@ -14,7 +14,7 @@ import (
 
 // GenerateToken create a token for the user passed in parameters
 func GenerateToken(prv *services.Provider, ip string, u model.AppUser) (string, error) {
-	rq := ` INSERT INTO LOGIN_TOKENS(ID, IP) 
+	rq := ` INSERT INTO LOGIN_TOKENS(ID_USR, IP) 
 			VALUES ($1, $2)
 			RETURNING TOKEN`
 
@@ -30,7 +30,7 @@ func GenerateToken(prv *services.Provider, ip string, u model.AppUser) (string, 
 // VerifyToken check if the token is valid. If so, it fetches the corresponding user from the database
 func VerifyToken(prv *services.Provider, tokenStr string) (model.AppUser, error) {
 	// @TODO Rewrite everything in this >:(
-	rq := ` SELECT ID, REVOKED
+	rq := ` SELECT ID_USR, REVOKED
 			FROM LOGIN_TOKENS
 			WHERE TOKEN = $1`
 
@@ -42,9 +42,7 @@ func VerifyToken(prv *services.Provider, tokenStr string) (model.AppUser, error)
 
 		if err == sql.ErrNoRows {
 			// Happens when the token doesn't exists on the server
-			// @TODO: Rewrite the token revocation to be IF in the table = revoked, no rows at all in the DB if not revoked (Save space)
-			// Temp fix:
-			return model.AppUser{}, serrors.ErrorNoToken
+			return model.AppUser{}, serrors.ErrorTokenNotFound
 		}
 
 		errPost, ok := err.(*pq.Error)

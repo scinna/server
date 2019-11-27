@@ -86,6 +86,9 @@ func NewUnknown(err error) *SError {
 	}
 }
 
+// ErrorTokenNotFound shows up whenever the request should be authed but the given token doesn't exists
+var ErrorTokenNotFound *SError = New("No token found in the request", 399, http.StatusUnauthorized)
+
 // ErrorNoToken shows up whenever the request should be authed and is not given any token
 var ErrorNoToken *SError = New("No token found in the request", 400, http.StatusUnauthorized)
 
