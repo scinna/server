@@ -29,6 +29,7 @@ type Provider struct {
 	PicturePath         string
 	HeaderIPField       string
 	RegistrationAllowed bool
+	WebURL              string
 }
 
 // GenerateUID function generates an ID for the pictures
@@ -79,7 +80,7 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 }
 
 // New function initializes the the Provider structure
-func New(db *sqlx.DB, mc utils.MailClient, ap *ArgonParams, pictPath, headerIPField string, registrationAllowed bool) *Provider {
+func New(db *sqlx.DB, mc utils.MailClient, ap *ArgonParams, pictPath, headerIPField string, registrationAllowed bool, websiteURL string) *Provider {
 	t := template.New("ScinnaTemplates")
 	t = template.Must(t.ParseFiles("templates/layout.tmpl", "templates/validation_mail.tmpl"))
 
@@ -91,6 +92,7 @@ func New(db *sqlx.DB, mc utils.MailClient, ap *ArgonParams, pictPath, headerIPFi
 		PicturePath:         pictPath,
 		HeaderIPField:       headerIPField,
 		RegistrationAllowed: registrationAllowed,
+		WebURL:              websiteURL,
 	}
 }
 

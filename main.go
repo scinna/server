@@ -50,6 +50,11 @@ func main() {
 		}
 	}
 
+	websiteURL, exists := os.LookupEnv("WEB_URL")
+	if !exists {
+		panic("Can't find website URL (WEB_URL). This is required to make the link in the validation email and the forgotten password email")
+	}
+
 	utils.GenerateDefaultPicture()
 
 	picturepath, exists := os.LookupEnv("PICTURE_PATH")
@@ -69,7 +74,7 @@ func main() {
 	defer db.Close()
 	fmt.Println("- Connected to database")
 
-	prv := services.New(db, utils.LoadMail(), argonParams, picturepath, headerIPField, registrationAllowedBool)
+	prv := services.New(db, utils.LoadMail(), argonParams, picturepath, headerIPField, registrationAllowedBool, websiteURL)
 
 	r := mux.NewRouter().StrictSlash(false)
 

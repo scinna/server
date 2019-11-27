@@ -109,7 +109,7 @@ func RegisterUser(prv *services.Provider, username, password, email string) (str
 		var token string
 		rows.Scan(&token)
 
-		sent, _ := prv.Mail.SendValidationMail(email, token)
+		sent, _ := prv.Mail.SendValidationMail(prv.WebURL, email, token)
 		if !sent {
 			return "", serrors.ErrorSendingMail
 		}

@@ -54,8 +54,12 @@ func (mc *MailClient) SendMail(dest, subject, body string) (bool, error) {
 }
 
 // SendValidationMail sends the validation mail for a user
-func (mc *MailClient) SendValidationMail(dest, validationCode string) (bool, error) {
+func (mc *MailClient) SendValidationMail(url, dest, validationCode string) (bool, error) {
+	if url[len(url)-1:] != "/" {
+		url = url + "/"
+	}
+
 	return mc.SendMail(dest, "Scinna: Activate your account", `
 		Please validate your account.
-		https://scinna.local/auth/register/`+validationCode)
+		`+url+`auth/register/`+validationCode)
 }
