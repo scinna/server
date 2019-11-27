@@ -69,7 +69,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		if valid {
-			token, err := auth.GenerateToken(prv, utils.ReadUserIP(prv.HeaderIPField, r), u)
+			token, err := auth.GenerateToken(prv, utils.ReadUserIP(prv.Config.HeaderIPField, r), u)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -90,20 +90,20 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 		serrors.ErrorInvalidCredentials.Write(w)
-		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv.HeaderIPField, r))
+		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv.Config.HeaderIPField, r))
 	}
 }
 
 // IsRegisterAvailableRoute is 200 when you can register, and 403 when you cant
 func IsRegisterAvailableRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !prv.RegistrationAllowed {
+		if !prv.Config.RegistrationAllowed {
 			w.WriteHeader(http.StatusForbidden)
 		}
 
 		w.Write([]byte(`
 		{
-			"RegisterAllowed": ` + strconv.FormatBool(prv.RegistrationAllowed) + `
+			"RegisterAllowed": ` + strconv.FormatBool(prv.Config.RegistrationAllowed) + `
 		}
 		`))
 	}
@@ -119,7 +119,7 @@ type RegisterRequest struct {
 // RegisterRoute lets someone register on the server
 func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !prv.RegistrationAllowed {
+		if !prv.Config.RegistrationAllowed {
 			serrors.ErrorRegDisabled.Write(w)
 			return
 		}

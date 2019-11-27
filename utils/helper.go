@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net/http"
+	"strings"
 )
 
 var mimetypes = map[string]string{
@@ -57,9 +58,12 @@ func IsValidVisibility(vis int8) bool {
 
 // ReadUserIP retreive the IP from the client, whether its coming directly or through a properly configured reverse-proxy
 func ReadUserIP(headerIPField string, r *http.Request) string {
+	ip := r.RemoteAddr
 	if len(headerIPField) > 0 {
-		return r.Header.Get(headerIPField)
+		ip = r.Header.Get(headerIPField)
 	}
 
-	return r.RemoteAddr
+	ip = strings.Split(ip, ":")[0]
+
+	return ip
 }

@@ -87,7 +87,7 @@ func NewUnknown(err error) *SError {
 }
 
 // ErrorTokenNotFound shows up whenever the request should be authed but the given token doesn't exists
-var ErrorTokenNotFound *SError = New("No token found in the request", 399, http.StatusUnauthorized)
+var ErrorTokenNotFound *SError = New("This token doesn't exists", 399, http.StatusUnauthorized)
 
 // ErrorNoToken shows up whenever the request should be authed and is not given any token
 var ErrorNoToken *SError = New("No token found in the request", 400, http.StatusUnauthorized)
@@ -165,3 +165,6 @@ var ErrorNoAccountValidation *SError = New("This activation token does not exist
 
 // ErrorNotValidated shows up when the user account is not activated
 var ErrorNotValidated *SError = New("This account is not activated", 471, http.StatusForbidden)
+
+// ErrorRateLimited gets thrown when an IP requests more than X time
+var ErrorRateLimited *SError = New("You've hit the rate limit for this API", 999, http.StatusBadRequest)

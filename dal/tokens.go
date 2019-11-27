@@ -2,6 +2,7 @@ package dal
 
 import (
 	"github.com/oxodao/scinna/model"
+	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 )
 
@@ -29,6 +30,22 @@ func ListTokens(prv *services.Provider, u model.AppUser) ([]model.LoginToken, er
 
 // RevokeToken revokes an existing token
 func RevokeToken(prv *services.Provider, idToken int) error {
+
+	rq := `UPDATE LOGIN_TOKENS SET REVOKED = TRUE, REVOKED_DATE = CURRENT_TIMESTAMP WHERE ID = $1`
+
+	r, err := prv.Db.Exec(rq, idToken)
+	if err != nil {
+		return err
+	}
+
+	aff, err := r.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if aff == 0 {
+		return serrors.ErrorTokenNotFound
+	}
 
 	return nil
 }

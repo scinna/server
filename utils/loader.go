@@ -7,12 +7,7 @@ import (
 )
 
 // LoadDatabase create the sqlx DB instance
-func LoadDatabase() *sqlx.DB {
-	dsn, exists := os.LookupEnv("POSTGRES_DSN")
-	if !exists {
-		panic("No database url found! (POSTGRES_DSN)")
-	}
-
+func LoadDatabase(dsn string) *sqlx.DB {
 	db, err := sqlx.Open("postgres", dsn)
 	if err != nil {
 		panic(err)

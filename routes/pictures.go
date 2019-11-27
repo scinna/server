@@ -45,7 +45,7 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 			}
 		}
 
-		pictFile, err := os.Open(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
+		pictFile, err := os.Open(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			serrors.ErrorPictureNotFound.Write(w)
 			pictFile, err = os.Open("not_found.png")
@@ -153,7 +153,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		parentFolder := prv.PicturePath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
+		parentFolder := prv.Config.PicturePath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
 
 		_, err = os.Stat(parentFolder)
 		if os.IsNotExist(err) {
@@ -233,7 +233,7 @@ func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 			serrors.ErrorWrongOwner.Write(w)
 			return
 		}
-		err = os.Remove(prv.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
+		err = os.Remove(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			// @TODO: Log in database
 			fmt.Println(err)
