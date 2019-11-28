@@ -13,7 +13,7 @@ import (
 
 // GetUser fetches one user from the database given its username
 func GetUser(p *services.Provider, username string) (model.AppUser, error) {
-	rq := ` SELECT ID, CREATED_AT, EMAIL, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN
+	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN
 			FROM APPUSER
 			WHERE USERNAME = $1`
 
@@ -29,7 +29,7 @@ func GetUser(p *services.Provider, username string) (model.AppUser, error) {
 
 // GetUserByID fetches one user from the database given its id
 func GetUserByID(p *services.Provider, id int) (model.AppUser, error) {
-	rq := ` SELECT ID, CREATED_AT, EMAIL, USERNAME, PASSWORD
+	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD
 			FROM APPUSER
 			WHERE ID = $1`
 

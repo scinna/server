@@ -231,25 +231,8 @@ func RevokeTokenRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		rq := `UPDATE LOGIN_TOKENS
-			   SET  REVOKED = true
-			   WHERE ID     = $1::INTEGER
-			   	 AND ID_USR = $2::INTEGER`
-
-		result, err := prv.Db.Exec(rq, idInt, u.ID)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		ra, err := result.RowsAffected()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if ra == 0 {
-			serrors.WriteError(w, serrors.ErrorTokenNotFound)
+		err = dal.RevokeToken(prv, idInt, *u.ID)
+		if serrors.WriteError(w, err) {
 			return
 		}
 

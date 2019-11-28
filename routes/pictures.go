@@ -229,10 +229,11 @@ func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		if *p.Creator.ID != *user.ID {
+		if *p.Creator.ID != *user.ID && user.Role != model.UserRoleAdmin {
 			serrors.ErrorWrongOwner.Write(w)
 			return
 		}
+
 		err = os.Remove(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			// @TODO: Log in database
