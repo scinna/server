@@ -6,7 +6,9 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
@@ -77,10 +79,30 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 	return false, nil
 }
 
+func parseTemplateDir(dir string) (*template.Template, error) {
+	var paths []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return template.ParseFiles(paths...)
+}
+
 // New function initializes the the Provider structure
 func New(cfg configuration.Configuration, db *sqlx.DB, mc utils.MailClient, ap *ArgonParams) *Provider {
-	t := template.New("ScinnaTemplates")
-	t = template.Must(t.ParseFiles("templates/layout.tmpl", "templates/validation_mail.tmpl"))
+	t, err := parseTemplateDir("templates")
+	if err != nil {
+		fmt.Println(err)
+		panic("Can't load templates!")
+	}
 
 	return &Provider{
 		Config:      cfg,
@@ -89,6 +111,11 @@ func New(cfg configuration.Configuration, db *sqlx.DB, mc utils.MailClient, ap *
 		Templates:   t,
 		ArgonParams: ap,
 	}
+}
+
+// Render renders a template to the writer
+func Render(prv *Provider, w http.ResponseWriter, data interface{}) error {
+	return prv.Templates.ExecuteTemplate(w, "index.html", &data)
 }
 
 // ArgonParams represents all the parameters needed to hash the passwords

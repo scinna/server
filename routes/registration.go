@@ -135,7 +135,7 @@ func ValidateUserRoute(prv *services.Provider) http.HandlerFunc {
 			vrr.ErrMsg = err.Error()
 		}
 
-		prv.Templates.ExecuteTemplate(w, "layout", vrr)
+		prv.Templates.ExecuteTemplate(w, "validation_mail.tmpl", vrr)
 
 	}
 }
