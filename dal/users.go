@@ -13,7 +13,7 @@ import (
 
 // GetUser fetches one user from the database given its username
 func GetUser(p *services.Provider, username string) (model.AppUser, error) {
-	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN
+	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN, INVITED_BY
 			FROM APPUSER
 			WHERE USERNAME = $1`
 
@@ -29,7 +29,7 @@ func GetUser(p *services.Provider, username string) (model.AppUser, error) {
 
 // GetUserByID fetches one user from the database given its id
 func GetUserByID(p *services.Provider, id int) (model.AppUser, error) {
-	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD
+	rq := ` SELECT ID, CREATED_AT, EMAIL, ROLE, USERNAME, PASSWORD, VALIDATED, VALIDATION_TOKEN, INVITED_BY
 			FROM APPUSER
 			WHERE ID = $1`
 
@@ -83,19 +83,19 @@ func InsertFailedLoginAttempt(prv *services.Provider, u model.AppUser, ip string
 }
 
 // RegisterUser inserts a non validated user in the DB
-func RegisterUser(prv *services.Provider, username, password, email string) (string, error) {
+func RegisterUser(prv *services.Provider, username, password, email string, invitedBy int64) (string, error) {
 
 	hPass, err := prv.HashPassword(password)
 	if err != nil {
 		return "", err
 	}
 
-	rq := ` INSERT INTO APPUSER(USERNAME, EMAIL, PASSWORD) 
-			VALUES ($1, LOWER($2), $3)
+	rq := ` INSERT INTO APPUSER(USERNAME, EMAIL, PASSWORD, INVITED_BY) 
+			VALUES ($1, LOWER($2), $3, CASE WHEN $4 <> -1 THEN $4 ELSE NULL END)
 			RETURNING VALIDATION_TOKEN
 		`
 
-	rows, err := prv.Db.Query(rq, username, email, hPass)
+	rows, err := prv.Db.Query(rq, username, email, hPass, invitedBy)
 	if err != nil {
 		if errPost, ok := err.(*pq.Error); ok {
 			if errPost.Code.Name() == serrors.PostgresError["AlreadyExisting"] {

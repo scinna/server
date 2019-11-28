@@ -10,7 +10,7 @@ import (
 // GetPicture retreive a picture from the database and its user given an URL ID
 func GetPicture(p *services.Provider, urlID string) (model.Picture, error) {
 	rq := ` SELECT p.ID, p.CREATED_AT, p.TITLE, p.URL_ID, p.DESCRIPT, p.VISIBILITY, p.EXT,
-				   au.ID AS "creator.id", au.CREATED_AT AS "creator.created_at", au.EMAIL as "creator.email", au.USERNAME AS "creator.username"
+				   au.ID AS "creator.id", au.CREATED_AT AS "creator.created_at", au.ROLE as "creator.role", au.EMAIL as "creator.email", au.USERNAME AS "creator.username"
 			FROM PICTURES p
 			INNER JOIN APPUSER au ON au.ID = p.CREATOR
 			WHERE p.URL_ID = $1`

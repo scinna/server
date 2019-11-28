@@ -72,6 +72,9 @@ func main() {
 	usersRoutes.HandleFunc("/me", middleware.CombineMiddlewaresCT(prv, routes.UpdateMyInfosRoute(prv))).Methods("PUT")
 	usersRoutes.HandleFunc("/{username}/pictures", middleware.CombineMiddlewaresCT(prv, routes.UserPicturesRoute(prv))).Methods("GET")
 
+	adminRoutes := r.PathPrefix("/admin").Subrouter().StrictSlash(false)
+	adminRoutes.HandleFunc("/invite", middleware.CombineMiddlewaresCT(prv, routes.GenerateInviteRoute(prv))).Methods("POST")
+
 	// Default route is for picture laoding
 	r.HandleFunc("/{pict}", middleware.CombineMiddlewares(prv, routes.RawPictureRoute(prv), false)).Methods("GET")
 

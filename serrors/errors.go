@@ -140,6 +140,15 @@ var ErrorMissingURLID *SError = New("Request is missing the picture ID!", 418, h
 // ErrorInvalidMimetype happens when you send a file that can't be uploaded to the server
 var ErrorInvalidMimetype *SError = New("This file type can't be uploaded (Only jpeg, png or gif)", 419, http.StatusBadRequest)
 
+// ErrorBadInviteCode happens when a user tries to register with an invalid invite code
+var ErrorBadInviteCode *SError = New("Invalid invitation code", 420, http.StatusBadRequest)
+
+// ErrorInviteOnly happens when a user tries to register with an invalid invite code
+var ErrorInviteOnly *SError = New("This server is invite-only", 421, http.StatusBadRequest)
+
+// ErrorNotAdmin happens when a user to use an admin route without being one
+var ErrorNotAdmin *SError = New("You are not an administrator", 422, http.StatusBadRequest)
+
 /////// Registration errors
 
 // ErrorRegDisabled gets thrown when a user tries to register while the registration are disabled
