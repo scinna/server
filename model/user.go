@@ -15,4 +15,5 @@ type AppUser struct {
 	Password        string `db:"password" json:"-"`
 	Validated       bool   `db:"validated" json:"-"` // Not needed to serialize it since all request that returns a user it must be validated
 	ValidationToken string `db:"validation_token" json:"-"`
+	InvitedBy       *int64 `db:"invited_by" json:"-"` // @TODO make something to have username there
 }

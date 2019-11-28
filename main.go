@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/oxodao/scinna/configuration"
+	"github.com/oxodao/scinna/dal"
 	"github.com/oxodao/scinna/middleware"
 	"github.com/oxodao/scinna/routes"
 	"github.com/oxodao/scinna/services"
@@ -46,6 +47,14 @@ func main() {
 	fmt.Println("- Connected to database")
 
 	prv := services.New(cfg, db, utils.LoadMail(), argonParams)
+
+	// Every 15 minutes, we clean up users older than 24h who have not validated their accounts
+	go func(prv *services.Provider) {
+		for {
+			dal.CleanupUsers(prv)
+			time.Sleep(15 * time.Minute)
+		}
+	}(prv)
 
 	r := mux.NewRouter().StrictSlash(false)
 

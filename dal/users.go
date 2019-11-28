@@ -147,3 +147,8 @@ func ValidateUser(prv *services.Provider, valTok string) error {
 
 	return err
 }
+
+// CleanupUsers removes all old users (Non validated older than 24 hours)
+func CleanupUsers(prv *services.Provider) {
+	prv.Db.Exec(`DELETE FROM APPUSER WHERE VALIDATED = FALSE AND CREATED_AT > CURRENT_TIMESTAMP - INTERVAL '24 hours'`)
+}
