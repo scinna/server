@@ -1,92 +1,67 @@
 package configuration
 
 import (
-	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
-	"strconv"
-	"strings"
 )
 
 // Load loads the configuration from the file
-func Load() (Configuration, error) {
+func Load(path string) Configuration {
 
-	dsn, exists := os.LookupEnv("POSTGRES_DSN")
-	if !exists {
-		panic("No database url found! (POSTGRES_DSN)")
+	if len(path) == 0 {
+		path = FindPath()
 	}
 
-	port, exists := os.LookupEnv("WEB_PORT")
-	if !exists {
-		panic("No listening port found! (WEB_PORT)")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		panic(path + ": This file cannot be found!")
 	}
 
-	headerIPField, exists := os.LookupEnv("HEADER_IP_FIELD")
-	if !exists {
-		fmt.Println("The header for the IP field is not set (HEADER_IP_FIELD). If you are using a reverse-proxy please be sure to set it according to its configuration.\nTo disable this message, add the environment variable with an empty value.")
-	}
-
-	registrationAllowed, exists := os.LookupEnv("REGISTRATION_ALLOWED")
-	var registrationAllowedInt int
-	if !exists {
-		fmt.Println("Registration is allowed by default. You can't hide this message or turn it off by filling the \"REGISTRATION_ALLOWED\" environment variable with either NO|INVITE|YES.")
-		registrationAllowedInt = 0
-	} else {
-		switch strings.ToLower(registrationAllowed) {
-		case "no":
-			registrationAllowedInt = 2
-			break
-		case "invite":
-			registrationAllowedInt = 1
-			break
-		case "yes":
-			registrationAllowedInt = 0
-			break
-
-		default:
-			fmt.Println("The registration setting can't be parsed. Setting it to private for safety")
-			registrationAllowedInt = 2
-			break
-		}
-	}
-
-	websiteURL, exists := os.LookupEnv("WEB_URL")
-	if !exists {
-		panic("Can't find website URL (WEB_URL). This is required to make the link in the validation email and the forgotten password email")
-	}
-
-	picturepath, exists := os.LookupEnv("PICTURE_PATH")
-	if !exists {
-		panic("No picture folder found! (PICTURE_PATH)")
-	}
-
-	ratelimiting, exists := os.LookupEnv("RATE_LIMITING")
-	if !exists {
-		panic("Please set a rate limiting for the API (RATE_LIMITING). X request max per 5 minutes")
-	}
-
-	ratelimitingInt, err := strconv.Atoi(ratelimiting)
+	file, err := os.Open(path)
 	if err != nil {
 		panic(err)
 	}
 
-	return Configuration{
-		PostgresDSN:         dsn,
-		PicturePath:         picturepath,
-		HeaderIPField:       headerIPField,
-		RegistrationAllowed: registrationAllowedInt,
-		WebURL:              websiteURL,
-		WebPort:             port,
-		RateLimiting:        ratelimitingInt,
-	}, nil
+	bts, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+
+	var cfg Configuration
+	err = yaml.Unmarshal(bts, &cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	return cfg
+}
+
+// FindPath finds the best match for the config file
+func FindPath() string {
+	if _, err := os.Stat("scinna.yml"); os.IsExist(err) {
+		return "scinna.yml"
+	}
+
+	if _, err := os.Stat("config.yml"); os.IsExist(err) {
+		return "config.yml"
+	}
+
+	return "/etc/scinna.yml"
 }
 
 // Configuration represents the current config for the server
 type Configuration struct {
-	PostgresDSN         string
-	PicturePath         string
-	HeaderIPField       string
-	RegistrationAllowed int
-	WebURL              string
-	WebPort             string
-	RateLimiting        int
+	PostgresDSN         string `yaml:"PostgresDSN"`
+	IDAlphabet          string `yaml:"IdAlphabet"`
+	IDSize              int    `yaml:"IdSize"`
+	WebURL              string `yaml:"WebURL"`
+	WebPort             string `yaml:"WebPort"`
+	PicturePath         string `yaml:"PicturePath"`
+	HeaderIPField       string `yaml:"HeaderIPField"`
+	SMTPSender          string `yaml:"SMTPSender"` // @TODO make this a category or something like that
+	SMTPHost            string `yaml:"SMTPHost"`
+	SMTPUser            string `yaml:"SMTPUser"`
+	SMTPPass            string `yaml:"SMTPPass"`
+	RegistrationAllowed string `yaml:"RegistrationAllowed"`
+	RateLimiting        int    `yaml:"RateLimiting"`
 }

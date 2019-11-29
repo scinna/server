@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"os"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,13 +12,4 @@ func LoadDatabase(dsn string) *sqlx.DB {
 	}
 
 	return db
-}
-
-// GenerateDefaultPicture method checks if the picture displayed for non existing image exists. If it doesn't, it generates a basic one
-func GenerateDefaultPicture() {
-	pict, err := os.Open("not_found.png")
-	if err != nil {
-		panic(err)
-	}
-	pict.Close()
 }

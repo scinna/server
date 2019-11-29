@@ -3,8 +3,9 @@ package utils
 import (
 	"fmt"
 	"net/smtp"
-	"os"
 	"regexp"
+
+	"github.com/oxodao/scinna/configuration"
 )
 
 // MailClient handles everything needed to connect to a SMTP user and send a mail
@@ -16,21 +17,12 @@ type MailClient struct {
 }
 
 // LoadMail loads the mail client
-func LoadMail() MailClient {
-
-	smtpSend, existsSend := os.LookupEnv("SMTP_SENDER")
-	smtpHost, existsHost := os.LookupEnv("SMTP_HOST")
-	smtpUser, _ := os.LookupEnv("SMTP_USER")
-	smtpPass, _ := os.LookupEnv("SMTP_PASS")
-
-	if !existsHost || !existsSend {
-		fmt.Println("NO SMTP FOUND! Won't be able to send registration mail or forgotten password ones")
-	}
+func LoadMail(cfg configuration.Configuration) MailClient {
 
 	var smtpAuth smtp.Auth
 
-	if len(smtpUser) > 0 && len(smtpPass) > 0 {
-		smtpAuth = smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
+	if len(cfg.SMTPUser) > 0 && len(cfg.SMTPPass) > 0 {
+		smtpAuth = smtp.PlainAuth("", cfg.SMTPUser, cfg.SMTPPass, cfg.SMTPPass)
 	}
 
 	reg, err := regexp.Compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])")
@@ -38,7 +30,7 @@ func LoadMail() MailClient {
 		fmt.Println(err)
 	}
 
-	return MailClient{SMTPClient: smtpAuth, smtpUser: smtpSend, smtpHost: smtpHost, IsEmail: reg}
+	return MailClient{SMTPClient: smtpAuth, smtpUser: cfg.SMTPSender, smtpHost: cfg.SMTPHost, IsEmail: reg}
 }
 
 // SendMail sends a mail

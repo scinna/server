@@ -48,12 +48,7 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 		pictFile, err := os.Open(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			serrors.ErrorPictureNotFound.Write(w)
-			pictFile, err = os.Open("not_found.png")
-			if err != nil {
-				return
-			}
-
-			w.Header().Del("Content-Type")
+			return
 		}
 		defer pictFile.Close()
 

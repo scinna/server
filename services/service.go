@@ -97,19 +97,31 @@ func parseTemplateDir(dir string) (*template.Template, error) {
 }
 
 // New function initializes the the Provider structure
-func New(cfg configuration.Configuration, db *sqlx.DB, mc utils.MailClient, ap *ArgonParams) *Provider {
+func New(cfg configuration.Configuration) *Provider {
 	t, err := parseTemplateDir("templates")
 	if err != nil {
 		fmt.Println(err)
 		panic("Can't load templates!")
 	}
+	fmt.Println("- Templates loaded")
+
+	db := utils.LoadDatabase(cfg.PostgresDSN)
+	fmt.Println("- Connected to database")
+
+	argonParams := &ArgonParams{
+		Memory:      64 * 1024,
+		Iterations:  3,
+		Parallelism: 2,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
 
 	return &Provider{
 		Config:      cfg,
 		Db:          db,
-		Mail:        mc,
+		Mail:        utils.LoadMail(cfg),
 		Templates:   t,
-		ArgonParams: ap,
+		ArgonParams: argonParams,
 	}
 }
 

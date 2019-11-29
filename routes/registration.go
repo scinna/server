@@ -2,8 +2,10 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/oxodao/scinna/auth"
@@ -16,28 +18,7 @@ import (
 // IsRegisterAvailableRoute is 200 when you can register, and 403 when you cant
 func IsRegisterAvailableRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if prv.Config.RegistrationAllowed == 2 {
-			w.WriteHeader(http.StatusForbidden)
-		}
-
-		jsonRsp := "{ \"Registration\": \""
-
-		switch prv.Config.RegistrationAllowed {
-		case 0:
-			jsonRsp = jsonRsp + "PUBLIC"
-			break
-
-		case 1:
-			jsonRsp = jsonRsp + "INVITE"
-			break
-
-		case 2:
-			jsonRsp = jsonRsp + "PRIVATE"
-			break
-		}
-
-		jsonRsp = jsonRsp + "\" }"
-
+		jsonRsp := fmt.Sprintf("{ \"Registration\": \"%v\"}", prv.Config.RegistrationAllowed)
 		w.Write([]byte(jsonRsp))
 	}
 }
@@ -53,7 +34,7 @@ type RegisterRequest struct {
 // RegisterRoute lets someone register on the server
 func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if prv.Config.RegistrationAllowed == 2 {
+		if strings.ToLower(prv.Config.RegistrationAllowed) == "false" {
 			serrors.ErrorRegDisabled.Write(w)
 			return
 		}
@@ -73,7 +54,7 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		var invitedBy int64 = -1
-		if prv.Config.RegistrationAllowed == 1 {
+		if strings.ToLower(prv.Config.RegistrationAllowed) == "invite" {
 			if len(rc.InviteCode) == 0 {
 				serrors.ErrorInviteOnly.Write(w)
 				return
