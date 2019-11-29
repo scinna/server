@@ -61,8 +61,7 @@ func main() {
 	// the react fontend app
 	r.HandleFunc("/", routes.IndexRoute(prv))
 
-	fs := http.FileServer(http.Dir("assets"))
-	r.Handle("/assets", fs)
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
 	authRoutes.HandleFunc("/login", middleware.CombineMiddlewaresCT(prv, routes.LoginRoute(prv))).Methods("POST")
