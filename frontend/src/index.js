@@ -6,12 +6,13 @@ import React              from 'react';
 import App                from './components/App.js';
 import vsaga              from './saga';
 
+import localStorageMiddleware                   from './middleware/LocalStorageMiddleware';
 import createSagaMiddleware                     from 'redux-saga';
 import {createStore, applyMiddleware, compose}  from 'redux';
 
 const sagaMiddleware = createSagaMiddleware();
 
-let middleware       = [sagaMiddleware];
+let middleware       = [sagaMiddleware, localStorageMiddleware];
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store            = createStore(reducers, composeEnhancers(applyMiddleware(...middleware)));

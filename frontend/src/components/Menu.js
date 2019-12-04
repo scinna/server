@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom'
+import { connect } from 'react-redux';
 
 import logo from '../assets/images/logo.png';
 import '../assets/css/menu.scss'
@@ -7,6 +8,18 @@ import '../assets/css/menu.scss'
 class Menu extends React.Component {
 
     render() {
+
+        let menuEnd = <div class="menu-end">
+            <Link class="button" to="/logout">Logout</Link>
+        </div>;
+
+        if (false) {
+            menuEnd = <div class="menu-end">
+                            <Link class="button" to="/register"><strong>Sign up</strong></Link>
+                            <Link class="button" to="/login">Log in</Link>
+                        </div>;
+        }
+
         return <nav>
                     <Link class="navbar-item" to="/">
                         <img class="brand" src={logo} alt="Main logo"/>
@@ -18,10 +31,7 @@ class Menu extends React.Component {
                             <Link className="navbar-item" to="/">Documentation</Link>
                         </div>
 
-                        <div class="menu-end">
-                            <Link class="button" to="/register"><strong>Sign up</strong></Link>
-                            <Link class="button" to="/login">Log in</Link>
-                        </div>
+                        {menuEnd}
                     </div>
                 </nav>;
 
@@ -29,4 +39,11 @@ class Menu extends React.Component {
 
 }
 
-export default withRouter(Menu);
+export default withRouter(connect(
+    state => ({
+
+    }), 
+    dispatch => ({
+
+    })
+)(Menu));

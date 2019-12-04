@@ -5,9 +5,7 @@ import {withRouter} from 'react-router-dom';
 class Homepage extends React.Component {
 
     render() {
-
         let component;
-
         // Check if logged in
         if (!false) {
             component = <article>
@@ -21,7 +19,6 @@ class Homepage extends React.Component {
 
             return component;
         }
-
     }
 
     export default withRouter(
