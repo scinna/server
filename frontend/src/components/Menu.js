@@ -8,7 +8,6 @@ import '../assets/css/menu.scss'
 class Menu extends React.Component {
 
     render() {
-
         let menuEnd = <div class="menu-end">
             <Link class="button" to="/logout">Logout</Link>
         </div>;
@@ -22,7 +21,7 @@ class Menu extends React.Component {
 
         return <nav>
                     <Link class="navbar-item" to="/">
-                        <img class="brand" src={logo} alt="Main logo"/>
+                        <img className="brand" src={logo} alt="Main logo"/>
                     </Link>
                 
                     <div id="menu-links">
