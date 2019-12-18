@@ -25,12 +25,7 @@ func GetPicture(p *services.Provider, urlID string) (model.Picture, error) {
 }
 
 // GetPicturesFromUser returns all the pictures from a user given its username and whether it report only public pictures
-func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]model.Picture, error) {
-	u, err := GetUser(p, user)
-	if err != nil {
-		return []model.Picture{}, err
-	}
-
+func GetPicturesFromUser(p *services.Provider, userID *int64, visibility bool) ([]model.Picture, error) {
 	rq := ` SELECT ID, CREATED_AT, TITLE, URL_ID, DESCRIPT, VISIBILITY, EXT
 			FROM PICTURES
 			WHERE CREATOR = $1`
@@ -41,7 +36,7 @@ func GetPicturesFromUser(p *services.Provider, user string, visibility bool) ([]
 
 	// This assignement is needed so that the JSON Marshal does not return nil instead of empty array when the user has no pictures
 	var pictures []model.Picture = []model.Picture{}
-	rows, err := p.Db.Queryx(rq, u.ID)
+	rows, err := p.Db.Queryx(rq, &userID)
 	if err != nil {
 		// Should never happen
 		return []model.Picture{}, err

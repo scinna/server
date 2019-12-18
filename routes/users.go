@@ -9,12 +9,18 @@ import (
 	"github.com/lib/pq"
 	"github.com/oxodao/scinna/auth"
 	"github.com/oxodao/scinna/dal"
+	"github.com/oxodao/scinna/model"
 	"github.com/oxodao/scinna/serrors"
 	"github.com/oxodao/scinna/services"
 )
 
-// UserPicturesRoute is the route that list all the given user's picture, and their infos
-func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
+type userInfoResponse struct {
+	model.AppUser
+	Pictures []model.Picture
+}
+
+// UserInfoRoute is the route that gives the user infos & his pictures
+func UserInfoRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
 		username := params["username"]
@@ -24,14 +30,35 @@ func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		picts, err := dal.GetPicturesFromUser(prv, username, true)
+		var usr model.AppUser
+		var err error
+		if username == "me" {
+			usr, err = auth.ValidateRequest(prv, w, r)
+		} else if username != "me" {
+			usr, err = dal.GetUser(prv, username)
+		}
 
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		uir := userInfoResponse{}
+		uir.CreatedAt = usr.CreatedAt
+		uir.Username = usr.Username
+		uir.Role = usr.Role
+
+		if username == "me" {
+			uir.Email = usr.Email
+		}
+
+		picts, err := dal.GetPicturesFromUser(prv, usr.ID, username != "me")
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
 		}
+		uir.Pictures = picts
 
-		json, err := json.Marshal(picts)
+		json, err := json.Marshal(uir)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -43,51 +70,6 @@ func UserPicturesRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// MyPicturesRoute is pretty much the same as UserPicturesRoute but for the current user - I'll may be deprecating this route in order to have only one that CAN use the auth token
-func MyPicturesRoute(prv *services.Provider) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := auth.ValidateRequest(prv, w, r)
-		if serrors.WriteError(w, err) {
-			return
-		}
-
-		picts, err := dal.GetPicturesFromUser(prv, user.Username, false)
-
-		if serrors.WriteLoggableError(w, err) {
-			return
-		}
-
-		json, err := json.Marshal(picts)
-
-		if serrors.WriteLoggableError(w, err) {
-			return
-		}
-
-		w.Write(json)
-
-	}
-}
-
-// MyInfosRoute returns the user's infos (Username, Mail, Qty of public pictures, ...)
-func MyInfosRoute(prv *services.Provider) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := auth.ValidateRequest(prv, w, r)
-		if serrors.WriteError(w, err) {
-			return
-		}
-
-		json, err := json.Marshal(user)
-
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Write(json)
-
-	}
-}
-
 type updateInfoRequest struct {
 	Email    string
 	Password string
@@ -96,6 +78,10 @@ type updateInfoRequest struct {
 // UpdateMyInfosRoute lets the user change it's infos
 func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		u, err := auth.ValidateRequest(prv, w, r)
+		if serrors.WriteError(w, err) {
+			return
+		}
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -109,11 +95,6 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 
 		if err != nil {
 			serrors.ErrorBadRequest.Write(w)
-			return
-		}
-
-		u, err := auth.ValidateRequest(prv, w, r)
-		if serrors.WriteError(w, err) {
 			return
 		}
 

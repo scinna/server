@@ -36,10 +36,8 @@ func RunServer(prv *services.Provider) {
 	picturesRoutes.HandleFunc("/{URL_ID}", middleware.CombineMiddlewaresCT(prv, routes.PictureInfoRoute(prv))).Methods("GET")
 
 	usersRoutes := r.PathPrefix("/users").Subrouter().StrictSlash(false)
-	usersRoutes.HandleFunc("/me/pictures", middleware.CombineMiddlewaresCT(prv, routes.MyPicturesRoute(prv))).Methods("GET")
-	usersRoutes.HandleFunc("/me", middleware.CombineMiddlewaresCT(prv, routes.MyInfosRoute(prv))).Methods("GET")
 	usersRoutes.HandleFunc("/me", middleware.CombineMiddlewaresCT(prv, routes.UpdateMyInfosRoute(prv))).Methods("PUT")
-	usersRoutes.HandleFunc("/{username}/pictures", middleware.CombineMiddlewaresCT(prv, routes.UserPicturesRoute(prv))).Methods("GET")
+	usersRoutes.HandleFunc("/{username}", middleware.CombineMiddlewaresCT(prv, routes.UserInfoRoute(prv))).Methods("GET")
 
 	adminRoutes := r.PathPrefix("/admin").Subrouter().StrictSlash(false)
 	adminRoutes.HandleFunc("/invite", middleware.CombineMiddlewaresCT(prv, routes.GenerateInviteRoute(prv))).Methods("POST")

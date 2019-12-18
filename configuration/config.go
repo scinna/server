@@ -1,9 +1,11 @@
 package configuration
 
 import (
-	"gopkg.in/yaml.v2"
+	"fmt"
 	"io/ioutil"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
 // Load loads the configuration from the file
@@ -14,7 +16,8 @@ func Load(path string) Configuration {
 	}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		panic(path + ": This file cannot be found!")
+		fmt.Println(path + ": This file cannot be found!\nGenerate one withe the command `scinna -genconf > /etc/scinna.yml`")
+		os.Exit(1)
 	}
 
 	file, err := os.Open(path)
