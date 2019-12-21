@@ -42,6 +42,9 @@ func RunServer(prv *services.Provider) {
 	adminRoutes := r.PathPrefix("/admin").Subrouter().StrictSlash(false)
 	adminRoutes.HandleFunc("/invite", middleware.CombineMiddlewaresCT(prv, routes.GenerateInviteRoute(prv))).Methods("POST")
 
+	r.HandleFunc("/setup", routes.SetupRoute(prv))
+	r.HandleFunc("/migrate", routes.MigrateRoute(prv))
+
 	// Default route is for picture laoding
 	r.HandleFunc("/{pict}", middleware.CombineMiddlewares(prv, routes.RawPictureRoute(prv), false)).Methods("GET")
 
