@@ -17,8 +17,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	gonanoid "github.com/matoous/go-nanoid"
-	"github.com/oxodao/scinna/configuration"
-	"github.com/oxodao/scinna/utils"
+	"github.com/scinna/server/configuration"
+	"github.com/scinna/server/utils"
 
 	"golang.org/x/crypto/argon2"
 )

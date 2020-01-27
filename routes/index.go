@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	"github.com/oxodao/scinna/dal"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/dal"
+	"github.com/scinna/server/services"
 )
 
 // DatabaseVersion is used for two things: Checking if the database is initialized, and checking if the server just got an update in order to execute the migrations

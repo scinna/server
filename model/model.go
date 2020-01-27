@@ -1,8 +1,6 @@
 package model
 
-import (
-	"time"
-)
+import "time"
 
 // Model represents the standard attributes that a entity should have
 type Model struct {

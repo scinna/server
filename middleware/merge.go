@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/services"
 )
 
 // CombineMiddlewares combines all middleware, pretty much equivalent to what you would find in a react app

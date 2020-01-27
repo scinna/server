@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/oxodao/scinna/auth"
-	"github.com/oxodao/scinna/dal"
-	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/auth"
+	"github.com/scinna/server/dal"
+	"github.com/scinna/server/model"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // IsRegisterAvailableRoute is 200 when you can register, and 403 when you cant

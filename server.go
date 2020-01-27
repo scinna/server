@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/oxodao/scinna/middleware"
-	"github.com/oxodao/scinna/routes"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/middleware"
+	"github.com/scinna/server/routes"
+	"github.com/scinna/server/services"
 )
 
 // RunServer starts the web api server

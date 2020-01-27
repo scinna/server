@@ -2,9 +2,9 @@ package dal
 
 import (
 	"database/sql"
-	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/model"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // GetPicture retreive a picture from the database and its user given an URL ID

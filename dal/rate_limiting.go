@@ -3,9 +3,9 @@ package dal
 import (
 	"net/http"
 
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
-	"github.com/oxodao/scinna/utils"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
+	"github.com/scinna/server/utils"
 )
 
 // APIRateLimiting limits the rate of the requests for the API

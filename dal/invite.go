@@ -1,9 +1,9 @@
 package dal
 
 import (
-	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/model"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // GetInviteCode returns the invite code for the given

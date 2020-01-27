@@ -1,9 +1,9 @@
 package dal
 
 import (
-	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/model"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // ListTokens returns the list of token for a user (Not the token itself, only other fields)

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/oxodao/scinna/configuration"
-	"github.com/oxodao/scinna/dal"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/configuration"
+	"github.com/scinna/server/dal"
+	"github.com/scinna/server/services"
 
 	_ "github.com/lib/pq"
 )

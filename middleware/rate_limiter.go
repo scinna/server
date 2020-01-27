@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/oxodao/scinna/dal"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/dal"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // RateLimiterMiddlewareFunc limits the calls to the API

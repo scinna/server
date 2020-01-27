@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/oxodao/scinna/model"
-	"github.com/oxodao/scinna/serrors"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/model"
+	"github.com/scinna/server/serrors"
+	"github.com/scinna/server/services"
 )
 
 // GetUser fetches one user from the database given its username

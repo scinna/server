@@ -5,7 +5,7 @@ import (
 	"net/smtp"
 	"regexp"
 
-	"github.com/oxodao/scinna/configuration"
+	"github.com/scinna/server/configuration"
 )
 
 // MailClient handles everything needed to connect to a SMTP user and send a mail

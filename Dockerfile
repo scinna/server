@@ -4,7 +4,7 @@ RUN apk update && apk add --no-cache git
 
 RUN adduser -D -g '' scinna
 
-WORKDIR $GOPATH/src/github.com/oxodao/scinna/
+WORKDIR $GOPATH/src/github.com/scinna/server/
 
 COPY . .
 

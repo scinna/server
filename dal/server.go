@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/lib/pq"
-	"github.com/oxodao/scinna/services"
+	"github.com/scinna/server/services"
 )
 
 // GetDbVersion returns the database version. It returns -1 if the DB is not setup.
