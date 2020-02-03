@@ -1,0 +1,25 @@
+# github.com/gabriel-vasile/mimetype v0.3.22
+github.com/gabriel-vasile/mimetype
+github.com/gabriel-vasile/mimetype/internal/json
+github.com/gabriel-vasile/mimetype/internal/matchers
+# github.com/gorilla/context v1.1.1
+github.com/gorilla/context
+# github.com/gorilla/mux v1.6.2
+github.com/gorilla/mux
+# github.com/jmoiron/sqlx v1.2.0
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/lib/pq v1.2.0
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/matoous/go-nanoid v1.1.0
+github.com/matoous/go-nanoid
+# golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba
+golang.org/x/crypto/argon2
+golang.org/x/crypto/blake2b
+# golang.org/x/sys v0.0.0-20190412213103-97732733099d
+golang.org/x/sys/cpu
+golang.org/x/sys/unix
+# gopkg.in/yaml.v2 v2.2.7
+gopkg.in/yaml.v2

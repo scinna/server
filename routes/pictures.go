@@ -120,11 +120,6 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		visibility := int8(visibInt)
 
 		if len(title) == 0 || len(title) > 128 || err != nil || !utils.IsValidVisibility(visibility) {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if err != nil {
 			serrors.ErrorBadRequest.Write(w)
 			return
 		}

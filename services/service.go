@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"text/template"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/scinna/server/configuration"
-	"github.com/scinna/server/utils"
 
 	"golang.org/x/crypto/argon2"
 )
@@ -26,7 +24,6 @@ import (
 // Provider is the struct that carry all the parameters / connections for the software
 type Provider struct {
 	Db          *sqlx.DB
-	Mail        utils.MailClient
 	Templates   *template.Template
 	ArgonParams *ArgonParams
 	Config      configuration.Configuration
@@ -34,18 +31,7 @@ type Provider struct {
 
 // GenerateUID function generates an ID for the pictures
 func (prv *Provider) GenerateUID() (string, error) {
-	alphabet, exists := os.LookupEnv("ID_ALPHABET")
-	if !exists {
-		alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ"
-	}
-
-	lengthStr, exists := os.LookupEnv("ID_LENGTH")
-	length := 10
-	if exists {
-		length, _ = strconv.Atoi(lengthStr)
-	}
-
-	return gonanoid.Generate(alphabet, length)
+	return gonanoid.Generate(prv.Config.IDAlphabet, prv.Config.IDSize)
 }
 
 // HashPassword will generate a hash of a password ready to be stored in the database
@@ -97,16 +83,13 @@ func parseTemplateDir(dir string) (*template.Template, error) {
 }
 
 // New function initializes the the Provider structure
-func New(cfg configuration.Configuration) *Provider {
+func New(cfg *configuration.Configuration) *Provider {
 	t, err := parseTemplateDir("templates")
 	if err != nil {
 		fmt.Println(err)
 		panic("Can't load templates!")
 	}
 	fmt.Println("- Templates loaded")
-
-	db := utils.LoadDatabase(cfg.PostgresDSN)
-	fmt.Println("- Connected to database")
 
 	argonParams := &ArgonParams{
 		Memory:      64 * 1024,
@@ -117,11 +100,22 @@ func New(cfg configuration.Configuration) *Provider {
 	}
 
 	return &Provider{
-		Config:      cfg,
-		Db:          db,
-		Mail:        utils.LoadMail(cfg),
+		Config:      *cfg,
 		Templates:   t,
 		ArgonParams: argonParams,
+	}
+}
+
+// Init initialize the database
+func (prv *Provider) Init() {
+	driver, dsn := prv.Config.Database.GetDsn()
+	db, err := sqlx.Open(driver, dsn)
+	if err != nil {
+		// @TODO logs (Redmine #109)
+		// Should panic?
+	} else {
+		fmt.Println("- Connected to database")
+		prv.Db = db
 	}
 }
 

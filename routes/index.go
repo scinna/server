@@ -1,60 +1,91 @@
 package routes
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
-	"github.com/scinna/server/dal"
+	"github.com/jmoiron/sqlx"
+	"github.com/scinna/server/configuration"
 	"github.com/scinna/server/services"
 )
-
-// DatabaseVersion is used for two things: Checking if the database is initialized, and checking if the server just got an update in order to execute the migrations
-const DatabaseVersion int = 1
 
 // IndexRoute is the index endpoint, the one displaying the react webapp
 func IndexRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		dbv, err := dal.GetDbVersion(prv)
-
-		if err != nil {
-			// @TODO: Show an error to the user
-			w.WriteHeader(500)
-			return
-		}
-
-		if dbv == -1 {
-			http.Redirect(w, r, "setup", http.StatusSeeOther)
-			return
-		}
-
-		if dbv != DatabaseVersion {
-			http.Redirect(w, r, "migrate", http.StatusSeeOther)
-			return
-		}
-
 		w.Write([]byte("This will be the react app for Scinna picture server"))
 	}
 }
 
-// SetupRoute is a route letting the user setup the server. It should only be ran once
-func SetupRoute(prv *services.Provider) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// If the server is already setup, you must not be able to get into this page
-		dbv, err := dal.GetDbVersion(prv)
-		if dbv > 0 || err != nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-			return
-		}
+/**
 
-		w.Write([]byte("Lets setup"))
+	These are routes for the first-launch setup
+
+**/
+
+var currentConfig configuration.Configuration
+
+// SaveConfigRoute is the SPA that let the user set the server up
+func SaveConfigRoute(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// TestDatabaseConfigRoute is the SPA that let the user set the server up
+func TestDatabaseConfigRoute(w http.ResponseWriter, r *http.Request) {
+	var params configuration.DBConfig
+
+	err := json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	driver, dsn := params.GetDsn()
+	db, err := sqlx.Open(driver, dsn)
+	if err != nil {
+		w.Write([]byte("{ \"IsValid\": false }"))
+		return
+	}
+	db.Close()
+
+	w.Write([]byte("{ \"IsValid\": true }"))
+}
+
+type smtpTestParams struct {
+	MailDisabled bool
+	Hostname     string `json:"smtp_host"`
+	Port         string `json:"smtp_port"`
+	Username     string `json:"smtp_username"`
+	Password     string `json:"smtp_password"`
+}
+
+// TestSMTPConfigRoute is the SPA that let the user set the server up
+func TestSMTPConfigRoute(w http.ResponseWriter, r *http.Request) {
+	var params smtpTestParams
+
+	err := json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if params.MailDisabled {
+		w.Write([]byte("{ \"IsValid\": true }"))
+		return
+	}
+
+	// @TODO: Check plus en détail pourquoi ça marche pas
+	// ex: timeout, etc... à afficher sur le client
+	// Si la connexion fonctionne: stocker dans la constante globale le setting afin qu'il la garde en dernier truc
+	if true {
+		w.Write([]byte("{ \"IsValid\": true }"))
+	} else {
+		w.Write([]byte("{ \"IsValid\": false }"))
 	}
 }
 
-// MigrateRoute is a route letting the user update or rollback the server once he change versions
-func MigrateRoute(prv *services.Provider) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Lets migrate"))
+func CreateAdminRoute(w http.ResponseWriter, r *http.Request) {
 
-		// @TODO: Migrations / Rollback
-		// Download the missing rollback files maybe ?
-	}
 }

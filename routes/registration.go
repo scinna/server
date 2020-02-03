@@ -72,7 +72,7 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		if !prv.Mail.IsEmail.MatchString(rc.Email) {
+		if !prv.Config.Mail.IsEmail.MatchString(rc.Email) {
 			serrors.ErrorRegBadEmail.Write(w)
 			return
 		}

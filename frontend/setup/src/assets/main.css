@@ -1,0 +1,151 @@
+:root {
+    --nav-bg: linear-gradient(90deg, rgba(37,63,95,1) 0%, rgba(47,76,117,1) 15%, rgba(78,83,133,1) 26%, rgba(68,73,114,1) 38%, rgba(77,68,114,1) 53%, rgba(76,55,121,1) 61%, rgba(46,60,103,1) 72%, rgba(33,93,121,1) 90%, rgba(36,93,123,1) 100%);
+    --main-bg: #333335;
+
+    --level-fg-color: #cececf;
+    --level-title-fg-color: #c9c9c9;
+    --level-btn-bg-color: #29292b;
+    --level-btn-color: #b5b5b5;
+
+    
+    --below-bg-color: #262628;
+    --below-fg-color: #848485;
+
+
+    --above-bg-color: #48484a;
+    --above-fg-color: #e4e4e5;
+
+    --primary-color: #87e7e1;
+    --secondary-color: #02968b; 
+
+    /* Pour le state, prendre des couleurs pales */
+    --iconed-text-fg-color-success: #3EC480;
+    --iconed-text-fg-color-info: #5FC3D1;
+    --iconed-text-fg-color-warn: #FF9B51;
+    --iconed-text-fg-color-danger: #FC5059;
+
+}
+
+body {
+    font-family: 'Montserrat';
+    background: var(--main-bg);
+    color: var(--level-fg-color);
+    margin: 0;
+    padding: 0;
+    font-size: .95em;
+}
+
+#root {
+    height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--level-title-fg-color);
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+a:not(.btn) {
+    color: var(--level-fg-color);
+    background-image: linear-gradient(90deg, rgba(226,203,255,1) 0%, rgba(202,161,255,1) 50%, rgba(226,203,255,1) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.1em;
+    background-position: 0 88%;
+    transition: background-size 0.15s ease-in;
+}
+
+a:not(.btn):hover {
+    color: black;
+    background-size: 100% 88%;
+}
+
+#mainApp {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+nav {
+    background: var(--nav-bg);
+    height: 4em;
+    width: 100%;
+    text-align: center;
+}
+
+nav img {
+    height: 3em;
+    margin: .5em;
+}
+
+#SiteContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.centered-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.above {
+    color: var(--above-fg-color);
+    background: var(--above-bg-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card {
+    width: 325px;
+    height: 450px;
+    margin: 2em;
+    padding: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
+    margin-top: 0;
+}
+
+.card p {
+    text-align: justify;
+}
+
+.card form {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card .content, .card form .content {
+    flex-grow: 1;
+}
+
+.card form .footer {
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 1em;
+    margin: 1em;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: .25em;
+
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+
+    background-color: var(--primary-color);
+    color: var(--above-bg-color);
+    border: 4px solir var(--primary-color);
+}

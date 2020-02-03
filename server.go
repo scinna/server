@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -42,9 +43,6 @@ func RunServer(prv *services.Provider) {
 	adminRoutes := r.PathPrefix("/admin").Subrouter().StrictSlash(false)
 	adminRoutes.HandleFunc("/invite", middleware.CombineMiddlewaresCT(prv, routes.GenerateInviteRoute(prv))).Methods("POST")
 
-	r.HandleFunc("/setup", routes.SetupRoute(prv))
-	r.HandleFunc("/migrate", routes.MigrateRoute(prv))
-
 	// Default route is for picture laoding
 	r.HandleFunc("/{pict}", middleware.CombineMiddlewares(prv, routes.RawPictureRoute(prv), false)).Methods("GET")
 
@@ -56,4 +54,24 @@ func RunServer(prv *services.Provider) {
 	}
 
 	log.Fatal(srv.ListenAndServe())
+}
+
+// RunSetup spin up a http server letting the admin do the first time setup of the server. This keeps the routes separated and so will never be called again as soon as the setup is done
+func RunSetup(port *int) {
+
+	r := mux.NewRouter().StrictSlash(false)
+	r.HandleFunc("/save", routes.SaveConfigRoute)
+	r.HandleFunc("/test/db", routes.TestDatabaseConfigRoute)
+	r.HandleFunc("/test/smtp", routes.TestSMTPConfigRoute)
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web")))
+
+	srv := &http.Server{
+		Handler:      r,
+		Addr:         "127.0.0.1:" + strconv.Itoa(*port),
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	log.Fatal(srv.ListenAndServe())
+
 }

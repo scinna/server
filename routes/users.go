@@ -105,7 +105,7 @@ func UpdateMyInfosRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		if !prv.Mail.IsEmail.MatchString(rc.Email) {
+		if !prv.Config.Mail.IsEmail.MatchString(rc.Email) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
