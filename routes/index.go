@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -23,7 +24,7 @@ func IndexRoute(prv *services.Provider) http.HandlerFunc {
 
 **/
 
-var currentConfig configuration.Configuration
+var currentConfig configuration.Configuration = configuration.Configuration{}
 
 // SaveConfigRoute is the SPA that let the user set the server up
 func SaveConfigRoute(w http.ResponseWriter, r *http.Request) {
@@ -43,26 +44,20 @@ func TestDatabaseConfigRoute(w http.ResponseWriter, r *http.Request) {
 
 	driver, dsn := params.GetDsn()
 	db, err := sqlx.Open(driver, dsn)
-	if err != nil {
+	if err != nil || db == nil || db.Ping() != nil {
 		w.Write([]byte("{ \"IsValid\": false }"))
 		return
 	}
 	db.Close()
 
-	w.Write([]byte("{ \"IsValid\": true }"))
-}
+	currentConfig.Database = params
 
-type smtpTestParams struct {
-	MailDisabled bool
-	Hostname     string `json:"smtp_host"`
-	Port         string `json:"smtp_port"`
-	Username     string `json:"smtp_username"`
-	Password     string `json:"smtp_password"`
+	w.Write([]byte("{ \"IsValid\": true }"))
 }
 
 // TestSMTPConfigRoute is the SPA that let the user set the server up
 func TestSMTPConfigRoute(w http.ResponseWriter, r *http.Request) {
-	var params smtpTestParams
+	var params configuration.MailConfig = configuration.MailConfig{}
 
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -71,21 +66,43 @@ func TestSMTPConfigRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if params.MailDisabled {
+	if !params.Enabled {
+		currentConfig.Mail = params
 		w.Write([]byte("{ \"IsValid\": true }"))
 		return
 	}
 
-	// @TODO: Check plus en détail pourquoi ça marche pas
-	// ex: timeout, etc... à afficher sur le client
-	// Si la connexion fonctionne: stocker dans la constante globale le setting afin qu'il la garde en dernier truc
-	if true {
-		w.Write([]byte("{ \"IsValid\": true }"))
-	} else {
-		w.Write([]byte("{ \"IsValid\": false }"))
+	currentConfig.Mail = params
+
+	wasSent, err := params.SendMail(params.TestReceiver, "Scinna test email", "This email was sent by Scinna. It's a test to check your SMTP settings.")
+
+	if !wasSent || err != nil {
+		if err == nil {
+			err = errors.New("The message was not sent")
+		}
+
+		msg := struct {
+			IsValid bool
+			Message error
+		}{
+			IsValid: false,
+			Message: err,
+		}
+
+		msgJSON, err := json.Marshal(msg)
+		if err != nil {
+			msgJSON = []byte("{\"IsValid\": false, \"Message\": \"JSON encoder went wrong.\"}")
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(msgJSON)
+		return
 	}
+
+	w.Write([]byte("{ \"IsValid\": true }"))
 }
 
+// CreateAdminRoute is called when the user first setup the server to create the original account
 func CreateAdminRoute(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("Coucou")
 }

@@ -22,8 +22,8 @@ export default function() {
                 <p>Creating the admin account.</p>
                 <TextField id="user_name" label="Username" fullWidth inputRef={register({required: true, min: 1})}/>
                 <TextField id="user_mail" label="Email" fullWidth inputRef={register({required: true, min: 1})}/>
-                <TextField id="user_pass" label="Password" fullWidth inputRef={register({required: true, min: 1})}/>
-                <TextField id="user_pwd2" label="Repeat password" fullWidth inputRef={register({required: true, min: 1})}/>
+                <TextField id="user_pass" label="Password" type="password" fullWidth inputRef={register({required: true, min: 1})}/>
+                <TextField id="user_pwd2" label="Repeat password" type="password" fullWidth inputRef={register({required: true, min: 1})}/>
             </div>
             <div className="footer">
                 <Link className="btn" to="/scinna">Back</Link>

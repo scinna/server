@@ -63,6 +63,7 @@ func RunSetup(port *int) {
 	r.HandleFunc("/save", routes.SaveConfigRoute)
 	r.HandleFunc("/test/db", routes.TestDatabaseConfigRoute)
 	r.HandleFunc("/test/smtp", routes.TestSMTPConfigRoute)
+	r.HandleFunc("/user", routes.CreateAdminRoute)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web")))
 
 	srv := &http.Server{

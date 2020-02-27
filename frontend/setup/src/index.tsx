@@ -2,10 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
 
 import './assets/main.css';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+
 
 const theme = createMuiTheme({
     palette: {
@@ -14,6 +16,7 @@ const theme = createMuiTheme({
     }
   } as ThemeOptions);
 
+
 ReactDOM.render(<HashRouter>
-    <ThemeProvider theme={theme}><App /></ThemeProvider>
+        <ThemeProvider theme={theme}><App /></ThemeProvider>
 </HashRouter>, document.getElementById('root'));

@@ -8,16 +8,16 @@ import (
 
 // DBConfig represents the login infos about a database
 type DBConfig struct {
-	Dbms string `json:"dbms"`
+	Dbms string `json:"Dbms"`
 
-	Hostname string `json:"db_host"`
-	Port     string `json:"db_port"`
+	Hostname string `json:"Hostname"`
+	Port     string `json:"Port"`
 
-	Username string `json:"db_username"`
-	Password string `json:"db_password"`
-	Database string `json:"db_database"`
+	Username string `json:"Username"`
+	Password string `json:"Password"`
+	Database string `json:"Database"`
 
-	Filepath string `json:"db_path"`
+	Filepath string `json:"Path"`
 }
 
 // GetDsn translate a configuration to a DSN ready to be used

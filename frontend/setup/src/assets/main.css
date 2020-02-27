@@ -100,8 +100,8 @@ nav img {
 }
 
 .card {
-    width: 325px;
-    height: 450px;
+    width: 400px;
+    /*height: 500px;*/ /** Less pretty without, but meh, not clean enough **/
     margin: 2em;
     padding: 1em;
 
