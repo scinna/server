@@ -1,6 +1,7 @@
 import {ACTION_UPDATE_DATABASE} from '../actions/database';
 import {ACTION_UPDATE_SMTP} from '../actions/smtp';
 import IActionType from '../actions';
+import { ACTION_UPDATE_SCINNA } from '../actions/scinna';
 
 export default (state: any, action: IActionType) => {
     switch (action.type) {
@@ -10,6 +11,10 @@ export default (state: any, action: IActionType) => {
         // @TODO: Go into his own reducer
         case ACTION_UPDATE_SMTP:
             return { ...state, Smtp: { ...state.Smtp, ...action.payload }}
+
+        // @TODO: Go into his own reducer
+        case ACTION_UPDATE_SCINNA:
+            return { ...state, Scinna: { ...state.Scinna, ...action.payload }}
 
         default:
             return state;

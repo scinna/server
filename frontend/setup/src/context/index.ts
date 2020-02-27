@@ -18,6 +18,18 @@ export const InitialState = {
         Password: '',
         Sender: '',
         TestReceiver: '',
+    },
+    Scinna: {
+        Registration: "private",
+        IPHeader: "",
+        RateLimiting: "100",
+        PicturePath: "/home/scinna/pictures/",
+        WebURL: "https://i.example.com/",
+    },
+    User: {
+        Username: "",
+        Email: "",
+        Password: "",
     }
 }
 
