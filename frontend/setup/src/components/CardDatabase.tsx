@@ -16,33 +16,26 @@ import TestDB from '../api/Database';
 import { useStateValue } from '../context';
 import { actionUpdateDatabase } from '../actions/database';
 
-/**
- * When the user click on Next, the app should send the data to the /database endpoint to test them
- * If the database doesn't work or it does not have enough rights, the app mustn't let the user process
- * forward.
- */
-
 const useStyles = makeStyles(theme => ({
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
     },
-    fieldColor:{
-        color: '#e4e4e5',
-    }
 }));
 
 const initialState = {
     ConfigValid: false,
     ButtonsEnabled: true,
     SnackbarOpened: false,
+    SnackbarMessage: "",
 };
 
+/**
+ * @TODO: Lock the buttons on all interfaces until the user receives the response from the HTTP request
+ */
 export default function() {
     const classes = useStyles();
     const [state, setState] = React.useState(initialState);
-
-    // @TODO: Remove typescript >:(
 
     //@ts-ignore
     const [global, dispatch] = useStateValue();
@@ -50,27 +43,41 @@ export default function() {
     const handleCloseSnack = (e: any) => {
         setState({
             ...state,
+            SnackbarMessage: "",
             SnackbarOpened: false,
         })
     };
 
     const handleInputChange = (field: string) => (e: any) => {
-        dispatch(actionUpdateDatabase( { [field]: e.target.value }))
+        if (e.currentTarget.type === "number") {
+            let val = parseInt(e.currentTarget.value)
+            dispatch(actionUpdateDatabase({ [field]: val }))   
+        } else {
+            dispatch(actionUpdateDatabase({ [field]: e.currentTarget.value }))   
+        }
     }
 
     const submit = (e: any) => {
         e.preventDefault();
 
+        // @TODO Find a way to use useEffect (?)
+        // Not working because not in React component but in submit function
         TestDB(global.Database)
             .then((r: any) => {
                 setState({
                     ...state,
                     ConfigValid: r.data.IsValid,
-                    SnackbarOpened: !r.data.IsValid,
+                    SnackbarOpened: !r.data.IsValid || r.status !== 200,
+                    SnackbarMessage: r.data.Message,    
                 })
             })
             .catch((e: any) => {
-                console.log(e)
+                setState({
+                    ...state,
+                    ConfigValid: e.response.data.IsValid,
+                    SnackbarMessage: e.response.data.Message,
+                    SnackbarOpened: true,
+                })
             })
 
         return false;
@@ -79,17 +86,17 @@ export default function() {
     let fields;
     if (global.Database.Dbms === 'sqlite3') {
         fields = <div>
-            <TextField id="db_path" name="db_path" label="File path" fullWidth onChange={handleInputChange("Path")} InputProps={{ className: classes.fieldColor }} value={global.Database.Path} />
+            <TextField id="db_path" name="db_path" label="File path" required fullWidth onChange={handleInputChange("Path")} value={global.Database.Path} />
         </div>;
     } else if (global.Database.Dbms === 'pgsql' || global.Database.Dbms === 'mysql') {
         fields = <div>
             <div style={{display: 'flex'}}>
-                <TextField id="db_host" name="db_host" label="Hostname" onChange={handleInputChange("Hostname")} value={ global.Database.Hostname } InputProps={{ className: classes.fieldColor }} />
-                <TextField id="db_port" name="db_port" label="Port" type="number" inputProps={{ min: "0" }} onChange={handleInputChange("Port")} value={ global.Database.Port } InputProps={{ className: classes.fieldColor }} />
+                <TextField id="db_host" name="db_host" label="Hostname" required onChange={handleInputChange("Hostname")} value={ global.Database.Hostname } />
+                <TextField id="db_port" name="db_port" label="Port" required type="number" inputProps={{ min: "0" }} onChange={handleInputChange("Port")} value={ global.Database.Port } />
             </div>
-            <TextField id="db_username" name="db_username" label="Username" fullWidth onChange={handleInputChange("Username")} value={global.Database.Username} InputProps={{ className: classes.fieldColor }} />
-            <TextField id="db_password" name="db_password" label="Password" fullWidth onChange={handleInputChange("Password")} value={global.Database.Password} InputProps={{ className: classes.fieldColor }} type="password" />
-            <TextField id="db_database" name="db_database" label="Database" fullWidth onChange={handleInputChange("Database")} value={global.Database.Database} InputProps={{ className: classes.fieldColor }} />
+            <TextField id="db_username" name="db_username" required label="Username" fullWidth onChange={handleInputChange("Username")} value={global.Database.Username} />
+            <TextField id="db_password" name="db_password" required label="Password" fullWidth onChange={handleInputChange("Password")} value={global.Database.Password} type="password" />
+            <TextField id="db_database" name="db_database" required label="Database" fullWidth onChange={handleInputChange("Database")} value={global.Database.Database} />
         </div>;
     } else {
         fields = <div>
@@ -105,7 +112,7 @@ export default function() {
                 <p>Please choose your database software.</p>
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel id="SelectDBMS">Choose your DBMS</InputLabel>
-                    <Select labelId="SelectDBMS" id="dbms" name="dbms" value={global.Database.Dbms} onChange={handleInputChange("Dbms")} classes={{ root: classes.fieldColor, icon: classes.fieldColor }}>
+                    <Select labelId="SelectDBMS" id="dbms" name="dbms" value={global.Database.Dbms} onChange={handleInputChange("Dbms")}>
                         <MenuItem value={"pgsql"}>Postgres</MenuItem>
                         <MenuItem value={"mysql"}>Mysql</MenuItem>
                         <MenuItem value={"sqlite3"}>Sqlite3</MenuItem>
@@ -133,7 +140,7 @@ export default function() {
                 </React.Fragment>
             }
       >
-            <MuiAlert elevation={6} variant="filled" severity="error"> These settings are invalid! </MuiAlert>
-        </Snackbar>
+            <MuiAlert elevation={6} variant="filled" severity="error">{state.SnackbarMessage}</MuiAlert>
+        </Snackbar> 
     </div>;
 }

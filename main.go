@@ -46,6 +46,7 @@ func main() {
 	}
 }
 
+// StartFullServer runs the full scinna server
 func StartFullServer(configPath *string, port *int) {
 	cfg, exists, err := configuration.Load(*configPath)
 	if err != nil {
@@ -62,8 +63,13 @@ func StartFullServer(configPath *string, port *int) {
 		cfg.WebPort = strconv.Itoa(*port)
 	}
 
-	prv := services.New(cfg)
+	prv, err := services.New(cfg)
+	prv.Init()
 	defer prv.Db.Close()
+
+	if err != nil {
+		panic(err)
+	}
 
 	// Every 15 minutes, we clean up users older than 24h who have not validated their accounts
 	go func(prv *services.Provider) {

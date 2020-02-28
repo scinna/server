@@ -2,6 +2,8 @@
 github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/json
 github.com/gabriel-vasile/mimetype/internal/matchers
+# github.com/gobuffalo/here v0.6.0
+github.com/gobuffalo/here
 # github.com/gorilla/context v1.1.1
 github.com/gorilla/context
 # github.com/gorilla/mux v1.6.2
@@ -13,6 +15,11 @@ github.com/jmoiron/sqlx/reflectx
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/markbates/pkger v0.14.0
+github.com/markbates/pkger
+github.com/markbates/pkger/internal/maps
+github.com/markbates/pkger/pkging
+github.com/markbates/pkger/pkging/stdos
 # github.com/matoous/go-nanoid v1.1.0
 github.com/matoous/go-nanoid
 # golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba

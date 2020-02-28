@@ -3,6 +3,7 @@ package configuration
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ type DBConfig struct {
 	Dbms string `json:"Dbms"`
 
 	Hostname string `json:"Hostname"`
-	Port     string `json:"Port"`
+	Port     int    `json:"Port"`
 
 	Username string `json:"Username"`
 	Password string `json:"Password"`
@@ -29,10 +30,10 @@ func (cfg *DBConfig) GetDsn() (driver string, dsn string) {
 		dsn = cfg.Filepath
 	} else if dbms == "mysql" {
 		driver = "mysql"
-		dsn = "mysql://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + cfg.Port + "/" + cfg.Database
+		dsn = "mysql://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + strconv.Itoa(cfg.Port) + "/" + cfg.Database
 	} else if dbms == "pgsql" || dbms == "postgres" || dbms == "postgresql" {
 		driver = "postgres"
-		dsn = "postgres://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + cfg.Port + "/" + cfg.Database
+		dsn = "postgres://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + strconv.Itoa(cfg.Port) + "/" + cfg.Database
 	} else {
 		fmt.Println("- No matching database found: " + cfg.Dbms)
 	}

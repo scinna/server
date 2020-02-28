@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"net/smtp"
 	"regexp"
+	"strconv"
 )
 
 // ServerType lets you choose the type of connection used to log in to SMTP server
@@ -29,7 +30,7 @@ type MailConfig struct {
 	ConnectionType ServerType `json:"ConnectionType"`
 
 	Hostname string `json:"Hostname"`
-	Port     string `json:"Port"`
+	Port     int    `json:"Port"`
 	Username string `json:"Username"`
 	Password string `json:"Password"`
 	Sender   string `json:"Sender"`
@@ -55,10 +56,10 @@ func (mc *MailConfig) SendMail(dest, subject, body string) (bool, error) {
 	mc.Client = smtp.PlainAuth("", mc.Username, mc.Password, mc.Hostname)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
-		ServerName:         mc.Hostname + ":" + mc.Port,
+		ServerName:         mc.Hostname + ":" + strconv.Itoa(mc.Port),
 	}
 
-	c, err := smtp.Dial(mc.Hostname + ":" + mc.Port)
+	c, err := smtp.Dial(mc.Hostname + ":" + strconv.Itoa(mc.Port))
 	if err != nil {
 		return false, err
 	}
@@ -68,7 +69,7 @@ func (mc *MailConfig) SendMail(dest, subject, body string) (bool, error) {
 		return false, err
 	}
 
-	if err := smtp.SendMail(mc.Hostname+":"+mc.Port, mc.Client, mc.Sender, []string{dest}, msg); err != nil {
+	if err := smtp.SendMail(mc.Hostname+":"+strconv.Itoa(mc.Port), mc.Client, mc.Sender, []string{dest}, msg); err != nil {
 		return false, err
 	}
 	return true, nil

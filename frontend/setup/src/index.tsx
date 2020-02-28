@@ -13,6 +13,13 @@ const theme = createMuiTheme({
     palette: {
         primary: { main: '#87E7E1' },
         secondary: { main: '#02968B' },
+        text: {
+          primary: "#fff",
+          secondary: "rgba(255, 255, 255, .5)"
+        },
+        background: {
+          paper: "var(--below-bg-color)"
+        }
     }
   } as ThemeOptions);
 

@@ -8,13 +8,13 @@ import (
 	"errors"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/template"
 
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/markbates/pkger"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/scinna/server/configuration"
 
@@ -65,9 +65,9 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 	return false, nil
 }
 
-func parseTemplateDir(dir string) (*template.Template, error) {
+func parseTemplateDir() (*template.Template, error) {
 	var paths []string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	err := pkger.Walk("/templates", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -83,11 +83,10 @@ func parseTemplateDir(dir string) (*template.Template, error) {
 }
 
 // New function initializes the the Provider structure
-func New(cfg *configuration.Configuration) *Provider {
-	t, err := parseTemplateDir("templates")
+func New(cfg *configuration.Configuration) (*Provider, error) {
+	t, err := parseTemplateDir()
 	if err != nil {
-		fmt.Println(err)
-		panic("Can't load templates!")
+		return nil, err
 	}
 	fmt.Println("- Templates loaded")
 
@@ -103,7 +102,7 @@ func New(cfg *configuration.Configuration) *Provider {
 		Config:      *cfg,
 		Templates:   t,
 		ArgonParams: argonParams,
-	}
+	}, nil
 }
 
 // Init initialize the database
@@ -117,6 +116,11 @@ func (prv *Provider) Init() {
 		fmt.Println("- Connected to database")
 		prv.Db = db
 	}
+}
+
+// Shutdown turns everything off
+func (prv *Provider) Shutdown() {
+	prv.Db.Close()
 }
 
 // Render renders a template to the writer

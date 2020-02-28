@@ -1,5 +1,5 @@
 import axios from 'axios';
 
-export default (dbCreds: Object) => {
-    return axios.post("/test/smtp", dbCreds)
+export default (smtpCreds: Object) => {
+    return axios.post("/test/smtp", smtpCreds)
 }

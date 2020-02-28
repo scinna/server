@@ -1,9 +1,9 @@
 export const ACTION_UPDATE_SCINNA = "UPDATE_SCINNA";
 
 interface updateScinnaPayload {
-    Registration?: string,
-    IPHeader?: string,
-    RateLimiting?: string,
+    RegistrationAllowed?: string,
+    HeaderIPField?: string,
+    RateLimiting?: number,
     PicturePath?: string,
     WebURL?: string,
 }

@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/markbates/pkger"
+
 	"github.com/scinna/server/middleware"
 	"github.com/scinna/server/routes"
 	"github.com/scinna/server/services"
@@ -59,14 +61,16 @@ func RunServer(prv *services.Provider) {
 // RunSetup spin up a http server letting the admin do the first time setup of the server. This keeps the routes separated and so will never be called again as soon as the setup is done
 func RunSetup(port *int) {
 
+	var srv http.Server
+
 	r := mux.NewRouter().StrictSlash(false)
-	r.HandleFunc("/save", routes.SaveConfigRoute)
 	r.HandleFunc("/test/db", routes.TestDatabaseConfigRoute)
 	r.HandleFunc("/test/smtp", routes.TestSMTPConfigRoute)
+	r.HandleFunc("/scinna", routes.ScinnaConfigRoute)
 	r.HandleFunc("/user", routes.CreateAdminRoute)
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web")))
+	r.PathPrefix("/").Handler(http.FileServer(pkger.Dir("/frontend/setup/build"))) // @TODO: Embed files in the executable through something like markbates/pkger
 
-	srv := &http.Server{
+	srv = http.Server{
 		Handler:      r,
 		Addr:         "127.0.0.1:" + strconv.Itoa(*port),
 		WriteTimeout: 15 * time.Second,

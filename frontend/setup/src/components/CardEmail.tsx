@@ -2,7 +2,6 @@ import React from 'react';
 import {Link, Redirect} from 'react-router-dom';
 
 import TestMail from '../api/Mail';
-import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -15,11 +14,6 @@ import ValidIcon from '@material-ui/icons/Check';
 import { useStateValue } from '../context';
 import {actionUpdateSmtp} from '../actions/smtp';
 
-const useStyles = makeStyles(theme => ({
-    fieldColor:{
-        color: '#e4e4e5',
-    }
-}));
 
 const initialState = {
     ConfigValid: false,
@@ -30,14 +24,18 @@ const initialState = {
 };
 
 export default function() {
-    const classes = useStyles();    
     const [state, setState] = React.useState(initialState);
 
     //@ts-ignore
     const [global, dispatch] = useStateValue();
 
     const handleInputChange = (field: string) => (e: any) => {
-        dispatch(actionUpdateSmtp({[field]: e.currentTarget.value}))
+        if (e.currentTarget.type === "number") {
+            let val = parseInt(e.currentTarget.value)
+            dispatch(actionUpdateSmtp({ [field]: val }))   
+        } else {
+            dispatch(actionUpdateSmtp({ [field]: e.currentTarget.value }))   
+        }
     }
 
     const handleToggle = (field: string) => (event: any) => {
@@ -64,28 +62,36 @@ export default function() {
     const submit = (e: any) => {
         e.preventDefault();
 
+        // @TODO Find a way to use useEffect (?)
+        // Not working because not in React component but in submit function
         TestMail(global.Smtp)
             .then((r: any) => {
-                let message = r.data.IsValid ? "Mail sent. Did you received it?" : "Something went wrong.";
-                setState({
-                    ...state,
-                    //ConfigValid: r.data.IsValid,
-                    SnackbarOpened: true,
-                    SnackbarMessage: message,
-                    SnackbarError: !r.data.IsValid
-                })
+                if (global.Smtp.Enabled) {
+                    setState({
+                        ...state,
+                        SnackbarOpened: true,
+                        SnackbarMessage: "Mail sent. Did you received it?",
+                        SnackbarError: false
+                    })
+                } else {
+                    setState({
+                        ...state,
+                        ConfigValid: true,
+                    })
+                }
             })
             .catch((e: any) => {
                 console.log(e)
+                setState({
+                    ...state,
+                    SnackbarOpened: true,
+                    SnackbarMessage: e.response.data.Message,
+                    SnackbarError: true
+                })
             })
 
         return false;
     };
-
-    /**
-     * @TODO: Add a button to send a test mail
-     *        Add a popup (Or snackbar) to ask the user if he received the email
-     */
 
     let fields;
     if (!global.Smtp.Enabled) {
@@ -97,16 +103,23 @@ export default function() {
     } else {
         fields = <div>
             <p>This only support STARTTLS for now.</p>
-            <TextField id="smtp_host" name="smtp_host" label="Hostname" fullWidth onChange={handleInputChange("Hostname")} value={ global.Smtp.Hostname } InputProps={{ className: classes.fieldColor }} />
-            <TextField id="smtp_port" name="smtp_port" label="Port" fullWidth onChange={handleInputChange("Port")} value={ global.Smtp.Port } InputProps={{ className: classes.fieldColor }} />
-            <TextField id="smtp_username" name="smtp_username" label="Username" fullWidth onChange={handleInputChange("Username")} value={ global.Smtp.Username } InputProps={{ className: classes.fieldColor }} />
-            <TextField id="smtp_password" name="smtp_password" type="password" label="Password" fullWidth onChange={handleInputChange("Password")} value={ global.Smtp.Password } InputProps={{ className: classes.fieldColor }} />
-            <TextField id="smtp_sender" name="smtp_sender" label="Sender" fullWidth onChange={handleInputChange("Sender")} value={ global.Smtp.Sender } InputProps={{ className: classes.fieldColor }} />
-            <TextField id="smtp_receiver" name="smtp_receiver" label="Test receiver" fullWidth onChange={handleInputChange("TestReceiver")} value={ global.Smtp.TestReceiver } InputProps={{ className: classes.fieldColor }} />
+            <TextField id="smtp_host"     required name="smtp_host" label="Hostname" fullWidth onChange={handleInputChange("Hostname")} value={ global.Smtp.Hostname } />
+            <TextField id="smtp_port"     required name="smtp_port" label="Port" type="number" inputProps={{ min: "0" }} fullWidth onChange={handleInputChange("Port")} value={ global.Smtp.Port } />
+            <TextField id="smtp_username" required name="smtp_username" label="Username" fullWidth onChange={handleInputChange("Username")} value={ global.Smtp.Username } />
+            <TextField id="smtp_password" required name="smtp_password" type="password" label="Password" fullWidth onChange={handleInputChange("Password")} value={ global.Smtp.Password } />
+            <TextField id="smtp_sender"   required name="smtp_sender" label="Sender" fullWidth onChange={handleInputChange("Sender")} value={ global.Smtp.Sender } />
+            <TextField id="smtp_receiver" required name="smtp_receiver" label="Test receiver" fullWidth onChange={handleInputChange("TestReceiver")} value={ global.Smtp.TestReceiver } />
         </div>;
     }
 
     let btText = global.Smtp.Enabled ? "Send test mail" : "Next";
+
+    let actionValid;
+    if (!state.SnackbarError) {
+        actionValid = <IconButton size="small" aria-label="close" color="inherit" onClick={handleReceived}>
+                        <ValidIcon fontSize="small" />
+                    </IconButton>;
+    }
 
     return <div className="card above">
         { state.ConfigValid ? <Redirect to="/scinna" /> : null}
@@ -133,9 +146,7 @@ export default function() {
                 severity={state.SnackbarError ? "error" : "info"} 
                 action={
                     <React.Fragment>
-                        <IconButton size="small" aria-label="close" color="inherit" onClick={handleReceived}>
-                            <ValidIcon fontSize="small" />
-                        </IconButton>
+                        {actionValid}
                         <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnack}>
                             <CloseIcon fontSize="small" />
                         </IconButton>

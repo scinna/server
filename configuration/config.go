@@ -23,12 +23,17 @@ type Configuration struct {
 	RateLimiting        int        `yaml:"RateLimiting"`
 }
 
+// Meh global variable >:(
+var lastTriedPath string = ""
+
 // HasConfig checks if the config file exists
 func HasConfig(path *string) bool {
 	if len(*path) == 0 {
 		osPath := FindPath()
 		path = &osPath
 	}
+
+	lastTriedPath = *path
 
 	if _, err := os.Stat(*path); os.IsNotExist(err) {
 		return false
@@ -72,6 +77,16 @@ func Load(path string) (*Configuration, bool, error) {
 	cfg.Mail.IsEmail = reg
 
 	return &cfg, true, err
+}
+
+// SaveConfig saves the configuration to the file
+func SaveConfig(cfg *Configuration) error {
+	cfgBytes, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(lastTriedPath, cfgBytes, 0644)
 }
 
 // FindPath finds the best match for the config file

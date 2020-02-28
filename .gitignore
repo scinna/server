@@ -10,5 +10,5 @@ frontend/setup/node_modules
 frontend/setup/.pnp
 frontend/setup.pnp.js
 /frontend/setup/build
-web/setup
-web/ui
+
+/pkged.go

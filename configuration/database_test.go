@@ -6,7 +6,7 @@ func TestDsnSpecialChars(t *testing.T) {
 	dbConfig := DBConfig{
 		Dbms:     "pgsql",
 		Hostname: "localhost",
-		Port:     "1234",
+		Port:     1234,
 		Username: "myUser",
 		Password: "my_Password%@/ ",
 		Database: "myDb",
@@ -25,7 +25,7 @@ func TestDsnDriverPostgres(t *testing.T) {
 	dbConfig := DBConfig{
 		Dbms:     "pgsql",
 		Hostname: "localhost",
-		Port:     "1234",
+		Port:     1234,
 		Username: "myUser",
 		Password: "my_Password%@/ ",
 		Database: "myDb",
@@ -55,7 +55,7 @@ func TestDsnDriverMysql(t *testing.T) {
 	dbConfig := DBConfig{
 		Dbms:     "mysql",
 		Hostname: "localhost",
-		Port:     "1234",
+		Port:     1234,
 		Username: "myUser",
 		Password: "my_Password%@/ ",
 		Database: "myDb",
@@ -74,7 +74,7 @@ func TestDsnDriverSqlite(t *testing.T) {
 	dbConfig := DBConfig{
 		Dbms:     "sqlite3",
 		Hostname: "localhost",
-		Port:     "1234",
+		Port:     1234,
 		Username: "myUser",
 		Password: "my_Password%@/ ",
 		Database: "myDb",

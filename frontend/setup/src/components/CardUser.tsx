@@ -1,34 +1,96 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import {Link, Redirect} from 'react-router-dom';
 
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 
-/**
- * When the user click on Next, the app should send the data to the /save endpoint to test them
- * If there is any error (DB settings invalid, SMTP settings invalid, Scinna settings invalid
- * Can't register the user), the app should not go to the finale card and display an error.
- */
+import { useStateValue } from '../context';
+import {actionUpdateUser} from '../actions/user';
+import CreateUserAccount from '../api/User';
+
+const initialState = {
+    ConfigValid: false,
+    PwdRepeat: "",
+    SnackbarOpened: false,
+};
 
 export default function() {
-    const { register, handleSubmit, errors } = useForm();
-    const onSubmit = (data: any) => console.log(data);
-        console.log(errors);
+    const [state, setState] = React.useState(initialState);
+
+    //@ts-ignore
+    const [global, dispatch] = useStateValue();
+
+    const handleCloseSnack = (e: any) => {
+        setState({
+            ...state,
+            SnackbarOpened: false,
+        })
+    };
+
+    const handleInputChange = (field: string) => (e: any) => {
+        dispatch(actionUpdateUser({[field]: e.currentTarget.value}))
+    }
+
+    const handlePwdRepeatChange = (e: any) => {
+        setState({
+            ...state,
+            PwdRepeat: e.currentTarget.value,
+        })
+    }
+
+    const callAPI = () => {
+        CreateUserAccount(global.User)
+            .then((r: any) => {
+                setState({
+                    ...state,
+                    ConfigValid: true,
+                })
+            })
+            .catch((e: any) => {
+                console.log(e)
+            })
+    }
+
+    const submit = (e: any) => {
+        e.preventDefault();
+
+        if (state.PwdRepeat === global.User.Password) {
+            callAPI();
+            return false;
+        }
+
+        setState({
+            ...state,
+            SnackbarOpened: true,
+        })
+
+        return false;
+    };
 
     return <div className="card above">
+        { state.ConfigValid ? <Redirect to="/finale" /> : null}
         <h4>Create your account</h4>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={submit}>
             <div className="content">
                 <p>Creating the admin account.</p>
-                <TextField id="user_name" label="Username" fullWidth inputRef={register({required: true, min: 1})}/>
-                <TextField id="user_mail" label="Email" fullWidth inputRef={register({required: true, min: 1})}/>
-                <TextField id="user_pass" label="Password" type="password" fullWidth inputRef={register({required: true, min: 1})}/>
-                <TextField id="user_pwd2" label="Repeat password" type="password" fullWidth inputRef={register({required: true, min: 1})}/>
+                <TextField name="user_name" label="Username" onChange={handleInputChange("Username")} value={ global.User.Username } required fullWidth />
+                <TextField name="user_mail" label="Email" onChange={handleInputChange("Email")} value={ global.User.Email } required fullWidth />
+                <TextField name="user_pass" label="Password" type="password" onChange={handleInputChange("Password")} value={ global.User.Password } required fullWidth />
+                <TextField name="user_pwd2" label="Repeat password" type="password" onChange={handlePwdRepeatChange} value={ state.PwdRepeat } required fullWidth />
             </div>
             <div className="footer">
                 <Link className="btn" to="/scinna">Back</Link>
-                <Link className="btn" to="/finale">Next</Link>
+                <input type="submit" className="btn" value="Next" />
             </div>
         </form>
+
+        <Snackbar 
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center', }}
+            open={state.SnackbarOpened}
+            autoHideDuration={3000}
+            onClose={handleCloseSnack}>
+            <MuiAlert elevation={6} variant="filled" severity="error">The passwords do not matches !</MuiAlert>
+        </Snackbar> 
     </div>;
 }
