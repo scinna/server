@@ -1,0 +1,129 @@
+:root {
+    --main-bg-color: #333335;
+
+    --level-fg-color: #cececf;
+    --level-title-fg-color: #c9c9c9;
+    --level-btn-bg-color: #29292b;
+    --level-btn-color: #b5b5b5;
+
+    
+    --below-bg-color: #262628;
+    --below-fg-color: #848485;
+
+
+    --above-bg-color: #48484a;
+    --above-fg-color: #e4e4e5;
+
+    --primary-color: #87e7e1;
+    --secondary-color: #02968b; 
+
+    /* Pour le state, prendre des couleurs pales */
+    --iconed-text-fg-color-success: #3EC480;
+    --iconed-text-fg-color-info: #5FC3D1;
+    --iconed-text-fg-color-warn: #FF9B51;
+    --iconed-text-fg-color-danger: #FC5059;
+
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.pretty-link {
+    background-image: linear-gradient(90deg, rgba(226,203,255,1) 0%, rgba(202,161,255,1) 50%, rgba(226,203,255,1) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.1em;
+    background-position: 0 99%;
+    color: rgba(255,255,255, .5);
+
+    transition: background-size 0.10s ease-in, color 0.15s ease-in;
+
+    &:hover {
+        background-size: 100% 100%;
+        color: black;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat';
+    background: var(--main-bg-color);
+}
+
+#mainApp {
+    width: 80%;
+    margin: auto;
+}
+
+#mainMenu {
+    
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+
+    background: var(--above-bg-color);
+
+    margin: 1em auto 1em auto;
+    padding: .75em;
+
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: .25em;
+
+    @media (max-width: 900px) {
+        a {
+            flex: 1;
+
+            img {
+                margin: auto;
+            }
+        }
+
+        ul {
+            display: none;
+        }
+    }
+
+    @media (min-width: 900px) {
+        .hamburger {
+            display: none;
+        }
+    }
+
+    img {
+        display: block;
+        height: 2em;
+    }
+
+    ul.menu {
+        flex: 1;
+    }
+
+    ul {
+        li {
+            display: inline-block;
+            margin: 0 1em 0 1em;
+
+            a {
+                font-family: 'Helvetica Neue', sans-serif;
+                text-decoration: none;  
+                font-size: 1rem;
+
+                color: #e4e4e5;
+                font-weight: bold;
+
+                background-color: inherit;
+                padding: .5em;
+                border-radius: .25em;
+
+                transition: color .3s, background-color .3s;
+
+                &:hover {
+                    background-color: #87e7e1;
+                    color: #333;
+                }
+            }
+        }
+    }
+}

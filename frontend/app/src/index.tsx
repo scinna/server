@@ -1,19 +1,23 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import App from './App';
+
 import { HashRouter } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 
-import App from './App';
+import ReactDOM from 'react-dom';
 
-
-import './assets/main.css';
-
+/**
+ * @TODO: https://material-ui.com/customization/typography/
+ *  Self-host fonts to not require CDN
+ * Remove the dependencies in index.html
+ */
 
 const theme = createMuiTheme({
     palette: {
-        primary: { main: '#87E7E1' },
-        secondary: { main: '#02968B' },
+        type: 'dark',
+        primary: { main: '#87E7E1', contrastText: '#fff' },
+        secondary: { main: '#02968B', contrastText: '#fff' },
         text: {
           primary: "#fff",
           secondary: "rgba(255, 255, 255, .5)"
@@ -24,7 +28,6 @@ const theme = createMuiTheme({
     }
   } as ThemeOptions);
 
-
 ReactDOM.render(<HashRouter>
-        <ThemeProvider theme={theme}><App /></ThemeProvider>
+    <ThemeProvider theme={theme}><App /></ThemeProvider>
 </HashRouter>, document.getElementById('root'));

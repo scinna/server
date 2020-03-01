@@ -9,6 +9,11 @@ yarn-error.log*
 frontend/setup/node_modules
 frontend/setup/.pnp
 frontend/setup.pnp.js
-/frontend/setup/build
+frontend/setup/build
+
+frontend/app/node_modules
+frontend/app/.pnp
+frontend/app/setup.pnp.js
+frontend/app/build
 
 /pkged.go
