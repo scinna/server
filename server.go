@@ -24,6 +24,8 @@ func RunServer(prv *services.Provider) {
 
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
+	r.HandleFunc("/config", middleware.CombineMiddlewaresCT(prv, routes.GetConfigRoute(prv))).Methods("GET")
+
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
 	authRoutes.HandleFunc("/login", middleware.CombineMiddlewaresCT(prv, routes.LoginRoute(prv))).Methods("POST")
 	authRoutes.HandleFunc("/register", middleware.CombineMiddlewaresCT(prv, routes.IsRegisterAvailableRoute(prv))).Methods("GET")

@@ -1,4 +1,4 @@
-import React, {useReducer} from 'react';
+import React, {useReducer, useEffect} from 'react';
 import { Typography } from '@material-ui/core';
 import { Switch, Route } from 'react-router-dom';
 
@@ -7,11 +7,19 @@ import MainReducer from './reducers';
 import Menu from './components/Menu';
 import IndexPage from './pages/IndexPage';
 
+import { getConfig } from './api/Config';
+
 
 function App() {
+  const [state, dispatch] = useReducer(MainReducer, InitialState);
+
+  useEffect(() => {
+    getConfig(dispatch);
+  }, []);
+
   return (
     // @ts-ignore
-    <AppContext.Provider value={useReducer(MainReducer, InitialState)}>
+    <AppContext.Provider value={[state, dispatch]}>
       <div id="mainApp">
         <Menu/>
         <Switch>

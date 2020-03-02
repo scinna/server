@@ -5,6 +5,11 @@ export const InitialState = {
         menuOpened: false,
         registration: 'private'
     },
+    Config: {
+        Retreived: false,
+        EmailAvailable: false,
+        Registration: 'private',
+    },
     User: {
         Username: '',
         Token: '',

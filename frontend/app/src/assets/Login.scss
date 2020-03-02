@@ -1,0 +1,17 @@
+@media (min-width: 600px){
+    .LoginPadding {
+        padding: 2em;
+    }
+}
+
+@media (max-width: 600px){
+    .LoginPadding {
+        padding-top: 2em;
+    }
+}
+
+@media (min-width: 1080px){
+    .FormMaxWidth {
+        width: 320px;
+    }
+}

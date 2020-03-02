@@ -6,7 +6,6 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
-	"net/http"
 	"os"
 	"strings"
 	"text/template"
@@ -66,6 +65,9 @@ func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, e
 }
 
 func parseTemplateDir() (*template.Template, error) {
+
+	pkger.Stat("/templates/layout_mail.html")
+
 	var paths []string
 	err := pkger.Walk("/templates", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -84,11 +86,11 @@ func parseTemplateDir() (*template.Template, error) {
 
 // New function initializes the the Provider structure
 func New(cfg *configuration.Configuration) (*Provider, error) {
-	t, err := parseTemplateDir()
+	/*t, err := parseTemplateDir()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("- Templates loaded")
+	fmt.Println("- Templates loaded")*/
 
 	argonParams := &ArgonParams{
 		Memory:      64 * 1024,
@@ -100,7 +102,7 @@ func New(cfg *configuration.Configuration) (*Provider, error) {
 
 	return &Provider{
 		Config:      *cfg,
-		Templates:   t,
+		Templates:   nil, //t,
 		ArgonParams: argonParams,
 	}, nil
 }
@@ -121,11 +123,6 @@ func (prv *Provider) Init() {
 // Shutdown turns everything off
 func (prv *Provider) Shutdown() {
 	prv.Db.Close()
-}
-
-// Render renders a template to the writer
-func Render(prv *Provider, w http.ResponseWriter, data interface{}) error {
-	return prv.Templates.ExecuteTemplate(w, "index.html", &data)
 }
 
 // ArgonParams represents all the parameters needed to hash the passwords
