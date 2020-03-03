@@ -15,7 +15,7 @@ import ProfilIcon from '@material-ui/icons/AccountBox';
 import LogoutIcon from '@material-ui/icons/ExitToApp';
 
 import {useStateValue} from '../context';
-import { actionMenuToggle } from '../actions/MainActions';
+import { actionMenuToggle, actionLogout } from '../actions/MainActions';
 
 import LogoScinna from '../assets/logo.png';
 import '../assets/main.scss';
@@ -29,6 +29,13 @@ const useStyles = makeStyles(theme => ({
 
 const MenuItem = (dispatch: any, icon: JSX.Element, text: string, to: string) => {
     return <ListItem button key={text} component={Link} to={to} onClick={() => dispatch(actionMenuToggle(false))}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={text}/>
+            </ListItem>;
+};
+
+const MenuItemAction = (dispatch: any, icon: JSX.Element, text: string, action: Function) => {
+    return <ListItem button key={text} component="a" onClick={() => { action(); dispatch(actionMenuToggle(false))}}>
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText primary={text}/>
             </ListItem>;
@@ -59,6 +66,10 @@ export default function() {
         };
     });
 
+    const logout = () => {
+        dispatch(actionLogout());
+    }
+
     const userLoggedIn = global.User.Username.length > 0 && global.User.Token.length > 0;
 
     let menuLeft;
@@ -78,7 +89,7 @@ export default function() {
         menuRight = [
             <li key="home">
                 <Tooltip title="Logout" aria-label="Logout">
-                    <IconButton><LogoutIcon/></IconButton>
+                    <IconButton onClick={logout}><LogoutIcon/></IconButton>
                 </Tooltip>
             </li>,
         ];
@@ -86,7 +97,7 @@ export default function() {
         menuMobile = [
             MenuItem(dispatch, <HomeIcon />, "My content", "/"),
             MenuItem(dispatch, <ProfilIcon />, global.User.Username, "/me"),
-            MenuItem(dispatch, <LogoutIcon />, "Logout", "/logout"), // @TODO: Just create an action that logs out
+            MenuItemAction(dispatch, <LogoutIcon />, "Logout", logout), // @TODO: Just create an action that logs out
         ];
     } else {
         menuLeft = [

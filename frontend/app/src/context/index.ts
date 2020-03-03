@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const InitialState = {
+export const CtxInitialState = {
     Main: {
         menuOpened: false,
         registration: 'private'
@@ -11,10 +11,13 @@ export const InitialState = {
         Registration: 'private',
     },
     User: {
+        ID: 0,
         Username: '',
-        Token: '',
+        Email: '',
+        CreatedAt: new Date(),
+        Token: localStorage.getItem("scinna_token") ?? '',
     }
 }
 
-export const AppContext = React.createContext(InitialState);
+export const AppContext = React.createContext(CtxInitialState);
 export const useStateValue = () => React.useContext(AppContext);

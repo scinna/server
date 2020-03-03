@@ -2,20 +2,28 @@ import React, {useReducer, useEffect} from 'react';
 import { Typography } from '@material-ui/core';
 import { Switch, Route } from 'react-router-dom';
 
-import { AppContext, InitialState } from './context';
+import { AppContext, CtxInitialState } from './context';
 import MainReducer from './reducers';
 import Menu from './components/Menu';
 import IndexPage from './pages/IndexPage';
 
-import { getConfig } from './api/Config';
+import { APIConfig } from './api/Config';
+import { APICheckToken } from './api/Login';
+import { setAxiosToken } from './api/Axios';
 
 
 function App() {
-  const [state, dispatch] = useReducer(MainReducer, InitialState);
+  const [state, dispatch] = useReducer(MainReducer, CtxInitialState);
 
   useEffect(() => {
-    getConfig(dispatch);
-  }, []);
+    APIConfig(dispatch);
+
+    // @TODO: Not that good, calls this route just after login, even though data was retreived
+    if (state.User.Token.length > 0) {
+      setAxiosToken(state.User.Token);
+      APICheckToken(dispatch, state.User.Token);
+    }
+  }, [state.User.Token]);
 
   return (
     // @ts-ignore

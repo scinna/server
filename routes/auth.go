@@ -94,6 +94,24 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
+// CheckTokenRoute is the route that lets the user authenticate: /auth/login
+func CheckTokenRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := auth.ValidateRequest(prv, w, r)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		userMarshalled, err := json.Marshal(user)
+		if err != nil {
+			serrors.ErrorTokenNotFound.Write(w)
+			return
+		}
+
+		w.Write(userMarshalled)
+	}
+}
+
 // GetTokensRoute sends all the user's token
 func GetTokensRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

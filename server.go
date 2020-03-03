@@ -28,6 +28,7 @@ func RunServer(prv *services.Provider) {
 
 	authRoutes := r.PathPrefix("/auth").Subrouter().StrictSlash(false)
 	authRoutes.HandleFunc("/login", middleware.CombineMiddlewaresCT(prv, routes.LoginRoute(prv))).Methods("POST")
+	authRoutes.HandleFunc("/token", middleware.CombineMiddlewaresCT(prv, routes.CheckTokenRoute(prv))).Methods("GET")
 	authRoutes.HandleFunc("/register", middleware.CombineMiddlewaresCT(prv, routes.IsRegisterAvailableRoute(prv))).Methods("GET")
 	authRoutes.HandleFunc("/register", middleware.CombineMiddlewaresCT(prv, routes.RegisterRoute(prv))).Methods("POST")
 	authRoutes.HandleFunc("/register/{VALIDATION_TOKEN}", routes.ValidateUserRoute(prv))
