@@ -2,6 +2,7 @@ import React from 'react';
 import { useStateValue } from '../context';
 
 import Login from '../components/Login';
+import UploadComponent from '../components/UploadComponent';
 import FileBrowser from '../components/FileBrowser';
 
 import { makeStyles, Typography, Fab } from '@material-ui/core';
@@ -24,29 +25,42 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+const initialState = {
+    UploadModal: true,
+    FolderModal: false,
+};
+
 export default function() {
     const classes = useStyles();
+    const [modal, setModal] = React.useState(initialState);
 
     //@ts-ignore
     const [global] = useStateValue();
-
     const userLoggedIn = global.User.Username.length > 0 && global.User.Token.length > 0;
 
-    let page;
+    const closeModal = (currModal: string) => () => {
+        setModal({
+            ...modal,
+            [currModal]: false,
+        });
+    };
 
+    let page;
     if (userLoggedIn) {
         page = <div>
             <Typography className={classes.title} variant="h4" component="h1">My content</Typography>
             <FileBrowser />
 
             <div className={classes.fab}>
-                <Fab color="primary" aria-label="add">
+                <Fab color="primary" aria-label="Upload picture" onClick={() => setModal({ ...modal, UploadModal: true })}>
                     <AddPhotoAlternateIcon />
                 </Fab>
-                <Fab className={classes.fabIcons} color="primary" aria-label="add">
+                <Fab className={classes.fabIcons} color="primary" aria-label="Create folder" onClick={() => setModal({ ...modal, FolderModal: true })}>
                     <NewFolderIcon />
                 </Fab>
             </div>
+
+            <UploadComponent open={modal.UploadModal} close={closeModal("UploadModal")} />
         </div>
     } else {
         page = <Login />
