@@ -15,6 +15,7 @@ export const CtxInitialState = {
         Username: '',
         Email: '',
         CreatedAt: new Date(),
+        Role: 10, // Default to user, not admin
         Token: localStorage.getItem("scinna_token") ?? '',
     }
 }

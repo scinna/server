@@ -17,13 +17,13 @@ function App() {
 
   useEffect(() => {
     APIConfig(dispatch);
-
+    
     // @TODO: Not that good, calls this route just after login, even though data was retreived
     if (state.User.Token.length > 0) {
       setAxiosToken(state.User.Token);
       APICheckToken(dispatch, state.User.Token);
     }
-  }, [state.User.Token]);
+  }, [state.User.Token])
 
   return (
     // @ts-ignore

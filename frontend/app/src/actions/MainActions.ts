@@ -30,8 +30,8 @@ export const actionBadToken = (): IActionType => {
     return { type: ACTION_BAD_TOKEN };
 }
 
-export const ACTION_LOG_OUT = "LOG_OUT";
+export const ACTION_LOGOUT = "LOGOUT";
 
 export const actionLogout = (): IActionType => {
-    return { type: ACTION_LOG_OUT };
+    return { type: ACTION_LOGOUT };
 }

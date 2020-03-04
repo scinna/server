@@ -28,7 +28,7 @@ export default function() {
     const classes = useStyles();
 
     //@ts-ignore
-    const [global, dispatch] = useStateValue();
+    const [global] = useStateValue();
 
     const userLoggedIn = global.User.Username.length > 0 && global.User.Token.length > 0;
 

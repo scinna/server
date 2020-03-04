@@ -15,10 +15,11 @@ import ProfilIcon from '@material-ui/icons/AccountBox';
 import LogoutIcon from '@material-ui/icons/ExitToApp';
 
 import {useStateValue} from '../context';
-import { actionMenuToggle, actionLogout } from '../actions/MainActions';
+import { actionMenuToggle } from '../actions/MainActions';
 
 import LogoScinna from '../assets/logo.png';
 import '../assets/main.scss';
+import { APILogout } from '../api/Login';
 
 const useStyles = makeStyles(theme => ({
     drawerImg: {
@@ -67,7 +68,7 @@ export default function() {
     });
 
     const logout = () => {
-        dispatch(actionLogout());
+        APILogout(dispatch, global.User.Token);
     }
 
     const userLoggedIn = global.User.Username.length > 0 && global.User.Token.length > 0;

@@ -8,11 +8,11 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
-import {Alert, AlertTitle} from '@material-ui/lab';
+import {Alert} from '@material-ui/lab';
 import CloseIcon from '@material-ui/icons/Close'; 
 
 import {useStateValue} from '../context';
-import { APILogin } from '../api/Login';
+import { APILogin, APIRegister } from '../api/Login';
 
 import '../assets/Login.scss';
 
@@ -53,6 +53,7 @@ const initialState: any = {
         Email: "",
         Password: "",
         Password2: "",
+        InviteCode: "",
     },
     Login: {
         Username: "",
@@ -104,7 +105,17 @@ export default function() {
                 }
             })
         } else {
-            // @TODO: API Request
+            APIRegister(dispatch, global.Config.EmailAvailable, forms.Registration, (resp: any) => {
+                console.log("Setting form to ", initialState.Registration);
+                setForms({
+                    ...forms,
+                    Registration: { ...initialState.Registration },
+                    Snackbar: {
+                        Opened: true,
+                        ...resp
+                    }
+                })
+            })
         }
     }
 
@@ -150,7 +161,7 @@ export default function() {
                     <TextField id="Email" label="Email" type="email" onChange={handleInputChangeRegister} value={forms.Registration.Email} required InputLabelProps={{ required: false }}/>
                     <TextField id="Password" label="Password" type="password" onChange={handleInputChangeRegister} value={forms.Registration.Password} required InputLabelProps={{ required: false }}/>
                     <TextField id="Password2" label="Repeat password" type="password" onChange={handleInputChangeRegister} value={forms.Registration.Password2} required InputLabelProps={{ required: false }}/>
-                    { global.Config.Registration === "InviteCode" && <TextField id="invite" onChange={handleInputChangeRegister} value={forms.Registration.InviteCode} label="Invitation code" type="text" required InputLabelProps={{ required: false }} />}
+                    { global.Config.Registration === "private" && <TextField id="InviteCode" onChange={handleInputChangeRegister} value={forms.Registration.InviteCode} label="Invitation code" type="text" required InputLabelProps={{ required: false }} />}
  
                     <Button variant="contained" color="secondary" className={classes.submitForm} type="submit">Register</Button>
                 </form>

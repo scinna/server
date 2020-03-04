@@ -112,6 +112,26 @@ func CheckTokenRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
+// LogoutRoute is the route that lets the user authenticate: /auth/login
+func LogoutRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := auth.ValidateRequest(prv, w, r)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		// Can't return any error since it would have already been caught by the ValidateRequest
+		token, _ := auth.GetTokenFromRequest(r)
+
+		err = dal.RevokeToken(prv, token, *user.ID)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		w.WriteHeader(http.StatusGone)
+	}
+}
+
 // GetTokensRoute sends all the user's token
 func GetTokensRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +173,7 @@ func RevokeTokenRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		err = dal.RevokeToken(prv, idInt, *u.ID)
+		err = dal.RevokeTokenByID(prv, idInt, *u.ID)
 		if serrors.WriteError(w, err) {
 			return
 		}

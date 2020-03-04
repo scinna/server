@@ -61,16 +61,27 @@ func VerifyToken(prv *services.Provider, tokenStr string) (model.AppUser, error)
 
 // ValidateRequest retreives the token from a request, validate its token and return the corresponding user
 func ValidateRequest(prv *services.Provider, w http.ResponseWriter, r *http.Request) (model.AppUser, error) {
+
+	authToken, err := GetTokenFromRequest(r)
+	if err != nil {
+		return model.AppUser{}, err
+	}
+
+	return VerifyToken(prv, authToken)
+}
+
+// GetTokenFromRequest extracts the token from the request
+func GetTokenFromRequest(r *http.Request) (string, error) {
 	authToken := r.Header.Get("Authorization")
 
 	if len(authToken) == 0 {
-		return model.AppUser{}, serrors.ErrorNoToken
+		return "", serrors.ErrorNoToken
 	}
 
 	splitToken := strings.Split(authToken, "Bearer ")
 	if len(splitToken) > 1 {
-		authToken = splitToken[1]
-		return VerifyToken(prv, authToken)
+		return splitToken[1], nil
 	}
-	return model.AppUser{}, serrors.ErrorBadToken
+
+	return "", serrors.ErrorBadToken
 }

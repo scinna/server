@@ -29,7 +29,29 @@ func ListTokens(prv *services.Provider, u model.AppUser) ([]model.LoginToken, er
 }
 
 // RevokeToken revokes an existing token
-func RevokeToken(prv *services.Provider, idToken int, idUser int64) error {
+func RevokeToken(prv *services.Provider, token string, idUser int64) error {
+
+	rq := `UPDATE LOGIN_TOKENS SET REVOKED = TRUE, REVOKED_AT = CURRENT_TIMESTAMP WHERE TOKEN = $1 AND ID_USR = $2`
+
+	r, err := prv.Db.Exec(rq, token, idUser)
+	if err != nil {
+		return err
+	}
+
+	aff, err := r.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if aff == 0 {
+		return serrors.ErrorTokenNotFound
+	}
+
+	return nil
+}
+
+// RevokeTokenByID revokes an existing token
+func RevokeTokenByID(prv *services.Provider, idToken int, idUser int64) error {
 
 	rq := `UPDATE LOGIN_TOKENS SET REVOKED = TRUE, REVOKED_AT = CURRENT_TIMESTAMP WHERE ID = $1 AND ID_USR = $2`
 

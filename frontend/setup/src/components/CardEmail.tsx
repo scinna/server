@@ -81,7 +81,6 @@ export default function() {
                 }
             })
             .catch((e: any) => {
-                console.log(e)
                 setState({
                     ...state,
                     SnackbarOpened: true,

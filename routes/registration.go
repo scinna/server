@@ -34,11 +34,6 @@ type RegisterRequest struct {
 // RegisterRoute lets someone register on the server
 func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if strings.ToLower(prv.Config.RegistrationAllowed) == "false" {
-			serrors.ErrorRegDisabled.Write(w)
-			return
-		}
-
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			serrors.ErrorBadRequest.Write(w)
@@ -54,9 +49,9 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		var invitedBy int64 = -1
-		if strings.ToLower(prv.Config.RegistrationAllowed) == "invite" {
+		if strings.ToLower(prv.Config.RegistrationAllowed) == "private" {
 			if len(rc.InviteCode) == 0 {
-				serrors.ErrorInviteOnly.Write(w)
+				serrors.ErrorBadInviteCode.Write(w)
 				return
 			}
 
@@ -78,13 +73,16 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		_, err = dal.RegisterUser(prv, rc.Username, rc.Password, rc.Email, invitedBy)
+		if err == nil || err == serrors.ErrorSendingMail {
+			serrors.WriteLoggableError(w, dal.RevokeInviteCode(prv, rc.InviteCode))
+		}
+
 		if serrors.WriteError(w, err) {
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
 
-		serrors.WriteLoggableError(w, dal.RevokeInviteCode(prv, rc.InviteCode))
 	}
 }
 
