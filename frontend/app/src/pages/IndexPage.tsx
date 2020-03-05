@@ -1,13 +1,17 @@
 import React from 'react';
-import { useStateValue } from '../context';
 
-import Login from '../components/Login';
-import UploadComponent from '../components/UploadComponent';
-import FileBrowser from '../components/FileBrowser';
+import { useLocation } from 'react-router-dom';
 
 import { makeStyles, Typography, Fab } from '@material-ui/core';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import NewFolderIcon from '@material-ui/icons/AddToPhotos';
+
+import { useStateValue } from '../context';
+import NotFound from '../components/NotFound';
+import Login from '../components/Login';
+import UploadComponent from '../components/UploadComponent';
+import FileBrowser from '../components/FileBrowser';
+
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -26,13 +30,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const initialState = {
-    UploadModal: true,
+    UploadModal: false,
     FolderModal: false,
 };
 
 export default function() {
     const classes = useStyles();
+    const location = useLocation();
     const [modal, setModal] = React.useState(initialState);
+
+
+    console.log(location);
 
     //@ts-ignore
     const [global] = useStateValue();
@@ -63,7 +71,10 @@ export default function() {
             <UploadComponent open={modal.UploadModal} close={closeModal("UploadModal")} />
         </div>
     } else {
-        page = <Login />
+        if (location.pathname !== '/')
+            page = <NotFound />
+        else
+            page = <Login />
     }
 
     return page;

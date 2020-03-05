@@ -168,6 +168,7 @@ func CreateAdminRoute(w http.ResponseWriter, r *http.Request) {
 	/**
 		@TODO: Initialize database when migration to the ORM is done
 	**/
+	
 
 	var params createAdminRequest = createAdminRequest{}
 

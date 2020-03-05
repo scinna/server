@@ -1,18 +1,18 @@
 import React from 'react';
 
 import {Grid, Typography, makeStyles } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import CloseIcon from '@material-ui/icons/Close'; 
+import Snackbar from '@material-ui/core/Snackbar';
+import {Alert} from '@material-ui/lab';
+import Button from '@material-ui/core/Button';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import {Alert} from '@material-ui/lab';
-import CloseIcon from '@material-ui/icons/Close'; 
 
-import {useStateValue} from '../context';
 import { APILogin, APIRegister } from '../api/Login';
+import {useStateValue} from '../context';
 
 import '../assets/Login.scss';
 
@@ -31,6 +31,13 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         margin: 'auto',
+    },
+    ForgottenLink: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        color: theme.palette.primary.main,
+        marginTop: '.5em',
+        cursor: 'pointer',
     }
 }))
 
@@ -106,7 +113,6 @@ export default function() {
             })
         } else {
             APIRegister(dispatch, global.Config.EmailAvailable, forms.Registration, (resp: any) => {
-                console.log("Setting form to ", initialState.Registration);
                 setForms({
                     ...forms,
                     Registration: { ...initialState.Registration },
@@ -171,7 +177,9 @@ export default function() {
                 <form className={`FormMaxWidth ${classes.loginForm}`} onSubmit={loginSubmit}>
                     <TextField id="Username" label="Username" onChange={handleInputChangeLogin} value={forms.Login.Username} required InputLabelProps={{ required: false }}/>
                     <TextField id="Password" label="Password" onChange={handleInputChangeLogin} value={forms.Login.Password} required InputLabelProps={{ required: false }} type="password" />
-                    { global.Config.EmailAvailable && <a>Forgotten password?</a>}
+                    { global.Config.EmailAvailable &&   <button type="button" className={classes.ForgottenLink} onClick={() => { console.info("I'm a button."); }}>
+                                                            Forgotten password?
+                                                        </button>}
  
                     <Button variant="contained" color="secondary" className={classes.submitForm} type="submit">Login</Button>
                 </form>

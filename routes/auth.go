@@ -52,7 +52,8 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		err = dal.ReachedMaxAttempts(prv, u)
+		ip := utils.ReadUserIP(prv.Config.HeaderIPField, r)
+		err = dal.ReachedMaxAttempts(prv, u, ip)
 		if serrors.WriteError(w, err) {
 			return
 		}
@@ -90,7 +91,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 		serrors.ErrorInvalidCredentials.Write(w)
-		dal.InsertFailedLoginAttempt(prv, u, utils.ReadUserIP(prv.Config.HeaderIPField, r))
+		dal.InsertFailedLoginAttempt(prv, u, ip)
 	}
 }
 

@@ -31,14 +31,15 @@ function App() {
       <div id="mainApp">
         <Menu/>
         <Switch>
-          <Route path="/" exact>
-            <IndexPage/>
-          </Route>
           <Route path="/pictures/:pictID">
             <Typography>Seeing a picture</Typography>
           </Route>
           <Route path="/me">
             <Typography>Seeing my profile</Typography>
+          </Route>
+
+          <Route path="*">
+            <IndexPage/>
           </Route>
         </Switch>
       </div>

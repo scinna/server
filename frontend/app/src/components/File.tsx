@@ -14,6 +14,7 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         alignItems: 'center',
         width: '128px',
+        cursor: 'pointer'
     },
     icon: {
         width: '3rem',
@@ -22,12 +23,14 @@ const useStyles = makeStyles({
     },
     text: {
         marginTop: '.5rem',
+        textAlign: 'center',
     }
 })
 
 interface FileProps {
     className?: string,
     isGoBack?: boolean,
+    onClick?: any,
     file?: File
 }
 
@@ -47,7 +50,7 @@ export default function(props: FileProps) {
         icon = "https://media.gettyimages.com/photos/colorful-powder-explosion-in-all-directions-in-a-nice-composition-picture-id890147976?s=612x612"
     }
 
-    return <div className={`${classes.fullIcon} ${props.className}`}>
+    return <div className={`${classes.fullIcon} ${props.className}`} onClick={props.onClick}>
         <img className={classes.icon} alt="File icon" src={icon} />
         <span className={classes.text}>{props.file ? props.file.filename : text}</span>
     </div>

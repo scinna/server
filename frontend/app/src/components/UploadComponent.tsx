@@ -8,11 +8,18 @@ import Modal from '@material-ui/core/Modal';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { LinearProgress, IconButton } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import FilledInput from '@material-ui/core/FilledInput';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
 
 import UploadIcon from '@material-ui/icons/Publish';
 import CloseIcon from '@material-ui/icons/Close';
+import CopyIcon from '@material-ui/icons/AttachFile';
 
 import {APIUploadPicture, IUploadResponse} from '../api/Uploads';
 
@@ -63,20 +70,29 @@ export default function (props: IUploadProps) {
     const [state, setState] = React.useState(initialState);
 
     const closePopup = () => {
-        if (!state.Upload.InProgress)
+        if (!state.Upload.InProgress) {
+            setState(initialState);
             props.close()
+        }
     }
     
     const cancelUpload: any = () => {
+        // If an upload is running, kill it
+        // There is a good explanation on how to do it on the axios readme
 
+        closePopup();
     }
 
     const handleUpload: any = (e: any) => {
-        APIUploadPicture(state.Picture, (progress: number) => {
+        const setProgress = (progress: number) => {
             setState({...state, Upload: { ...state.Upload, Progress: progress}})
-        }, (response: IUploadResponse) => {
+        };
+
+        const doAfter = (response: IUploadResponse) => {
             setState({ ...state, Upload: {...state.Upload, UploadedOpen: true, UploadedResponse: response } })
-        })
+        };
+
+        APIUploadPicture(state.Picture, setProgress, doAfter);
     }
 
     // @TODO: Type this everywhere there is a changeevent
@@ -126,7 +142,7 @@ export default function (props: IUploadProps) {
                         </IconButton>
                     </div>
                 </form>
-                <ModalFileUploaded Open={state.Upload.UploadedOpen} OnClose={() => { setState({ ...state, Upload: { ...state.Upload, UploadedOpen: false } }) }} PictureData={state.Upload.UploadedResponse} />
+                <ModalFileUploaded Open={state.Upload.UploadedOpen} OnClose={() => { setState({ ...state, Upload: { ...state.Upload, UploadedOpen: false } }) }} PictureData={state.Upload.UploadedResponse} CloseParent={closePopup} />
             </div>
         </Modal>
     );
@@ -134,28 +150,60 @@ export default function (props: IUploadProps) {
 
 interface IUploadedData {
     Open: boolean,
-    OnClose: any, // Ffs material-ui doing weird things
+    OnClose: any, // Ffs material-ui doing weird things, should be Function but this is not working
+    CloseParent: any,
     PictureData?: IUploadResponse|null,
 }
 
 const stylesFileUploaded = makeStyles({
     title: {
         color: 'var(--above-fg-color)',
+        margin: 0,
     }, 
     text: {
         color: 'var(--above-fg-color)',
+    },
+    textfield: {
+        marginTop: '1em',
+    },
+    closeButton: {
+        marginTop: '1em',
+        marginLeft: '50%',
+        transform: 'translate(-50%, 0)',
     }
 });
 
 function ModalFileUploaded(props: IUploadedData) {
     const classes = stylesFileUploaded();
 
+    let url = window.location.protocol+"//"+window.location.hostname+"/"+props.PictureData?.URLID;
+
+    const handleClickCopyLink = (event: any) => {
+        const textfield = document.getElementById("PictureLink"); // Should find a better way of accessing the button but meh, it works.
+        // @ts-ignore
+        textfield?.select();
+        document.execCommand("copy");
+    }
+
     return <Modal open={props.Open} onClose={props.OnClose}>
-        <div className="frame">
+        <div className="frame frame-uploaded">
             <h3 className={classes.title}>Picture uploaded!</h3>
                 {/** @TODO: Handle the color correctly, with theme */}
                 <Typography className={classes.text} variant="body2">Your picture has been uploaded.</Typography>
-                <TextField value={window.location.protocol+"//"+window.location.hostname+"/"+props.PictureData?.URLID} /> {/* @TODO: Custom textfield with a clipboard option on the right */}
+                <FormControl variant="filled" className={classes.textfield}>
+                    <InputLabel htmlFor="PictureLink">Picture link</InputLabel>
+                    <FilledInput id="PictureLink" type="text" value={url}
+                        endAdornment={
+                        <InputAdornment position="end">
+                            <IconButton aria-label="Copy link" onClick={handleClickCopyLink} edge="end">
+                                <CopyIcon/>
+                            </IconButton>
+                        </InputAdornment>
+                        }
+                    />
+                </FormControl>
+                
+                <Button className={classes.closeButton} variant="contained" color="primary" onClick={() => {props.OnClose(); props.CloseParent(); }}>Close</Button>
         </div>
     </Modal>
 }

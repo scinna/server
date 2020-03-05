@@ -40,11 +40,11 @@ func GetUserByID(p *services.Provider, id int) (model.AppUser, error) {
 }
 
 // ReachedMaxAttempts returns whether the user has tried to login more than 10 times in the last five minutes
-func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) error {
+func ReachedMaxAttempts(prv *services.Provider, u model.AppUser, ip string) error {
 	rq := `
 			SELECT 
 				CASE WHEN (CREATED_AT > CURRENT_TIMESTAMP - INTERVAL '5 min') THEN 
-					CASE WHEN ((SELECT COUNT(*) FROM LOGIN_ATTEMPT WHERE ID = $1 AND CREATED_AT > CURRENT_TIMESTAMP - INTERVAL '5 min') >= $2) THEN
+					CASE WHEN ((SELECT COUNT(*) FROM LOGIN_ATTEMPT WHERE IP = $3 AND ID = $1 AND CREATED_AT > CURRENT_TIMESTAMP - INTERVAL '5 min') >= $2) THEN
 						TRUE
 					ELSE
 						FALSE
@@ -58,7 +58,7 @@ func ReachedMaxAttempts(prv *services.Provider, u model.AppUser) error {
 			LIMIT 1`
 
 	var cantLogIn bool
-	err := prv.Db.Get(&cantLogIn, rq, u.ID, 10)
+	err := prv.Db.Get(&cantLogIn, rq, u.ID, 10, ip)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
