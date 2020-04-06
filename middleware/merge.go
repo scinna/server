@@ -20,7 +20,7 @@ func CombineMiddlewares(prv *services.Provider, handlerfunc http.HandlerFunc, se
 	return hd
 }
 
-// CombineMiddlewaresCT combines all middleware, pretty much equivalent to what you would find in a react app
+// CombineMiddlewaresCT combines all middleware, including the one to set the content type
 func CombineMiddlewaresCT(prv *services.Provider, handlerfunc http.HandlerFunc) http.HandlerFunc {
 	return CombineMiddlewares(prv, handlerfunc, true)
 }

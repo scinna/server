@@ -36,11 +36,26 @@ func RunServer(prv *services.Provider) {
 	authRoutes.HandleFunc("/tokens", middleware.CombineMiddlewaresCT(prv, routes.GetTokensRoute(prv))).Methods("GET")
 	authRoutes.HandleFunc("/tokens/{TOKEN_ID}", middleware.CombineMiddlewaresCT(prv, routes.RevokeTokenRoute(prv))).Methods("DELETE")
 
-	picturesRoutes := r.PathPrefix("/pictures").Subrouter().StrictSlash(false)
+	mediasRoutes := r.PathPrefix("/medias").Subrouter().StrictSlash(false)
 	// For some reason using / forces the trailing slash in the url.. So blanking it out...
-	picturesRoutes.HandleFunc("", middleware.CombineMiddlewaresCT(prv, routes.UploadPictureRoute(prv))).Methods("POST")
-	picturesRoutes.HandleFunc("/{URL_ID}", middleware.CombineMiddlewaresCT(prv, routes.DeletePictureRoute(prv))).Methods("DELETE")
-	picturesRoutes.HandleFunc("/{URL_ID}", middleware.CombineMiddlewaresCT(prv, routes.PictureInfoRoute(prv))).Methods("GET")
+	mediasRoutes.HandleFunc("", middleware.CombineMiddlewaresCT(prv, routes.UploadMediaRoute(prv))).Methods("POST")
+	mediasRoutes.HandleFunc("/{URL_ID}", middleware.CombineMiddlewaresCT(prv, routes.DeleteMediaRoute(prv))).Methods("DELETE")
+	mediasRoutes.HandleFunc("/{URL_ID}", middleware.CombineMiddlewaresCT(prv, routes.MediaInfoRoute(prv))).Methods("GET")
+
+	// Folders routes
+	r.PathPrefix("/folders").Handler(
+		http.StripPrefix("/folders", middleware.CombineMiddlewaresCT(prv, routes.GetFolderContentRoute(prv))),
+	).Methods("GET")
+
+	r.PathPrefix("/folders").Handler(
+		http.StripPrefix("/folders", middleware.CombineMiddlewaresCT(prv, routes.CreateFolderRoute(prv))),
+	).Methods("POST")
+
+	foldersRoutes := r.PathPrefix("/folders").Subrouter().StrictSlash(false)
+	foldersRoutes.HandleFunc("/{FOLDER_ID}/{NEW_NAME}", middleware.CombineMiddlewaresCT(prv, routes.RenameFolderRoute(prv))).Methods("UPDATE")
+	foldersRoutes.HandleFunc("/{FOLDER_ID}", middleware.CombineMiddlewaresCT(prv, routes.MoveFolderRoute(prv))).Methods("PUT")              // Move to root
+	foldersRoutes.HandleFunc("/{FOLDER_ID}/{NEW_PARENT}", middleware.CombineMiddlewaresCT(prv, routes.MoveFolderRoute(prv))).Methods("PUT") // Move to a folder
+	foldersRoutes.HandleFunc("/{FOLDER_ID}", middleware.CombineMiddlewaresCT(prv, routes.DeleteFolderRoute(prv))).Methods("DELETE")
 
 	usersRoutes := r.PathPrefix("/users").Subrouter().StrictSlash(false)
 	usersRoutes.HandleFunc("/me", middleware.CombineMiddlewaresCT(prv, routes.UpdateMyInfosRoute(prv))).Methods("PUT")
@@ -49,8 +64,8 @@ func RunServer(prv *services.Provider) {
 	adminRoutes := r.PathPrefix("/admin").Subrouter().StrictSlash(false)
 	adminRoutes.HandleFunc("/invite", middleware.CombineMiddlewaresCT(prv, routes.GenerateInviteRoute(prv))).Methods("POST")
 
-	// Default route is for picture laoding
-	r.HandleFunc("/{pict}", middleware.CombineMiddlewares(prv, routes.RawPictureRoute(prv), false)).Methods("GET")
+	// Default route is for media laoding
+	r.HandleFunc("/{media}", middleware.CombineMiddlewares(prv, routes.RawMediaRoute(prv), false)).Methods("GET")
 
 	srv := &http.Server{
 		Handler:      r,

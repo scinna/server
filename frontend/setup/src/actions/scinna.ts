@@ -4,7 +4,7 @@ interface updateScinnaPayload {
     RegistrationAllowed?: string,
     HeaderIPField?: string,
     RateLimiting?: number,
-    PicturePath?: string,
+    MediaPath?: string,
     WebURL?: string,
 }
 

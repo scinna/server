@@ -6,24 +6,16 @@ import { AppContext, CtxInitialState } from './context';
 import MainReducer from './reducers';
 import Menu from './components/Menu';
 import IndexPage from './pages/IndexPage';
+import ProfilePage from './pages/ProfilePage';
 
-import { APIConfig } from './api/Config';
-import { APICheckToken } from './api/Login';
-import { setAxiosToken } from './api/Axios';
+import { AxiosMiddlishware } from './api/Axios';
+import MediaViewer from './components/MediaViewer';
 
 
 function App() {
   const [state, dispatch] = useReducer(MainReducer, CtxInitialState);
 
-  useEffect(() => {
-    APIConfig(dispatch);
-    
-    // @TODO: Not that good, calls this route just after login, even though data was retreived
-    if (state.User.Token.length > 0) {
-      setAxiosToken(state.User.Token);
-      APICheckToken(dispatch, state.User.Token);
-    }
-  }, [state.User.Token])
+  AxiosMiddlishware(dispatch);
 
   return (
     // @ts-ignore
@@ -31,14 +23,14 @@ function App() {
       <div id="mainApp">
         <Menu/>
         <Switch>
-          <Route path="/pictures/:pictID">
-            <Typography>Seeing a picture</Typography>
+          <Route path="/media/:pictID">
+            <MediaViewer/>
           </Route>
           <Route path="/me">
-            <Typography>Seeing my profile</Typography>
+            <ProfilePage/>
           </Route>
 
-          <Route path="*">
+          <Route exact={false} path="/">
             <IndexPage/>
           </Route>
         </Switch>

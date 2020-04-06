@@ -39,9 +39,6 @@ export default function() {
     const location = useLocation();
     const [modal, setModal] = React.useState(initialState);
 
-
-    console.log(location);
-
     //@ts-ignore
     const [global] = useStateValue();
     const userLoggedIn = global.User.Username.length > 0 && global.User.Token.length > 0;
@@ -57,10 +54,10 @@ export default function() {
     if (userLoggedIn) {
         page = <div>
             <Typography className={classes.title} variant="h4" component="h1">My content</Typography>
-            <FileBrowser />
+            <FileBrowser CurrentPath={location.pathname.substring(6)} />
 
             <div className={classes.fab}>
-                <Fab color="primary" aria-label="Upload picture" onClick={() => setModal({ ...modal, UploadModal: true })}>
+                <Fab color="primary" aria-label="Upload media" onClick={() => setModal({ ...modal, UploadModal: true })}>
                     <AddPhotoAlternateIcon />
                 </Fab>
                 <Fab className={classes.fabIcons} color="primary" aria-label="Create folder" onClick={() => setModal({ ...modal, FolderModal: true })}>

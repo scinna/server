@@ -4,7 +4,7 @@ interface IUploadData {
     title: string,
     description: string,
     visibility: number,
-    picture?: object|null
+    media?: object|null
 }
 
 export interface IUploadResponse {
@@ -15,7 +15,7 @@ export interface IUploadResponse {
     //Creator /** Not used yet? */
 }
 
-export function APIUploadPicture(data: IUploadData, updateProgress: Function, actionAfter: Function) { 
+export function APIUploadMedia(data: IUploadData, updateProgress: Function, actionAfter: Function) { 
 
     const dataSent = new FormData();
     for (let k in data) {
@@ -23,7 +23,7 @@ export function APIUploadPicture(data: IUploadData, updateProgress: Function, ac
         dataSent.append(k, data[k]);
     }
 
-    scinnaxios.post('/pictures', dataSent, {
+    scinnaxios.post('/medias', dataSent, {
         onUploadProgress: (evt: any) => {
             updateProgress(evt.loaded / evt.total * 100);
         }

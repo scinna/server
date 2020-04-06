@@ -23,7 +23,7 @@ export const InitialState = {
         RegistrationAllowed: "private",
         HeaderIPField: "",
         RateLimiting: 100,
-        PicturePath: "/home/scinna/pictures/",
+        MediaPath: "/home/scinna/medias/",
         WebURL: window.location.protocol + "//" + window.location.hostname,
     },
     User: {

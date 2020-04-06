@@ -18,7 +18,7 @@ import (
 // IndexRoute is the index endpoint, the one displaying the react webapp
 func IndexRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("This will be the react app for Scinna picture server"))
+		w.Write([]byte("This will be the react app for Scinna media server"))
 	}
 }
 
@@ -135,7 +135,7 @@ func ScinnaConfigRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.RegistrationAllowed) > 0 && len(params.PicturePath) > 0 && len(params.WebURL) > 0 {
+	if len(params.RegistrationAllowed) > 0 && len(params.MediaPath) > 0 && len(params.WebURL) > 0 {
 		w.WriteHeader(http.StatusOK)
 
 		params.Database = currentConfig.Database
@@ -168,7 +168,6 @@ func CreateAdminRoute(w http.ResponseWriter, r *http.Request) {
 	/**
 		@TODO: Initialize database when migration to the ORM is done
 	**/
-	
 
 	var params createAdminRequest = createAdminRequest{}
 

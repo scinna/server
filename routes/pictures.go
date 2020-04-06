@@ -19,19 +19,19 @@ import (
 	"github.com/scinna/server/utils"
 )
 
-// RawPictureRoute is the route that render the picture: /{picture id}
-func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
+// RawMediaRoute is the route that render the media: /{media id}
+func RawMediaRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := mux.Vars(r)
-		id := params["pict"]
+		id := params["media"]
 
 		if len(id) == 0 {
 			serrors.ErrorBadRequest.Write(w)
 			return
 		}
 
-		p, err := dal.GetPicture(prv, id)
+		p, err := dal.GetMedia(prv, id)
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
@@ -40,14 +40,14 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 		if p.Visibility == 2 {
 			user, err := auth.ValidateRequest(prv, w, r)
 			if err != nil || p.Creator.ID == user.ID {
-				serrors.ErrorPrivatePicture.Write(w)
+				serrors.ErrorPrivateMedia.Write(w)
 				return
 			}
 		}
 
-		pictFile, err := os.Open(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
+		pictFile, err := os.Open(prv.Config.MediaPath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
-			serrors.ErrorPictureNotFound.Write(w)
+			serrors.ErrorMediaNotFound.Write(w)
 			return
 		}
 		defer pictFile.Close()
@@ -57,8 +57,8 @@ func RawPictureRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// PictureInfoRoute returns the informations of the picture like author, date, visibility, ...
-func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
+// MediaInfoRoute returns the informations of the media like author, date, visibility, ...
+func MediaInfoRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := mux.Vars(r)
@@ -69,19 +69,19 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		p, err := dal.GetPicture(prv, id)
+		p, err := dal.GetMedia(prv, id)
 		if serrors.WriteError(w, err) {
 			return
 		}
 
 		user, err := auth.ValidateRequest(prv, w, r)
 		if p.Visibility == 2 {
-			if err == serrors.ErrorNoToken && serrors.WriteError(w, serrors.ErrorPrivatePicture) {
+			if err == serrors.ErrorNoToken && serrors.WriteError(w, serrors.ErrorPrivateMedia) {
 				return
 			}
 
 			if *user.ID != *p.Creator.ID {
-				serrors.ErrorPrivatePicture.Write(w)
+				serrors.ErrorPrivateMedia.Write(w)
 				return
 			}
 		}
@@ -103,8 +103,22 @@ func PictureInfoRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// UploadPictureRoute is the route that let user upload a picture
-func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
+// MoveMediaRoute lets the user move the media to another folder
+func MoveMediaRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// @TODO: Not implemented yet
+	}
+}
+
+// EditMediaRoute lets the user change the name, description and visibility of a media
+func EditMediaRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// @TODO: Not implemented yet
+	}
+}
+
+// UploadMediaRoute is the route that let user upload a media
+func UploadMediaRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
 		if serrors.WriteError(w, err) {
@@ -124,7 +138,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		file, _, err := r.FormFile("picture")
+		file, _, err := r.FormFile("media")
 		if err != nil {
 			serrors.ErrorBadRequest.Write(w)
 			return
@@ -143,7 +157,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		parentFolder := prv.Config.PicturePath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
+		parentFolder := prv.Config.MediaPath + "/" + strconv.FormatInt(*user.ID, 10) + "/"
 
 		_, err = os.Stat(parentFolder)
 		if os.IsNotExist(err) {
@@ -154,7 +168,7 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			}
 		}
 
-		pict := model.Picture{
+		media := model.Media{
 			Title:       title,
 			Description: desc,
 			Creator:     &user,
@@ -162,15 +176,15 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 			Ext:         utils.GetExtForMimetype(mimeType),
 		}
 
-		pict, err = dal.CreatePicture(prv, pict)
+		media, err = dal.CreateMedia(prv, media)
 		if serrors.WriteError(w, err) {
 			return
 		}
 
-		outputFile, err := os.Create(parentFolder + strconv.FormatInt(*pict.ID, 10) + "." + pict.Ext)
+		outputFile, err := os.Create(parentFolder + strconv.FormatInt(*media.ID, 10) + "." + media.Ext)
 		if err != nil {
 			serrors.WriteLoggableError(w, err)
-			dal.DeletePicture(prv, pict)
+			dal.DeleteMedia(prv, media)
 			return
 		}
 		defer outputFile.Close()
@@ -184,12 +198,12 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 		w.WriteHeader(http.StatusCreated)
 
 		// Clearing out the fields we don't want to send
-		pict.ID = nil
-		pict.Ext = ""
+		media.ID = nil
+		media.Ext = ""
 
-		json, err := json.Marshal(pict)
+		json, err := json.Marshal(media)
 		if err != nil {
-			// The picture is uploaded but something went wrong while encoding the response
+			// The media is uploaded but something went wrong while encoding the response
 			w.WriteHeader(http.StatusAccepted)
 			return
 		}
@@ -198,8 +212,8 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// DeletePictureRoute is the route that let the user delete one OR MULTIPLE of his picture
-func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
+// DeleteMediaRoute is the route that let the user delete one OR MULTIPLE of his media
+func DeleteMediaRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := auth.ValidateRequest(prv, w, r)
 		if serrors.WriteError(w, err) {
@@ -214,7 +228,7 @@ func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		p, err := dal.GetPicture(prv, id)
+		p, err := dal.GetMedia(prv, id)
 		if serrors.WriteError(w, err) {
 			return
 		}
@@ -224,13 +238,13 @@ func DeletePictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		err = os.Remove(prv.Config.PicturePath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
+		err = os.Remove(prv.Config.MediaPath + "/" + strconv.FormatInt(*p.Creator.ID, 10) + "/" + strconv.FormatInt(*p.ID, 10) + "." + p.Ext)
 		if err != nil {
 			// @TODO: Log in database
 			fmt.Println(err)
 		}
 
-		err = dal.DeletePicture(prv, p)
+		err = dal.DeleteMedia(prv, p)
 		if serrors.WriteError(w, err) {
 			return
 		}

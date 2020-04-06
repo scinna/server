@@ -133,10 +133,14 @@ const initialState = {
     CurrentFolder: FakeFolder(),
 }
 
-export default function() {
+interface FBProps {
+    CurrentPath: string
+}
+
+export default function(props: FBProps) {
     const [state, setState] = React.useState(initialState);
     const classes = useStyles();
-
+    
     const clickOnIcon = (element: ModelFile|null) => (): any => {
         if (element !== null) {
             if (element?.isFolder)

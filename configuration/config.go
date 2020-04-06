@@ -17,7 +17,7 @@ type Configuration struct {
 	IDSize              int        `yaml:"IdSize"`
 	WebURL              string     `yaml:"WebURL"`
 	WebPort             string     `yaml:"WebPort"`
-	PicturePath         string     `yaml:"PicturePath"`
+	MediaPath           string     `yaml:"MediaPath"`
 	HeaderIPField       string     `yaml:"HeaderIPField"`
 	RegistrationAllowed string     `yaml:"RegistrationAllowed"`
 	RateLimiting        int        `yaml:"RateLimiting"`

@@ -21,7 +21,7 @@ import UploadIcon from '@material-ui/icons/Publish';
 import CloseIcon from '@material-ui/icons/Close';
 import CopyIcon from '@material-ui/icons/AttachFile';
 
-import {APIUploadPicture, IUploadResponse} from '../api/Uploads';
+import {APIUploadMedia, IUploadResponse} from '../api/Uploads';
 
 import '../assets/UploadModal.scss'
 
@@ -31,11 +31,11 @@ interface IUploadProps {
 }
 
 interface IState {
-    Picture: {
+    Media: {
         title: string,
         description: string,
         visibility: number,
-        picture?: object|null
+        media?: object|null
     }, 
     Buttons: {
         UploadEnabled: boolean
@@ -49,11 +49,11 @@ interface IState {
 }
 
 const initialState: IState = {
-    Picture: {
+    Media: {
         title: '',
         description: '',
         visibility: 0,
-        picture: null,
+        media: null,
     },
     Buttons: {
         UploadEnabled: false,
@@ -92,7 +92,7 @@ export default function (props: IUploadProps) {
             setState({ ...state, Upload: {...state.Upload, UploadedOpen: true, UploadedResponse: response } })
         };
 
-        APIUploadPicture(state.Picture, setProgress, doAfter);
+        APIUploadMedia(state.Media, setProgress, doAfter);
     }
 
     // @TODO: Type this everywhere there is a changeevent
@@ -101,12 +101,12 @@ export default function (props: IUploadProps) {
         const name = elt.getAttribute("name");
 
         if (name !== null)
-            setState({ ...state, Picture: { ...state.Picture, [name]: elt.value }, Buttons: { UploadEnabled: state.Picture.picture != null && state.Picture.title.length > 0}})
+            setState({ ...state, Media: { ...state.Media, [name]: elt.value }, Buttons: { UploadEnabled: state.Media.media != null && state.Media.title.length > 0}})
     } 
 
     const handleFileChange = (files: object[]) => {
-        const picture: object = files[0];
-        setState({ ...state, Picture: {...state.Picture, picture}, Buttons: { ...state.Buttons, UploadEnabled: (picture != null && state.Picture.title.length > 0) } });
+        const media: object = files[0];
+        setState({ ...state, Media: {...state.Media, media}, Buttons: { ...state.Buttons, UploadEnabled: (media != null && state.Media.title.length > 0) } });
     }
 
     return (
@@ -119,10 +119,10 @@ export default function (props: IUploadProps) {
                 <form>
                     <div className="UploadZone">
                         <div className="infos">
-                            <TextField name="title" label="Title" onChange={handleInputChange} value={state.Picture.title} required/>
-                            <TextField name="description" label="Description" onChange={handleInputChange} value={state.Picture.description} multiline rowsMax="5"/>
+                            <TextField name="title" label="Title" onChange={handleInputChange} value={state.Media.title} required/>
+                            <TextField name="description" label="Description" onChange={handleInputChange} value={state.Media.description} multiline rowsMax="5"/>
 
-                            <RadioGroup id="visibility" value={state.Picture.visibility.toString()} onChange={handleInputChange} row>
+                            <RadioGroup id="visibility" value={state.Media.visibility.toString()} onChange={handleInputChange} row>
                                 <FormControlLabel name="visibility" value="0" control={<Radio color="primary" />} label="Public" labelPlacement="bottom"/>
                                 <FormControlLabel name="visibility" value="1" control={<Radio color="primary" />} label="Unlisted" labelPlacement="bottom"/>
                                 <FormControlLabel name="visibility" value="2" control={<Radio color="primary" />} label="Private" labelPlacement="bottom"/>
@@ -142,7 +142,7 @@ export default function (props: IUploadProps) {
                         </IconButton>
                     </div>
                 </form>
-                <ModalFileUploaded Open={state.Upload.UploadedOpen} OnClose={() => { setState({ ...state, Upload: { ...state.Upload, UploadedOpen: false } }) }} PictureData={state.Upload.UploadedResponse} CloseParent={closePopup} />
+                <ModalFileUploaded Open={state.Upload.UploadedOpen} OnClose={() => { setState({ ...state, Upload: { ...state.Upload, UploadedOpen: false } }) }} MediaData={state.Upload.UploadedResponse} CloseParent={closePopup} />
             </div>
         </Modal>
     );
@@ -152,7 +152,7 @@ interface IUploadedData {
     Open: boolean,
     OnClose: any, // Ffs material-ui doing weird things, should be Function but this is not working
     CloseParent: any,
-    PictureData?: IUploadResponse|null,
+    MediaData?: IUploadResponse|null,
 }
 
 const stylesFileUploaded = makeStyles({
@@ -176,10 +176,10 @@ const stylesFileUploaded = makeStyles({
 function ModalFileUploaded(props: IUploadedData) {
     const classes = stylesFileUploaded();
 
-    let url = window.location.protocol+"//"+window.location.hostname+"/"+props.PictureData?.URLID;
+    let url = window.location.protocol+"//"+window.location.hostname+"/"+props.MediaData?.URLID;
 
     const handleClickCopyLink = (event: any) => {
-        const textfield = document.getElementById("PictureLink"); // Should find a better way of accessing the button but meh, it works.
+        const textfield = document.getElementById("MediaLink"); // Should find a better way of accessing the button but meh, it works.
         // @ts-ignore
         textfield?.select();
         document.execCommand("copy");
@@ -187,12 +187,12 @@ function ModalFileUploaded(props: IUploadedData) {
 
     return <Modal open={props.Open} onClose={props.OnClose}>
         <div className="frame frame-uploaded">
-            <h3 className={classes.title}>Picture uploaded!</h3>
+            <h3 className={classes.title}>Media uploaded!</h3>
                 {/** @TODO: Handle the color correctly, with theme */}
-                <Typography className={classes.text} variant="body2">Your picture has been uploaded.</Typography>
+                <Typography className={classes.text} variant="body2">Your media has been uploaded.</Typography>
                 <FormControl variant="filled" className={classes.textfield}>
-                    <InputLabel htmlFor="PictureLink">Picture link</InputLabel>
-                    <FilledInput id="PictureLink" type="text" value={url}
+                    <InputLabel htmlFor="MediaLink">Media link</InputLabel>
+                    <FilledInput id="MediaLink" type="text" value={url}
                         endAdornment={
                         <InputAdornment position="end">
                             <IconButton aria-label="Copy link" onClick={handleClickCopyLink} edge="end">

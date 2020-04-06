@@ -9,7 +9,7 @@ func PrintExample() {
 # This is the connection string for the postgresql database
 PostgresDSN: "postgres://username:password@host[:port]/database"
 
-# This feeds the generator that create unique IDs for your pictures
+# This feeds the generator that create unique IDs for your medias
 IdAlphabet: "0123456789abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ"
 IdSize: 10
 
@@ -19,8 +19,8 @@ WebURL: https://scinna.local
 # This is the port the server is listening to 
 WebPort: 1635
 
-# This is where the pictures will be stored
-PicturePath: "/tmp/scinna/pictures"
+# This is where the medias will be stored
+MediaPath: "/tmp/scinna/medias"
 
 # /!\ REALLY IMPORTANT /!\
 # This field must be set according to what you reverse proxy fills

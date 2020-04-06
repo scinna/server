@@ -16,10 +16,10 @@ import (
 
 type userInfoResponse struct {
 	model.AppUser
-	Pictures []model.Picture
+	Medias []model.Media
 }
 
-// UserInfoRoute is the route that gives the user infos & his pictures
+// UserInfoRoute is the route that gives the user infos & his medias
 func UserInfoRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
@@ -51,12 +51,12 @@ func UserInfoRoute(prv *services.Provider) http.HandlerFunc {
 			uir.Email = usr.Email
 		}
 
-		picts, err := dal.GetPicturesFromUser(prv, usr.ID, username != "me")
+		medias, err := dal.GetMediasFromUser(prv, usr.ID, username != "me")
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
 		}
-		uir.Pictures = picts
+		uir.Medias = medias
 
 		json, err := json.Marshal(uir)
 

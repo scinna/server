@@ -135,11 +135,11 @@ export default function() {
                 </HelpTooltip>
                 
                 <HelpTooltip placement="right" title={<React.Fragment>
-                            <Typography color="inherit">Picture path</Typography>
-                            <p>This is where the picture will be stored on the server.</p>
+                            <Typography color="inherit">Media path</Typography>
+                            <p>This is where the media will be stored on the server.</p>
                             <p>Be sure that Scinna has read and write permission on this folder.</p>
                         </React.Fragment>}>
-                    <TextField id="scinna_path" required label="Picture path" onChange={handleInputChange("PicturePath")} value={ global.Scinna.PicturePath } fullWidth />
+                    <TextField id="scinna_path" required label="Media path" onChange={handleInputChange("MediaPath")} value={ global.Scinna.MediaPath } fullWidth />
                 </HelpTooltip>
 
                 <HelpTooltip placement="right" title={<React.Fragment>

@@ -98,8 +98,8 @@ var ErrorBadToken *SError = New("The given token is in the wrong format. It shou
 // ErrorRevoked shows up whenever the request should be authed and the given token has been revoked
 var ErrorRevoked *SError = New("This token has been revoked and can no longer be used", 403, http.StatusUnauthorized)
 
-// ErrorPictureNotFound shows up whenever the picture supposedly removed doesn't exists from the DB (Should NEVER happens)
-var ErrorPictureNotFound *SError = New("Picture not found", 404, http.StatusNotFound)
+// ErrorMediaNotFound shows up whenever the media supposedly removed doesn't exists from the DB (Should NEVER happens)
+var ErrorMediaNotFound *SError = New("Media not found", 404, http.StatusNotFound)
 
 // ErrorBadRequest shows up whenever the client sends a malformated request (Can't read the body, bad JSON, etc...)
 var ErrorBadRequest *SError = New("The server can't parse your request! (Are you sure all required fields were filled ?)", 405, http.StatusBadRequest)
@@ -113,8 +113,8 @@ var ErrorISE *SError = New("There was a server-side error", 407, http.StatusInte
 // ErrorGenerationUID is when the URL ID generator fails
 var ErrorGenerationUID *SError = New("There was an error generating the unique ID", 408, http.StatusInternalServerError)
 
-// ErrorWrongOwner is when the user request a picture or modify a picture that he doesn't own
-var ErrorWrongOwner *SError = New("This picture doesn't belong to you", 409, http.StatusForbidden)
+// ErrorWrongOwner is when the user request a media or modify a media that he doesn't own
+var ErrorWrongOwner *SError = New("This media doesn't belong to you", 409, http.StatusForbidden)
 
 // ErrorBadFile happens when a user try to send a wrong file
 var ErrorBadFile *SError = New("The file you are uploading is incorrect (Not an image or more than 10 meg)", 410, http.StatusBadRequest)
@@ -131,11 +131,11 @@ var ErrorUserNotFound *SError = New("User not found", 413, http.StatusBadRequest
 // ErrorInvalidCredentials is thrown when the user logs with a wrong password
 var ErrorInvalidCredentials *SError = New("Invalid credentials", 414, http.StatusBadRequest)
 
-// ErrorPrivatePicture is thrown when the user asks for a private picture that he doesn't own
-var ErrorPrivatePicture *SError = New("This picture is private", 415, http.StatusForbidden)
+// ErrorPrivateMedia is thrown when the user asks for a private media that he doesn't own
+var ErrorPrivateMedia *SError = New("This media is private", 415, http.StatusForbidden)
 
 // ErrorMissingURLID happens when the client request a route that requires a URL ID and doesn't feed it
-var ErrorMissingURLID *SError = New("Request is missing the picture ID!", 418, http.StatusBadRequest)
+var ErrorMissingURLID *SError = New("Request is missing the media ID!", 418, http.StatusBadRequest)
 
 // ErrorInvalidMimetype happens when you send a file that can't be uploaded to the server
 var ErrorInvalidMimetype *SError = New("This file type can't be uploaded (Only jpeg, png or gif)", 419, http.StatusBadRequest)

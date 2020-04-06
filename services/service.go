@@ -28,7 +28,7 @@ type Provider struct {
 	Config      configuration.Configuration
 }
 
-// GenerateUID function generates an ID for the pictures
+// GenerateUID function generates an ID for the media
 func (prv *Provider) GenerateUID() (string, error) {
 	return gonanoid.Generate(prv.Config.IDAlphabet, prv.Config.IDSize)
 }

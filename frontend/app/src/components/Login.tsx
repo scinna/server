@@ -146,7 +146,7 @@ export default function() {
                 This is a Scinna instance.
             </Typography>
             <Typography color="textSecondary" component="p" className={classes.text}>
-                Scinna is an open-source, self-hosted screenshot and picture server. Find more about it at <a className="pretty-link" href="https://scinna.app/">https://scinna.app</a>
+                Scinna is an open-source, self-hosted screenshot and media server. Find more about it at <a className="pretty-link" href="https://scinna.app/">https://scinna.app</a>
             </Typography>
         </Grid>
         
