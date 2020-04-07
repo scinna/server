@@ -1,25 +1,16 @@
-FROM golang:alpine AS builder
+FROM golang
+WORKDIR /app
+EXPOSE 40000 1541 1635
 
-RUN apk update && apk add --no-cache git
+COPY ./go.mod /app/go.mod
+COPY ./go.sum /app/go.sum
 
-RUN adduser -D -g '' scinna
+RUN go get github.com/go-delve/delve/cmd/dlv
 
-WORKDIR $GOPATH/src/github.com/scinna/server/
+# Temporarly? commented: something is wrong with go-nanoid that prevents it from being downloaded
+# Since I push my
+# "go: github.com/matoous/go-nanoid@1.1.0: parsing go.mod: go.mod1: usage: go 1.23"
+RUN GO111MODULE=on go mod download 
 
-COPY . .
-
-RUN go mod download
-RUN go mod verify
-
-# @TODO ARM version
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/hello
-
-FROM scratch
-
-COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /go/bin/scinna /go/bin/scinna
-
-USER scinna
-
-ENTRYPOINT ["/go/bin/scinna"]
+CMD [ "dlv", "debug", "github.com/scinna/server", "--listen=:40000", "--headless=true", "--api-version=2", "--log", "--", "-port", "1635" ]
+#CMD ["go", "run", "/app", "-port", "1635"]

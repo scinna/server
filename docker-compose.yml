@@ -1,45 +1,82 @@
 version: "3.7"
 services:
-
     database:
-        image: postgres
+        image: postgres:12-alpine
         volumes:
             - scinnaDB:/var/lib/postgresql/data
-        networks:
-            - scinnaNET
         environment:
+            - POSTGRES_DB=scinna
             - POSTGRES_USER=scinna
             - POSTGRES_PASSWORD=scinna
+        networks:
+            scinnaNET:
+                ipv4_address: 172.28.1.10
 
+    web:
+        image: nginx:stable-alpine
+        volumes:
+            - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./docker/dhparam.pem:/etc/nginx/dhparam.pem:ro
+            - ./docker/scinna.pem:/etc/nginx/cert.pem:ro
+            - ./docker/scinna.key.pem:/etc/nginx/cert.key.pem:ro
+        ports:
+            - 80:80
+            - 443:443
+        networks:
+            scinnaNET:
+                ipv4_address: 172.28.1.20
 
     scinna:
         build:
             context: .
+            dockerfile: Dockerfile
         image: scinna:git
-        networks:
-            - scinnaNET
+        security_opt:
+            - "seccomp:unconfined"
         volumes:
-            - /tmp/scinna/pictures:/pictures
+            - .:/app
+            - ./docker:/root
         ports:
-            - "8080:8080"
-        environment:
-            - POSTGRES_DNS="postgres://scinna:scinna@database/scinna"
-            - ID_ALPHABET="0123456789abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ"
-            - ID_SIZE=10
-            - WEB_PORT=8080
-            - PICTURE_PATH=/pictures
+            - 40000:40000
+            - 1635:1635
+        networks:
+            scinnaNET:
+                ipv4_address: 172.28.1.30
+
+    front:
+        image: node:13-alpine
+        working_dir: /app
+        volumes:
+            - ./frontend/app:/app
+        command: "yarn start"
+        networks:
+            scinnaNET:
+                ipv4_address: 172.28.1.40
+
+    # setup:
+    #     image: node:13-alpine
+    #     working_dir: /app
+    #     command: "yarn start"
+    #     volumes:
+    #         - ./frontend/setup:/app
+    #     networks:
+    #         scinnaNET:
+    #             ipv4_address: 172.28.1.41
 
     adminer:
         image: adminer
         restart: always
         networks:
-            - scinnaNET
-        ports: 
-            - 8081:8080
+            scinnaNET:
+                ipv4_address: 172.28.1.50
 
 
 networks:
     scinnaNET:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.28.1.0/24
 
 volumes:
     scinnaDB:

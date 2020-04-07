@@ -17,3 +17,10 @@ frontend/app/setup.pnp.js
 frontend/app/build
 
 /pkged.go
+
+# Certificate for local https (Generate yours using mkcerts)
+*.pem
+
+docker/scinna/*
+docker/.*
+docker/*.yml

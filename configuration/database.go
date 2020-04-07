@@ -33,7 +33,8 @@ func (cfg *DBConfig) GetDsn() (driver string, dsn string) {
 		dsn = "mysql://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + strconv.Itoa(cfg.Port) + "/" + cfg.Database
 	} else if dbms == "pgsql" || dbms == "postgres" || dbms == "postgresql" {
 		driver = "postgres"
-		dsn = "postgres://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + strconv.Itoa(cfg.Port) + "/" + cfg.Database
+		// @TODO: This is temporary, connection must let the user choose whether to turn on sslmode or not
+		dsn = "postgres://" + cfg.Username + ":" + url.QueryEscape(cfg.Password) + "@" + cfg.Hostname + ":" + strconv.Itoa(cfg.Port) + "/" + cfg.Database + "?sslmode=disable"
 	} else {
 		fmt.Println("- No matching database found: " + cfg.Dbms)
 	}

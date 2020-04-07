@@ -9,7 +9,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.2.0
 	github.com/markbates/pkger v0.14.0
-	github.com/matoous/go-nanoid v1.1.0
+	github.com/matoous/go-nanoid v1.3.0
 	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/yaml.v2 v2.2.7

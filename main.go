@@ -10,6 +10,7 @@ import (
 	"github.com/scinna/server/configuration"
 	"github.com/scinna/server/dal"
 	"github.com/scinna/server/services"
+	"github.com/scinna/server/wizard"
 
 	_ "github.com/lib/pq"
 )
@@ -38,7 +39,7 @@ func main() {
 			fmt.Println("This looks like the first startup.")
 			fmt.Println("Launching the setup on port " + strconv.Itoa(*port))
 
-			RunSetup(port)
+			wizard.RunSetup(port)
 		} else {
 			fmt.Println("No port set! Please specify it with -port [port]")
 			os.Exit(1)

@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -79,7 +80,8 @@ func TestDatabaseConfigRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if db.Ping() != nil {
+	if err := db.Ping(); err != nil {
+		fmt.Println(err)
 		writeError(w, true, errors.New("Can't ping the database")) // @TODO: Find when it can happen and write a corresponding error message
 		return
 	}
@@ -201,6 +203,9 @@ func CreateAdminRoute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+
+	currentConfig.IDSize = 10
+	currentConfig.IDAlphabet = "abcdefghijklmnopqrstuvwxyzABCZEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 	// Should write the config to the file and restart the server
 	// This require the router to not push into the history
