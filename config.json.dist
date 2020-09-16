@@ -1,0 +1,23 @@
+{
+  "ConfigSMTP": {
+    "Enabled": true,
+    "ConnectionType": "STARTTLS",
+    "Hostname": "",
+    "Port": 587,
+    "Username": "",
+    "Password": "",
+    "Sender": ""
+  },
+  "ConfigDB": {
+    "Dbms": "postgres",
+    "Hostname": "",
+    "Port": 5432,
+    "Username": "",
+    "Password": "",
+    "Database": ""
+  },
+  "WebURL": "",
+  "WebPort": 1635,
+  "MediaPath": "/tmp/medias/",
+  "RegistrationAllowed": true
+}
