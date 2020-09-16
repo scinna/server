@@ -2,22 +2,25 @@
   "ConfigSMTP": {
     "Enabled": true,
     "ConnectionType": "STARTTLS",
-    "Hostname": "",
+    "Hostname": "smtp.mailgun.org",
     "Port": 587,
     "Username": "",
     "Password": "",
     "Sender": ""
   },
   "ConfigDB": {
-    "Dbms": "postgres",
-    "Hostname": "",
+    "Hostname": "localhost",
     "Port": 5432,
-    "Username": "",
-    "Password": "",
-    "Database": ""
+    "Username": "scinna",
+    "Password": "scinna",
+    "Database": "scinna"
   },
-  "WebURL": "",
+  "Registration": {
+    "Allowed": true,
+    "Validation": "email"
+  },
+  "WebURL": "https://scinna.drx/",
   "WebPort": 1635,
   "MediaPath": "/tmp/medias/",
-  "RegistrationAllowed": true
+  "RealIpHeader": "X-Real-IP"
 }
