@@ -56,7 +56,11 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		// Check if the invite code exists
 		invite := dal.FindInvite(prv, registerBody.InviteCode)
 		if !prv.Config.Registration.Allowed && (invite == nil || invite.Used) {
-			serrors.ErrorBadInviteCode.Write(w)
+			if invite == nil {
+				serrors.ErrorBadInviteCode.Write(w)
+			} else if invite.Used {
+				serrors.ErrorInviteUsed.Write(w)
+			}
 			return
 		}
 

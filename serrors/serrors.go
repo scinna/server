@@ -88,17 +88,20 @@ func NewUnknown(err error) *SError {
 // ErrorBadInviteCode is shown when the user tries to register with no invitation code or an invalid one
 var ErrorBadInviteCode = New("The server requires a valid invitation code", 10, 400)
 
+// ErrorInviteUsed is shown when the user tries to register with no invitation code or an invalid one
+var ErrorInviteUsed = New("This invite code has already been used", 11, 400)
+
 // ErrorUserExists is shown when the user tries to register with an already existing user
-var ErrorUserExists = New("This username is already used", 11, 500)
+var ErrorUserExists = New("This username is already used", 12, 500)
 
 // ErrorEmailExists is shown when the user tries to register with an already existing email
-var ErrorEmailExists = New("This email is already used", 12, 500)
+var ErrorEmailExists = New("This email is already used", 13, 500)
 
 // ErrorInvalidRegistration is shown when the user tries to register with an empty username, password or email
-var ErrorInvalidRegistration = New("Username, Email and Password can't be empty", 13, 400)
+var ErrorInvalidRegistration = New("Username, Email and Password can't be empty", 14, 400)
 
 // InvalidUsernameOrPassword
-var InvalidUsernameOrPassword = New("Invalid username or password", 14, 401)
+var InvalidUsernameOrPassword = New("Invalid username or password", 15, 401)
 
 // UserNeedValidationAdmin is sent when the user was registered and the admin needs to validate the account
 var UserNeedValidationAdmin = New("You have been registered. The admin now needs to validate your account", 120, 201)
