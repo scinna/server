@@ -21,8 +21,7 @@ func GetUserFromID(prv *services.Provider, id int) (*models.User, error){
 
 // GetUserFromUsername returns a user from an id
 func GetUserFromUsername(prv *services.Provider, username string) (*models.User, error){
-	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1`
-	row := prv.DB.QueryRowx(rq, username)
+	row := prv.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}

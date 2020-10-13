@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/config"
+	"github.com/scinna/server/cron"
 	"github.com/scinna/server/dal"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/routes"
@@ -15,17 +16,16 @@ import (
 	"strconv"
 	"syscall"
 	"time"
-
-	_ "github.com/lib/pq"
 )
 
 const (
 	SCINNA_AUTHOR = "Scinna Team"
 	SCINNA_VERSION = "0.1"
+	SCINNA_PATCH   = "0"
 )
 
 func main() {
-	fmt.Printf("Scinna [v%v] by %v\n", SCINNA_VERSION, SCINNA_AUTHOR)
+	fmt.Printf("Scinna [v%v.%v] by %v\n", SCINNA_VERSION, SCINNA_PATCH, SCINNA_AUTHOR)
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -47,10 +47,18 @@ func main() {
 
 	if version != SCINNA_VERSION {
 		log.Fatal("Your database is not up to date. Please execute migrations")
+		log.Fatal("You should be on v." + version + ".x")
 		return
 	}
 
 	SetupCloseHandler(prv)
+
+	go func() {
+		for {
+			cron.ClearOldAccounts(prv)
+			time.Sleep(1 * time.Hour)
+		}
+	}()
 
 	router := mux.NewRouter()
 
@@ -58,9 +66,13 @@ func main() {
 	routes.Authentication(prv, router.PathPrefix("/auth").Subrouter())
 	routes.Accounts(prv, router.PathPrefix("/account").Subrouter())
 
+	// Last one (Matching the media_id)
+	routes.Medias(prv, router.PathPrefix("/").Subrouter())
+
 	headers := handlers.AllowedHeaders([]string {
 		"Authorization",
 		"X-Requested-With",
+		"X-Real-IP",
 		"Content-Type",
 	})
 

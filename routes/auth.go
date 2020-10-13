@@ -108,7 +108,6 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 		w.Header().Del("Content-Type")
 
 		validationCode := mux.Vars(r)["validation_code"]
-
 		user := dal.ValidateUser(prv, validationCode)
 
 		t := template.Must(template.ParseFiles("templates/validated.html"))

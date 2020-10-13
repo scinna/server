@@ -9,7 +9,7 @@ import (
 )
 
 func FindInvite(prv *services.Provider, invite string) *models.InviteCode {
-	rq := `SELECT INVITE_ID, INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE INVITE_CODE = $1`
+	rq := `SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE INVITE_CODE = $1`
 	row := prv.DB.QueryRowx(rq, invite)
 	if row.Err() != nil {
 		log.Warn(row.Err().Error())
@@ -26,11 +26,10 @@ func FindInvite(prv *services.Provider, invite string) *models.InviteCode {
 }
 
 func DisableInvite(prv *services.Provider, invite *models.InviteCode) {
-	prv.DB.Exec(`UPDATE invite_code SET used = true WHERE invite_id = $1`, invite.InviteID)
+	prv.DB.Exec(`UPDATE invite_code SET used = true WHERE invite_code = $1`, invite.InviteCode)
 }
 
 func RegisterUser(prv *services.Provider, request *requests.RegisterRequest) (string, error){
-
 	rq := ` INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED)
 			VALUES ($1, $2, $3, $4)
 			RETURNING VALIDATION_CODE`
@@ -53,7 +52,7 @@ func RegisterUser(prv *services.Provider, request *requests.RegisterRequest) (st
 
 func ValidateUser(prv *services.Provider, validation string) string {
 	var results []string
-	err := prv.DB.Select(&results, "UPDATE SCINNA_USER SET validated = true WHERE validation_code = $1 RETURNING user_name", validation)
+	err := prv.DB.Select(&results, "UPDATE SCINNA_USER SET validated = true, validation_code = NULL WHERE validation_code = $1 RETURNING user_name", validation)
 	if err != nil || len(results) == 0 {
 		return ""
 	}

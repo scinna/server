@@ -1,12 +1,14 @@
 package models
 
 type Media struct {
-	MediaID int `db:"media_id"`
+	MediaID string `db:"media_id"`
 
 	Title       string `db:"title"`
 	Description string `db:"description"`
 
-	Path string `db:"path"`
+	Path       string `db:"path" json:"-"`
+	Visibility int    `db:"visibility"`
+	Mimetype   string `db:"mimetype" json:"-"`
 
-	Visibility int `db:"visibility"`
+	User *User `db:"User"`
 }

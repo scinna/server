@@ -3,13 +3,13 @@ package dal
 import "github.com/scinna/server/services"
 
 func FetchVersion(prv *services.Provider) (string, error) {
-	row := prv.DB.QueryRowx("SELECT VERSION FROM DBVERSION LIMIT 1")
-	var version string
+	row := prv.DB.QueryRow("SELECT VERSION FROM dbversion")
 	if row.Err() != nil {
 		return "", row.Err()
 	}
 
-	row.Scan(&version)
+	var vers string
+	err := row.Scan(&vers)
 
-	return version, nil
+	return vers, err
 }

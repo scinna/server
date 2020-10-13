@@ -112,4 +112,11 @@ var UserNeedValidationEmail = New("You have been registered. Please click the li
 // UserRegistered is sent when the user was registered and the admin needs to validate the account
 var UserRegistered = New("You can now use your account", 122, 201)
 
+// InvalidType is sent when the user tries to upload a non autorized mime-type file
+var InvalidType = New("Please upload a PICTURE file only", 4250, 400)
+
+// InvalidVisibility is sent when the visibility for picture uploading is < 0 or > 2
+var InvalidVisibility = New("The visibility must be 0 (Public), 1 (Unlisted) or 2 (Private)", 4251, 400)
+
 var NoToken = New("You can't access this resource without a valid authentication token", 401, 401)
+var NotOwner = New("You don't have permission to reach this resource", 403, 403)

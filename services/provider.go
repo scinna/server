@@ -18,6 +18,7 @@ import (
 
 type Provider struct {
 	DB          *sqlx.DB
+	//DB *gorm.DB
 	ArgonParams *ArgonParams
 	MailClient  smtp.Auth
 	Config      *config.Config
@@ -28,6 +29,7 @@ func NewProvider(cfg *config.Config) (*Provider, error) {
 	dsn := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", db.Username, db.Password, db.Hostname, db.Port, db.Database)
 
 	sqlxDb, err := sqlx.Open("postgres", dsn)
+	//gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -47,12 +49,12 @@ func NewProvider(cfg *config.Config) (*Provider, error) {
 	}, nil
 }
 
-func (p *Provider) GenerateUID() (string, error) {
+func (prv *Provider) GenerateUID() (string, error) {
 	return gonanoid.Generate("0123456789abcdefghijklmnopqrstuvwxyz", 10)
 }
 
-func (p *Provider) Shutdown() {
-	p.DB.Close()
+func (prv *Provider) Shutdown() {
+	prv.DB.Close()
 }
 
 // HashPassword will generate a hash of a password ready to be stored in the database
@@ -192,7 +194,12 @@ func (prv *Provider) SendValidationMail(dest, validationCode string) (bool, erro
 	/**
 	@TODO HTML template for pretty emails
 	 */
-	return prv.SendMail(dest, "Scinna: Activate your account", `
+	return prv.SendMail(dest, "Scinna: Activate your account", fmt.Sprintf(`
+		Hello,
+
+		You have registred for an account on a Scinna server.
 		Please validate your account.
-		`+url+`auth/register/`+validationCode)
+		%vauth/register/%v
+
+		Keep in mind that this link will only work for one hour after registration. If you missed the validation, you need to register again.`, url, validationCode))
 }
