@@ -59,3 +59,40 @@ func ValidateUser(prv *services.Provider, validation string) string {
 
 	return results[0]
 }
+
+func GenerateInviteIfNeeded(prv *services.Provider) (string, error) {
+	row := prv.DB.QueryRow("SELECT COUNT(*) FROM SCINNA_USER")
+	if row.Err() != nil {
+		return "", row.Err()
+	}
+
+	var amtUsers int
+	err := row.Scan(&amtUsers)
+	if err != nil {
+		return "", row.Err()
+	}
+
+	if amtUsers > 0 {
+		return "NONE", nil
+	}
+
+	rowx := prv.DB.QueryRowx("SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE USED = FALSE LIMIT 1")
+	if rowx.Err() != nil {
+		return "", rowx.Err()
+	}
+
+	var invite models.InviteCode
+	err = rowx.StructScan(&invite)
+
+	if err == sql.ErrNoRows {
+		inviteCode, err := prv.GenerateUID()
+		if err != nil {
+			return "", err
+		}
+
+		_, err = prv.DB.Exec("INSERT INTO invite_code (invite_code, invited_by) VALUES ($1, -1)", inviteCode)
+		return inviteCode, err
+	}
+
+	return invite.InviteCode, err
+}

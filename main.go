@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
 	"github.com/scinna/server/config"
 	"github.com/scinna/server/cron"
 	"github.com/scinna/server/dal"
@@ -41,8 +42,18 @@ func main() {
 
 	version, err := dal.FetchVersion(prv)
 	if err != nil {
-		log.Fatal(err.Error())
-		return
+		errFound := false
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "42P01" { // Relation does not exists == database is not created
+				errFound = true
+				log.Fatal("You should initialize the database with the given script")
+			}
+		}
+
+		if !errFound {
+			log.Fatal(err.Error())
+			return
+		}
 	}
 
 	if version != SCINNA_VERSION {
@@ -59,6 +70,19 @@ func main() {
 			time.Sleep(1 * time.Hour)
 		}
 	}()
+
+	if !prv.Config.Registration.Allowed {
+		code, err := dal.GenerateInviteIfNeeded(prv)
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+
+		if code != "NONE" {
+			log.InfoAlwaysShown("Your server is invite only and there are no users registered.")
+			log.InfoAlwaysShown("Please use this code to create your admin account: " + code)
+		}
+	}
 
 	router := mux.NewRouter()
 

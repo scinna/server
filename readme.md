@@ -59,11 +59,13 @@ The first version will have the basic feature expected from a self-hosted image 
 
 - [ ] Folders to sort your pictures
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
-- [ ] Localization
+- [ ] Database auto-initialization
+- [ ] Database auto-upgrading
 - More to come
 
 ### Version 3.0
 
+- [ ] Localization
 - [ ] Video sharing
 - [ ] Support for S3 storage (Maybe?)
 - More to come

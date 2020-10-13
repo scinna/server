@@ -29,8 +29,8 @@ func MediaBelongsToToken(prv *services.Provider, pict *models.Media, token strin
 		FROM MEDIA m
 		INNER JOIN SCINNA_USER u ON u.USER_ID = m.USER_ID
 		INNER JOIN LOGIN_TOKENS lt ON lt.USER_ID = u.USER_ID
-		WHERE lt.LOGIN_TOKEN = ?
-		  AND m.MEDIA_ID = ?
+		WHERE lt.LOGIN_TOKEN = $1
+		  AND m.MEDIA_ID = $2
 `, token, pict.MediaID)
 
 	if row.Err() != nil {
@@ -61,6 +61,6 @@ func CreatePicture(prv *services.Provider, pict *models.Media) error {
 }
 
 func DeleteMedia(prv *services.Provider, pict *models.Media) error {
-	_, err := prv.DB.Exec("DELETE FROM MEDIA WHERE media_id = ?", pict.MediaID)
+	_, err := prv.DB.Exec("DELETE FROM MEDIA WHERE media_id = $1", pict.MediaID)
 	return err
 }
