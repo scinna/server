@@ -7,6 +7,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/scinna/server/dal"
 	"github.com/scinna/server/dto"
+	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/requests"
 	"github.com/scinna/server/serrors"
@@ -82,7 +83,10 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 		// Send the mail
 		if prv.Config.Registration.Validation == "email" && prv.Config.ConfigSMTP.Enabled {
-			prv.SendValidationMail(registerBody.Email, valcode)
+			_, err := prv.SendValidationMail(registerBody.Email, valcode)
+			if err != nil {
+				log.Warn(err.Error())
+			}
 		}
 
 		// Set the invite code to used
