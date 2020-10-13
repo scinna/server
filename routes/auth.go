@@ -134,6 +134,11 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
+		if !user.Validated {
+			serrors.AccountNotValidated.Write(w)
+			return
+		}
+
 		isValid, err := prv.VerifyPassword(authRq.Password, user.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

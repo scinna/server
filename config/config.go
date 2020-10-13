@@ -41,6 +41,7 @@ type DB struct {
 }
 
 type Registration struct {
+	HasUser    bool
 	Allowed    bool
 	Validation string
 }

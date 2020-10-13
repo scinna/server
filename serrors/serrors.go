@@ -103,6 +103,9 @@ var ErrorInvalidRegistration = New("Username, Email and Password can't be empty"
 // InvalidUsernameOrPassword
 var InvalidUsernameOrPassword = New("Invalid username or password", 15, 401)
 
+// AccountNotValidated is sent when the user tries to login without being validated
+var AccountNotValidated = New("This account is not validated", 16, 401)
+
 // UserNeedValidationAdmin is sent when the user was registered and the admin needs to validate the account
 var UserNeedValidationAdmin = New("You have been registered. The admin now needs to validate your account", 120, 201)
 
