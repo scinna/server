@@ -79,6 +79,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		title := r.FormValue("title")
 		desc := r.FormValue("description")
 		visib := r.FormValue("visibility")
+		collection := r.FormValue("collection")
 		visibInt, err := strconv.Atoi(visib)
 
 		if err != nil {
@@ -115,7 +116,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 			Mimetype:    mime.String(),
 		}
 
-		err = dal.CreatePicture(prv, &pict)
+		err = dal.CreatePicture(prv, &pict, collection)
 		if err != nil {
 			serrors.WriteError(w, err)
 			return

@@ -1,23 +1,22 @@
 <template>
-  <router-view />
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+  </div>
+  <router-view/>
 </template>
 
 <script>
-import axios from "axios";
-import {ACTION_LOGOUT} from "@/store/actions";
+import FetchUser from './api/FetchUser';
 
 export default {
   name: 'App',
-  created: function () {
-    axios.interceptors.response.use(undefined, function (err) {
-      return new Promise(function () {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch(ACTION_LOGOUT);
-          this.$router.push('login');
-        }
-        throw err;
-      });
-    });
+  mounted() {
+    if (this.$store.state.Token === null || this.$store.state.Token.length === 0) {
+      this.$router.push('login')
+    }
+
+    FetchUser(this.$store.commit, this.$store.state.Token);
   }
 }
 </script>

@@ -43,7 +43,7 @@ func MediaBelongsToToken(prv *services.Provider, pict *models.Media, token strin
 	return isOwner
 }
 
-func CreatePicture(prv *services.Provider, pict *models.Media) error {
+func CreatePicture(prv *services.Provider, pict *models.Media, collection string) error {
 	uid, err := prv.GenerateUID()
 	if err != nil {
 		return err
@@ -53,9 +53,11 @@ func CreatePicture(prv *services.Provider, pict *models.Media) error {
 	pict.Path = pict.User.UserID + "/" + uid
 
 	_, err = prv.DB.Exec(`
-		INSERT INTO MEDIA (MEDIA_ID, USER_ID, TITLE, DESCRIPTION, PATH, VISIBILITY, MIMETYPE)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-	`, pict.MediaID, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Visibility, pict.Mimetype)
+		INSERT INTO MEDIA (MEDIA_ID, USER_ID, TITLE, DESCRIPTION, PATH, VISIBILITY, MIMETYPE, CLC_ID)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, 
+		        CASE WHEN LENGTH($8) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND TITLE = $8)
+		        ELSE (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND DEFAULT_COLLECTION = true)
+		END)`, pict.MediaID, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Visibility, pict.Mimetype, collection)
 
 	return err
 }

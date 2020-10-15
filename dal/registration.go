@@ -32,7 +32,7 @@ func DisableInvite(prv *services.Provider, invite *models.InviteCode) {
 func RegisterUser(prv *services.Provider, request *requests.RegisterRequest) (string, error){
 	rq := ` INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED)
 			VALUES ($1, $2, $3, $4)
-			RETURNING VALIDATION_CODE`
+			RETURNING USER_ID, VALIDATION_CODE`
 
 	pwd, err := prv.HashPassword(request.Password)
 	if err != nil {
@@ -44,8 +44,14 @@ func RegisterUser(prv *services.Provider, request *requests.RegisterRequest) (st
 		return "", row.Err()
 	}
 
+	var userid string
 	var valcode string
-	err = row.Scan(&valcode)
+	err = row.Scan(&userid, &valcode)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = prv.DB.Exec("INSERT INTO COLLECTIONS (title, user_id, visibility, default_collection) VALUES ($1, $2, $3, true)", "Default collection", userid, 0)
 
 	return valcode, err
 }
