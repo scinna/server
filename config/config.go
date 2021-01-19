@@ -3,20 +3,21 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"github.com/scinna/server/log"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/scinna/server/log"
 )
 
 type Config struct {
-	ConfigSMTP   SMTP
-	ConfigDB     DB
-	Registration Registration
-	WebURL       string
-	WebPort      int
-	MediaPath    string
-	RealIpHeader string
+	ConfigSMTP    SMTP
+	ConfigDB      DB
+	Registration  Registration
+	WebURL        string
+	ListeningAddr string
+	MediaPath     string
+	RealIpHeader  string
 }
 
 /** SMTP represents the configuration for the database **/

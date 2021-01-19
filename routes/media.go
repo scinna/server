@@ -3,6 +3,11 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/dal"
@@ -12,18 +17,13 @@ import (
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"github.com/scinna/server/utils"
-	"io"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 func Medias(prv *services.Provider, r *mux.Router) {
-
-	// Oh dear we are in trouble
 	sr := r.PathPrefix("/").Subrouter()
 	sr.Use(middlewares.LoggedInMiddleware(prv))
-	sr.Use(middlewares.ContentTypeMiddleware)
+	sr.Use(middlewares.Json)
+
 	sr.HandleFunc("/upload", uploadMedia(prv))
 
 	r.HandleFunc("/{media_id}", getMedia(prv))
@@ -84,9 +84,11 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
 
 		if visibInt < 0 || visibInt > 2 {
+			// @TODO: remove this, just send a bad request
 			serrors.InvalidVisibility.Write(w)
 			return
 		}

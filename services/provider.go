@@ -7,18 +7,18 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	"github.com/matoous/go-nanoid"
-	"github.com/scinna/server/config"
-	"golang.org/x/crypto/argon2"
 	"net/smtp"
 	"strconv"
 	"strings"
+
+	"github.com/jmoiron/sqlx"
+	gonanoid "github.com/matoous/go-nanoid"
+	"github.com/scinna/server/config"
+	"golang.org/x/crypto/argon2"
 )
 
 type Provider struct {
 	DB          *sqlx.DB
-	//DB *gorm.DB
 	ArgonParams *ArgonParams
 	MailClient  smtp.Auth
 	Config      *config.Config
@@ -29,7 +29,6 @@ func NewProvider(cfg *config.Config) (*Provider, error) {
 	dsn := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", db.Username, db.Password, db.Hostname, db.Port, db.Database)
 
 	sqlxDb, err := sqlx.Open("postgres", dsn)
-	//gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +75,7 @@ func (prv *Provider) HashPassword(password string) (string, error) {
 func (prv *Provider) VerifyPassword(password, encodedHash string) (match bool, err error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 	if err != nil {
-		// @TODO Log error in DB
+		// @TODO Log error in DB for "login attempt" section in the user profile
 		return false, err
 	}
 
@@ -193,7 +192,7 @@ func (prv *Provider) SendValidationMail(dest, validationCode string) (bool, erro
 
 	/**
 	@TODO HTML template for pretty emails
-	 */
+	*/
 	return prv.SendMail(dest, "Scinna: Activate your account", fmt.Sprintf(`
 		Hello,
 

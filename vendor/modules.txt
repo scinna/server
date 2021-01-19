@@ -5,8 +5,6 @@ github.com/felixge/httpsnoop
 github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/json
 github.com/gabriel-vasile/mimetype/internal/matchers
-# github.com/gobuffalo/here v0.6.0
-github.com/gobuffalo/here
 # github.com/gorilla/handlers v1.5.1
 ## explicit
 github.com/gorilla/handlers
@@ -24,13 +22,6 @@ github.com/lib/pq/oid
 github.com/lib/pq/scram
 # github.com/markbates/pkger v0.17.1
 ## explicit
-github.com/markbates/pkger
-github.com/markbates/pkger/here
-github.com/markbates/pkger/internal/maps
-github.com/markbates/pkger/pkging
-github.com/markbates/pkger/pkging/embed
-github.com/markbates/pkger/pkging/mem
-github.com/markbates/pkger/pkging/stdos
 # github.com/matoous/go-nanoid v1.4.1
 ## explicit
 github.com/matoous/go-nanoid

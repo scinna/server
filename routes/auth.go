@@ -3,6 +3,10 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"net/http"
+	"strings"
+
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	"github.com/scinna/server/dal"
@@ -13,13 +17,10 @@ import (
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"github.com/scinna/server/utils"
-	"html/template"
-	"net/http"
-	"strings"
 )
 
 func Authentication(prv *services.Provider, r *mux.Router) {
-	r.Use(middlewares.ContentTypeMiddleware)
+	r.Use(middlewares.Json)
 
 	r.HandleFunc("/register", findRegistrationType(prv)).Methods(http.MethodGet)
 	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
@@ -49,6 +50,8 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		// @TODO Maybe we can prevent the blacklist of the "me" username by combining the /me and the /user_id endpoint
+		// It would simply add complete infos when requesting the current user
 		if len(registerBody.Username) == 0 || len(registerBody.Email) == 0 || len(registerBody.Password) == 0 || strings.ToLower(registerBody.Username) == "me" {
 			serrors.ErrorInvalidRegistration.Write(w)
 			return
@@ -69,7 +72,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		valcode, err := dal.RegisterUser(prv, &registerBody)
 		if err != nil {
 			if err, ok := err.(*pq.Error); ok {
-				if err.Constraint == "scinna_user_user_name_key"  {
+				if err.Constraint == "scinna_user_user_name_key" {
 					serrors.ErrorUserExists.Write(w)
 				} else if err.Constraint == "scinna_user_user_email_key" {
 					serrors.ErrorEmailExists.Write(w)
@@ -85,6 +88,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		if prv.Config.Registration.Validation == "email" && prv.Config.ConfigSMTP.Enabled {
 			_, err := prv.SendValidationMail(registerBody.Email, valcode)
 			if err != nil {
+				// @TODO Add an error on for the user
 				log.Warn(err.Error())
 			}
 		}
@@ -109,6 +113,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// @TODO: Use pkger to embed the template
 		w.Header().Del("Content-Type")
 
 		validationCode := mux.Vars(r)["validation_code"]
@@ -117,7 +122,7 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 		t := template.Must(template.ParseFiles("templates/validated.html"))
 		t.Execute(w, struct {
 			Username string
-		} {
+		}{
 			Username: user,
 		})
 	}

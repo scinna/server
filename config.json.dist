@@ -20,7 +20,7 @@
     "Validation": "email"
   },
   "WebURL": "https://scinna.drx/",
-  "WebPort": 1635,
+  "ListeningAddr": "0.0.0.0:1635",
   "MediaPath": "/tmp/medias/",
   "RealIpHeader": "X-Real-IP"
 }
