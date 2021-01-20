@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/scinna/server/config"
 	"github.com/scinna/server/cron"
 	"github.com/scinna/server/dal"
+	"github.com/scinna/server/fixtures"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/routes"
 	"github.com/scinna/server/services"
@@ -34,6 +36,10 @@ func main() {
 func start() error {
 	fmt.Printf("Scinna [v%v.%v] by %v\n", SCINNA_VERSION, SCINNA_PATCH, SCINNA_AUTHOR)
 
+	generateDb := flag.Bool("generate-db", false, "Generate the default database")
+
+	flag.Parse()
+
 	cfg, err := config.Load()
 	if err != nil {
 		return err
@@ -42,6 +48,10 @@ func start() error {
 	prv, err := services.NewProvider(cfg)
 	if err != nil {
 		return err
+	}
+
+	if *generateDb {
+		fixtures.InitializeTable(prv, SCINNA_VERSION)
 	}
 
 	err = utils.CheckVersion(prv, SCINNA_VERSION)
@@ -86,9 +96,7 @@ func start() error {
 		ReadHeaderTimeout: 15 * time.Second,
 	}
 
-	srv.ListenAndServe()
-
-	return nil
+	return srv.ListenAndServe()
 }
 
 func SetupCloseHandler(prv *services.Provider) {

@@ -17,7 +17,7 @@ func CheckVersion(prv *services.Provider, scinnaVersion string) error {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "42P01" { // Relation does not exists == database is not created
 				errFound = true
-				log.Fatal("You should initialize the database with the given script")
+				log.Fatal("Your database seems empty. Try generating it with the --generate-db flag")
 			}
 		}
 

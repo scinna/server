@@ -12,3 +12,23 @@ type Media struct {
 
 	User *User `db:"User"`
 }
+
+func (m Media) GetTableName() string {
+	return "MEDIA"
+}
+
+func (m Media) GenerateTable() string {
+	return `
+		CREATE TABLE MEDIA
+		(
+			MEDIA_ID    VARCHAR(10) PRIMARY KEY,
+			USER_ID     uuid REFERENCES SCINNA_USER (USER_ID) NOT NULL,
+			CLC_ID      uuid REFERENCES COLLECTIONS (CLC_ID) NOT NULL,
+			TITLE       VARCHAR,
+			DESCRIPTION VARCHAR,
+			PATH        VARCHAR,
+			VISIBILITY  INTEGER,
+			MIMETYPE    VARCHAR
+		);
+	`
+}
