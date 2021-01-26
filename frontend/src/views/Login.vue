@@ -1,62 +1,42 @@
 <template>
-  <form @submit.prevent="login" v-if="!IsRegistration">
-    <h1>Login</h1>
-    <label for="username">Username</label>
-    <input id="username" required v-model="username" type="text" />
-    <label for="password">Password</label>
-    <input id="password" required v-model="password" type="password" />
-    <button type="submit">Login</button>
-  </form>
-  <form @submit.prevent="register" v-else>
-    <h1>Register</h1>
-    <label for="username">Username</label>
-    <input id="username" required v-model="username" type="text" />
-    <label for="password">Password</label>
-    <input id="password" required v-model="password" type="password" />
-    <label for="password2">Confirm password</label>
-    <input id="password2" required v-model="confirm_password" type="password" />
-    <button type="submit">Register</button>
-  </form>
+  <div id="content">
+    <form @submit.prevent="login">
+      <label for="username">Username:</label>
+      <input type="text" id="username" v-model="username"/>
+      <label for="password">Password:</label>
+      <input type="password" id="password" v-model="password"/>
+
+      <input type="submit" />
+    </form>
+  </div>
 </template>
 
-<script>
-import {ACTION_LOGIN, ACTION_REGISTER} from "@/store/actions";
+<script lang="ts">
+import Vue from 'vue';
+import {Mutations} from "@/store/Mutations";
 
-export default {
+export default Vue.extend({
   name: 'Login',
-  data: function () {
+  data: function() {
     return {
-      IsRegistration: false,
-      username: "",
-      password: "",
-      confirm_password: "",
-      email: "",
-      invite_code: ""
+      username: '',
+      password: '',
     }
   },
   methods: {
-    login: function () {
-      const payload = {
-        Username: this.username,
-        Password: this.password,
-      };
-
-      this.$store.dispatch(ACTION_LOGIN, payload).then(() => {
-        this.$router.push('/')
-      })
-    },
-    register: function() {
-      const payload = {
-        Username: this.username,
-        Password: this.password,
-        Email: this.email,
-        InviteCode: this.invite_code,
-      };
-
-      this.$store.dispatch(ACTION_REGISTER, payload).then(() => {
-
-      })
+    login: function() {
+      this.$store.dispatch(Mutations.LOGIN_REQUEST, { username: this.username, password: this.password })
+        .then((resp) => {
+          console.log(resp);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
-}
+});
 </script>
+
+<style lang="scss" scoped>
+  @import '../assets/CenteredForm';
+</style>

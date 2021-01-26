@@ -26,7 +26,7 @@ func Authentication(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
 	r.HandleFunc("/register/{validation_code}", validateAccount(prv)).Methods(http.MethodGet)
 
-	r.HandleFunc("/login", authenticate(prv)).Methods(http.MethodPost)
+	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
 }
 
 func findRegistrationType(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {

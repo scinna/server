@@ -1,5 +1,6 @@
 <template>
   <div id="content">
+    Displaying image {{ $route.params.id }}
   </div>
 </template>
 
@@ -7,7 +8,7 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'Home',
+  name: 'Media',
   components: {},
 });
 </script>

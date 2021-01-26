@@ -1,46 +1,58 @@
 <template>
-  <router-view />
+  <div id="app">
+    <Navbar id="navbar"/>
+    <router-view/>
+  </div>
 </template>
 
-<script>
-import axios from "axios";
-import {ACTION_LOGOUT} from "@/store/actions";
+<script lang="ts">
+import Navbar from '@/components/Navbar.vue';
 
 export default {
   name: 'App',
-  created: function () {
-    axios.interceptors.response.use(undefined, function (err) {
-      return new Promise(function () {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch(ACTION_LOGOUT);
-          this.$router.push('login');
-        }
-        throw err;
-      });
-    });
-  }
+  components: {
+    Navbar,
+  },
 }
+
 </script>
 
 <style lang="scss">
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 
-#nav {
-  padding: 30px;
+  background: #2c3e50;
+  height: 100%;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  color: white;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  display: flex;
+  flex-direction: column;
+
+  #navbar {
+    flex: 0 0 3em;
+  }
+
+  #content {
+    flex: 1;
   }
 }
 </style>

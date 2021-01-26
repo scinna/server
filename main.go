@@ -37,6 +37,7 @@ func start() error {
 	fmt.Printf("Scinna [v%v.%v] by %v\n", SCINNA_VERSION, SCINNA_PATCH, SCINNA_AUTHOR)
 
 	generateDb := flag.Bool("generate-db", false, "Generate the default database")
+	forceGenerateDb := flag.Bool("auto-yes", false, "Automatically answer yes to the dropping of the old tables (CAUTION!)")
 
 	flag.Parse()
 
@@ -51,7 +52,7 @@ func start() error {
 	}
 
 	if *generateDb {
-		fixtures.InitializeTable(prv, SCINNA_VERSION)
+		fixtures.InitializeTable(prv, SCINNA_VERSION, *forceGenerateDb)
 	}
 
 	err = utils.CheckVersion(prv, SCINNA_VERSION)
@@ -83,8 +84,10 @@ func start() error {
 	router := mux.NewRouter()
 
 	routes.WebApp(prv, router)
-	routes.Authentication(prv, router.PathPrefix("/auth").Subrouter())
-	routes.Accounts(prv, router.PathPrefix("/account").Subrouter())
+
+	api := router.PathPrefix("/api")
+	routes.Authentication(prv, api.PathPrefix("/auth").Subrouter())
+	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
 
 	// Last one (Matching the media_id)
 	routes.Medias(prv, router.PathPrefix("/").Subrouter())

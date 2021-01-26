@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+    node:
+        image: node:15.6-alpine
+        restart: unless-stopped
+        command: yarn serve
+        working_dir: /app
+        volumes:
+            - ./frontend:/app
+        ports:
+            - 8080:8080

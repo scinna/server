@@ -1,0 +1,21 @@
+#content {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    width: 400px;
+    padding: 1em;
+
+    background: red;
+
+    input[type="submit"], label:not(:first-child) {
+      margin-top: 1em;
+    }
+  }
+}

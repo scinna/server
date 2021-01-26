@@ -15,7 +15,7 @@ func WebApp(prv *services.Provider, r *mux.Router) {
 	// We can't use / since it will be used to serve pictures and it would conflict with assets serving
 	// A solution would be to move al assets to a sub-directory and configure the frontend to let access on /assets for example
 	r.HandleFunc("/app", homeRoute(prv))
-	r.HandleFunc("/infos", configRoute(prv))
+	r.HandleFunc("/api/infos", configRoute(prv))
 }
 
 func homeRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {

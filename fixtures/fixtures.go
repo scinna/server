@@ -2,16 +2,27 @@ package fixtures
 
 import (
 	"fmt"
+	"github.com/scinna/server/log"
 
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/services"
 )
 
-func InitializeTable(prv *services.Provider, scinnaVersion string) {
+func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	// Install required plugins
 	plugins := []string{
 		"citext",
 		"pgcrypto",
+	}
+
+	log.InfoAlwaysShown("Creating the database...")
+
+	if !force {
+		log.InfoAlwaysShown("Executing the creation script will remove ALL TABLES AND ALL DATA.")
+		log.InfoAlwaysShown("Are you sure you want to proceed ? (y / N)")
+
+		// @TODO read user input
+		// if != Y & != y => os.exit(1)
 	}
 
 	for _, p := range plugins {
@@ -46,6 +57,7 @@ func InitializeTable(prv *services.Provider, scinnaVersion string) {
 		if e != nil {
 			panic(e)
 		}
+		log.InfoAlwaysShown(fmt.Sprintf("\t- Table %v created.", t.GetTableName()))
 	}
 
 }
