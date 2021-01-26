@@ -18,6 +18,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import 'assets/Colors.scss';
+
 * {
   box-sizing: border-box;
 }
@@ -39,7 +41,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background: #2c3e50;
+  background: $background;
   height: 100%;
 
   color: white;
