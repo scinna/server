@@ -1,3 +1,5 @@
+@import './Colors.scss';
+
 #content {
   display: flex;
   flex-direction: column;
@@ -10,9 +12,10 @@
     flex-direction: column;
 
     width: 400px;
-    padding: 1em;
+    padding: 2em;
+    border-radius: .5em;
 
-    background: red;
+    background: $background-darker;
 
     input[type="submit"], label:not(:first-child) {
       margin-top: 1em;

@@ -10,7 +10,7 @@
   },
   "ConfigDB": {
     "Hostname": "localhost",
-    "Port": 5432,
+    "Port": 5433,
     "Username": "scinna",
     "Password": "scinna",
     "Database": "scinna"

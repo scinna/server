@@ -11,6 +11,7 @@
 
       <router-link class="link" to="/">Home</router-link>
       <router-link class="link" to="/">Profile</router-link>
+      <router-link class="link" to="/">About</router-link>
       <router-link class="link" to="/">Logout</router-link>
     </div>
   </nav>
@@ -50,6 +51,7 @@ export default Vue.extend({
 
 .nav {
   background: $background-darker;
+  color: $text-lighter;
   padding: .5em;
 
   display: flex;
@@ -75,6 +77,7 @@ export default Vue.extend({
   }
 
   &--links {
+    background: $background-darker;
     z-index: 999;
     display: flex;
     flex: 1;
@@ -104,9 +107,9 @@ export default Vue.extend({
     }
 
     &--links {
+      background: $background;
       position: absolute;
       flex-direction: column;
-      background: $background-lighter;
 
       height: 100%;
       width: 200px;
@@ -127,7 +130,7 @@ export default Vue.extend({
         padding: .5em;
         width: 100%;
         text-align: center;
-        background: darken($background, 5%);
+        background: $background-darker;
 
         &:nth-last-child {
           margin-top: auto;

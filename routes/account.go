@@ -14,7 +14,7 @@ func Accounts(prv *services.Provider, r *mux.Router) {
 	r.Use(middlewares.LoggedInMiddleware(prv))
 	r.Use(middlewares.Json)
 
-	r.HandleFunc("/", fetchAccountInfos(prv)).Methods(http.MethodGet)
+	r.HandleFunc("", fetchAccountInfos(prv)).Methods(http.MethodGet)
 }
 
 func fetchAccountInfos(prv *services.Provider) http.HandlerFunc {

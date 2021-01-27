@@ -22,11 +22,11 @@ import (
 func Authentication(prv *services.Provider, r *mux.Router) {
 	r.Use(middlewares.Json)
 
+	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
+
 	r.HandleFunc("/register", findRegistrationType(prv)).Methods(http.MethodGet)
 	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
 	r.HandleFunc("/register/{validation_code}", validateAccount(prv)).Methods(http.MethodGet)
-
-	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
 }
 
 func findRegistrationType(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {

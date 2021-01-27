@@ -1,12 +1,10 @@
 <template>
   <div id="content">
     <form @submit.prevent="login">
-      <label for="username">Username:</label>
-      <input type="text" id="username" v-model="username"/>
-      <label for="password">Password:</label>
-      <input type="password" id="password" v-model="password"/>
+      <CustomInput type="text" label="Username" :model="username" required/>
+      <CustomInput type="password" label="Password" :model="password" required/>
 
-      <input type="submit" />
+      <CustomInput type="submit" />
     </form>
   </div>
 </template>
@@ -14,9 +12,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import {Mutations} from "@/store/Mutations";
+import CustomInput from "@/components/CustomInput.vue";
+import {Authenticate} from "@/api/User";
 
 export default Vue.extend({
   name: 'Login',
+  components: {CustomInput},
   data: function() {
     return {
       username: '',
@@ -25,13 +26,13 @@ export default Vue.extend({
   },
   methods: {
     login: function() {
-      this.$store.dispatch(Mutations.LOGIN_REQUEST, { username: this.username, password: this.password })
-        .then((resp) => {
-          console.log(resp);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      Authenticate({ Username: this.username, Password: this.password})
+      .then(resp => {
+        this.$store.dispatch(Mutations.LOGIN_RESPONSE, resp.data);
+      })
+      .catch(err => {
+        console.error("Err: ", err);
+      });
     }
   }
 });

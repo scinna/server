@@ -1,3 +1,13 @@
-$background: #2c3e50;
-$background-darker: darken(#2c3e50, 5%);
-$background-lighter: lighten(#2c3e50, 5%);
+// Mostly stolen from AdminLTE project
+
+$background: #222d32;
+$background-darker: #1e282c;
+$background-lighter: #2c3b41;
+
+$text: #fff;
+$text-lighter: #8aa4af;
+
+$accent-color: #87e7e1;
+
+$success-color: #59ff80;
+$error-color: #f54d64;

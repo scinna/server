@@ -18,10 +18,15 @@ export default Vue.extend({
   },
   mounted() {
     this.axios.get('/api/infos')
-      .then((resp) => {
-        const serverInfos = resp.data as ServerProps;
-        this.$store.commit(Mutations.GOT_SERVER_INFOS, serverInfos);
-      })
+        .then((resp) => {
+          const serverInfos = resp.data as ServerProps;
+          this.$store.commit(Mutations.GOT_SERVER_INFOS, serverInfos);
+        })
+
+    this.$store.dispatch(Mutations.LOAD_USER_TOKEN)
+        .then(() => {
+          console.log("Ask for infos")
+        })
   }
 });
 </script>
