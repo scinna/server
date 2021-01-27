@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/gabriel-vasile/mimetype v1.1.1
-	github.com/gorilla/handlers v1.5.1
+	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.3.0

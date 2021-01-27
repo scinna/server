@@ -6,15 +6,24 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import Navbar from '@/components/Navbar.vue';
+import {ServerProps} from "@/store/Server";
+import {Mutations} from "@/store/Mutations";
 
-export default {
+export default Vue.extend({
   name: 'App',
   components: {
     Navbar,
   },
-}
-
+  mounted() {
+    this.axios.get('/api/infos')
+      .then((resp) => {
+        const serverInfos = resp.data as ServerProps;
+        this.$store.commit(Mutations.GOT_SERVER_INFOS, serverInfos);
+      })
+  }
+});
 </script>
 
 <style lang="scss">

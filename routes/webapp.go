@@ -27,6 +27,8 @@ func homeRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Reque
 
 func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
 		bytes, err := json.Marshal(dto.NewServerConfig(prv))
 		if serrors.WriteError(w, err) {
 			return

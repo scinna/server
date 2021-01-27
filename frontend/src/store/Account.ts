@@ -8,10 +8,10 @@ const defaultState: AccountStateProps = {
     Token: null,
 }
 
-const Accounts = {
+const accounts = {
     state: defaultState,
     mutations: {},
     actions: {},
 };
 
-export default Accounts;
+export default accounts;
