@@ -84,7 +84,7 @@ func start() error {
 		}
 	}
 
-	router := mux.NewRouter()
+	router := mux.NewRouter().StrictSlash(false)
 
 	routes.WebApp(prv, router)
 

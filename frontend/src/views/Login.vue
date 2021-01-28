@@ -28,6 +28,9 @@ export default Vue.extend({
   },
   methods: {
     login: function() {
+      console.log(this.username, this.password)
+      return
+      /*
       Authenticate({ Username: this.username, Password: this.password})
       .then(resp => {
         this.$store.dispatch(Mutations.LOGIN_RESPONSE, resp.data);
@@ -35,6 +38,7 @@ export default Vue.extend({
       .catch(err => {
         console.error("Err: ", err);
       });
+       */
     }
   }
 });

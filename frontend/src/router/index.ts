@@ -7,12 +7,30 @@ import Register from "@/views/Register.vue";
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 
+import store from '@/store';
+
 Vue.use(VueRouter);
+
+/*
+const loginIfNotAuthenticated = (to, from, next) => {
+    if (!store.getters.isLoggedIn) {
+        next();
+        return;
+    }
+
+    next('/login');
+}
+*/
 
 const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'Home',
+        component: Home,
+    },
+    {
+        path: '/browser',
+        name: 'Browser',
         component: Home,
     },
     {

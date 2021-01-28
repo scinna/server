@@ -25,8 +25,11 @@ export default Vue.extend({
 
     this.$store.dispatch(Mutations.LOAD_USER_TOKEN)
         .then(() => {
-          console.log("Ask for infos")
+          console.log("ok")
         })
+        .catch(() => {
+          console.log("err");
+        });
   }
 });
 </script>

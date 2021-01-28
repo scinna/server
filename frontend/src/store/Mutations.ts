@@ -4,4 +4,6 @@ export enum Mutations {
 
     LOGIN_RESPONSE = 'LOGIN_RESPONSE',
 
+    FETCH_USER_INFOS = 'FETCH_USER_INFOS',
+
 }
