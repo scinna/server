@@ -9,7 +9,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
-	"github.com/scinna/server/dal"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
@@ -58,7 +57,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		}
 
 		// Check if the invite code exists
-		invite := dal.FindInvite(prv, registerBody.InviteCode)
+		invite := prv.Dal.Registration.FindInvite(registerBody.InviteCode)
 		if !prv.Config.Registration.Allowed && (invite == nil || invite.Used) {
 			if invite == nil {
 				serrors.ErrorBadInviteCode.Write(w)
@@ -70,8 +69,16 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 		// @TODO: Validate email address
 
+		hashedPassword, err := prv.HashPassword(registerBody.Password)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		registerBody.HashedPassword = hashedPassword
+
 		// Register the user
-		valcode, err := dal.RegisterUser(prv, &registerBody)
+		valcode, err := prv.Dal.Registration.RegisterUser(&registerBody, prv.Config.Registration.Validation == "open")
 		if err != nil {
 			if err, ok := err.(*pq.Error); ok {
 				if err.Constraint == "scinna_user_user_name_key" {
@@ -97,7 +104,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 		// Set the invite code to used
 		if invite != nil {
-			dal.DisableInvite(prv, invite)
+			prv.Dal.Registration.DisableInvite(invite)
 		}
 
 		// Send the response
@@ -119,7 +126,7 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 		w.Header().Del("Content-Type")
 
 		validationCode := mux.Vars(r)["validation_code"]
-		user := dal.ValidateUser(prv, validationCode)
+		user := prv.Dal.Registration.ValidateUser(validationCode)
 
 		t := template.Must(template.ParseFiles("templates/validated.html"))
 		t.Execute(w, struct {
@@ -139,7 +146,7 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		user, err := dal.GetUserFromUsername(prv, authRq.Username)
+		user, err := prv.Dal.User.GetUserFromUsername(authRq.Username)
 		if err != nil {
 			serrors.InvalidUsernameOrPassword.Write(w)
 			return
@@ -157,7 +164,7 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 		}
 
 		if isValid {
-			token, err := dal.Login(prv, user, utils.IPForRequest(prv.Config, r))
+			token, err := prv.Dal.User.Login(user, utils.IPForRequest(prv.Config, r))
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

@@ -1,9 +1,11 @@
 package dal
 
-import "github.com/scinna/server/services"
+import (
+	"github.com/jmoiron/sqlx"
+)
 
-func FetchVersion(prv *services.Provider) (string, error) {
-	row := prv.DB.QueryRow("SELECT VERSION FROM dbversion")
+func FetchVersion(db *sqlx.DB) (string, error) {
+	row := db.QueryRow("SELECT VERSION FROM dbversion")
 	if row.Err() != nil {
 		return "", row.Err()
 	}

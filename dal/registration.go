@@ -2,15 +2,19 @@ package dal
 
 import (
 	"database/sql"
+	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/requests"
-	"github.com/scinna/server/services"
 )
 
-func FindInvite(prv *services.Provider, invite string) *models.InviteCode {
+type Registration struct {
+	DB *sqlx.DB
+}
+
+func (r *Registration) FindInvite(invite string) *models.InviteCode {
 	rq := `SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE INVITE_CODE = $1`
-	row := prv.DB.QueryRowx(rq, invite)
+	row := r.DB.QueryRowx(rq, invite)
 	if row.Err() != nil {
 		log.Warn(row.Err().Error())
 		return nil
@@ -25,40 +29,35 @@ func FindInvite(prv *services.Provider, invite string) *models.InviteCode {
 	return &ic
 }
 
-func DisableInvite(prv *services.Provider, invite *models.InviteCode) {
-	prv.DB.Exec(`UPDATE invite_code SET used = true WHERE invite_code = $1`, invite.InviteCode)
+func (r *Registration) DisableInvite(invite *models.InviteCode) {
+	r.DB.Exec(`UPDATE invite_code SET used = true WHERE invite_code = $1`, invite.InviteCode)
 }
 
-func RegisterUser(prv *services.Provider, request *requests.RegisterRequest) (string, error){
+func (r *Registration) RegisterUser(request *requests.RegisterRequest, canRegister bool) (string, error){
 	rq := ` INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED)
 			VALUES ($1, $2, $3, $4)
 			RETURNING USER_ID, VALIDATION_CODE`
 
-	pwd, err := prv.HashPassword(request.Password)
-	if err != nil {
-		return "", err
-	}
-
-	row := prv.DB.QueryRowx(rq, request.Username, request.Email, pwd, prv.Config.Registration.Validation == "open")
+	row := r.DB.QueryRowx(rq, request.Username, request.Email, request.HashedPassword, canRegister)
 	if row.Err() != nil {
 		return "", row.Err()
 	}
 
 	var userid string
 	var valcode string
-	err = row.Scan(&userid, &valcode)
+	err := row.Scan(&userid, &valcode)
 	if err != nil {
 		return "", err
 	}
 
-	_, err = prv.DB.Exec("INSERT INTO COLLECTIONS (title, user_id, visibility, default_collection) VALUES ($1, $2, $3, true)", "Default collection", userid, 0)
+	_, err = r.DB.Exec("INSERT INTO COLLECTIONS (title, user_id, visibility, default_collection) VALUES ($1, $2, $3, true)", "Default collection", userid, 0)
 
 	return valcode, err
 }
 
-func ValidateUser(prv *services.Provider, validation string) string {
+func (r *Registration) ValidateUser(validation string) string {
 	var results []string
-	err := prv.DB.Select(&results, "UPDATE SCINNA_USER SET validated = true, validation_code = NULL WHERE validation_code = $1 RETURNING user_name", validation)
+	err := r.DB.Select(&results, "UPDATE SCINNA_USER SET validated = true, validation_code = NULL WHERE validation_code = $1 RETURNING user_name", validation)
 	if err != nil || len(results) == 0 {
 		return ""
 	}
@@ -66,8 +65,8 @@ func ValidateUser(prv *services.Provider, validation string) string {
 	return results[0]
 }
 
-func GenerateInviteIfNeeded(prv *services.Provider) (string, error) {
-	row := prv.DB.QueryRow("SELECT COUNT(*) FROM SCINNA_USER")
+func (r *Registration) GenerateInviteIfNeeded(inviteCode string) (string, error) {
+	row := r.DB.QueryRow("SELECT COUNT(*) FROM SCINNA_USER")
 	if row.Err() != nil {
 		return "", row.Err()
 	}
@@ -82,7 +81,7 @@ func GenerateInviteIfNeeded(prv *services.Provider) (string, error) {
 		return "NONE", nil
 	}
 
-	rowx := prv.DB.QueryRowx("SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE USED = FALSE LIMIT 1")
+	rowx := r.DB.QueryRowx("SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE USED = FALSE LIMIT 1")
 	if rowx.Err() != nil {
 		return "", rowx.Err()
 	}
@@ -91,12 +90,7 @@ func GenerateInviteIfNeeded(prv *services.Provider) (string, error) {
 	err = rowx.StructScan(&invite)
 
 	if err == sql.ErrNoRows {
-		inviteCode, err := prv.GenerateUID()
-		if err != nil {
-			return "", err
-		}
-
-		_, err = prv.DB.Exec("INSERT INTO invite_code (invite_code, invited_by) VALUES ($1, -1)", inviteCode)
+		_, err = r.DB.Exec("INSERT INTO invite_code (invite_code, invited_by) VALUES ($1, -1)", inviteCode)
 		return inviteCode, err
 	}
 

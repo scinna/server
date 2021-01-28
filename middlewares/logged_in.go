@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"github.com/scinna/server/dal"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
@@ -49,5 +48,5 @@ func ValidateRequest(prv *services.Provider, r *http.Request) (*models.User, err
 	if err != nil {
 		return nil, err
 	}
-	return dal.FetchUserFromToken(prv, authToken)
+	return prv.Dal.User.FetchUserFromToken(authToken)
 }

@@ -1,11 +1,15 @@
 package dal
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/models"
-	"github.com/scinna/server/services"
 )
 
-func FindMedia(prv *services.Provider, mediaID string) (*models.Media, error) {
+type Medias struct {
+	DB *sqlx.DB
+}
+
+func (m *Medias) FindMedia(mediaID string) (*models.Media, error) {
 	rq := `
 	SELECT m.MEDIA_ID, m.TITLE, m.DESCRIPTION, m.PATH, m.VISIBILITY, su.USER_ID as "User.user_id", su.user_name as "User.user_name", '' as "User.user_email", '' as "User.user_password", true as "User.validated", '' as "User.validation_code" 
 	FROM MEDIA m
@@ -14,7 +18,7 @@ func FindMedia(prv *services.Provider, mediaID string) (*models.Media, error) {
 `
 
 	var media models.Media
-	row := prv.DB.QueryRowx(rq, mediaID)
+	row := m.DB.QueryRowx(rq, mediaID)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -23,8 +27,8 @@ func FindMedia(prv *services.Provider, mediaID string) (*models.Media, error) {
 	return &media, err
 }
 
-func MediaBelongsToToken(prv *services.Provider, pict *models.Media, token string) bool {
-	row := prv.DB.QueryRow(`
+func (m *Medias) MediaBelongsToToken(pict *models.Media, token string) bool {
+	row := m.DB.QueryRow(`
 		SELECT TRUE
 		FROM MEDIA m
 		INNER JOIN SCINNA_USER u ON u.USER_ID = m.USER_ID
@@ -43,16 +47,10 @@ func MediaBelongsToToken(prv *services.Provider, pict *models.Media, token strin
 	return isOwner
 }
 
-func CreatePicture(prv *services.Provider, pict *models.Media, collection string) error {
-	uid, err := prv.GenerateUID()
-	if err != nil {
-		return err
-	}
+func (m *Medias) CreatePicture(pict *models.Media, collection string) error {
+	pict.Path = pict.User.UserID + "/" + pict.MediaID
 
-	pict.MediaID = uid
-	pict.Path = pict.User.UserID + "/" + uid
-
-	_, err = prv.DB.Exec(`
+	_, err := m.DB.Exec(`
 		INSERT INTO MEDIA (MEDIA_ID, USER_ID, TITLE, DESCRIPTION, PATH, VISIBILITY, MIMETYPE, CLC_ID)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, 
 		        CASE WHEN LENGTH($8) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND TITLE = $8)
@@ -62,7 +60,7 @@ func CreatePicture(prv *services.Provider, pict *models.Media, collection string
 	return err
 }
 
-func DeleteMedia(prv *services.Provider, pict *models.Media) error {
-	_, err := prv.DB.Exec("DELETE FROM MEDIA WHERE media_id = $1", pict.MediaID)
+func (m *Medias) DeleteMedia(pict *models.Media) error {
+	_, err := m.DB.Exec("DELETE FROM MEDIA WHERE media_id = $1", pict.MediaID)
 	return err
 }

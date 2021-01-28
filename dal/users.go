@@ -1,14 +1,28 @@
 package dal
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/models"
-	"github.com/scinna/server/services"
 )
 
+type User struct {
+	DB *sqlx.DB
+}
+
+func (u *User) InsertUser(user *models.User) error {
+	rq := `INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED) VALUES ($1, $2, $3, $4) RETURNING USER_ID`
+	row := u.DB.QueryRowx(rq, user.Name, user.Email, user.Password, user.Validated)
+	if row.Err() != nil {
+		return row.Err()
+	}
+
+	return row.StructScan(user)
+}
+
 // GetUserFromID returns a user from an id
-func GetUserFromID(prv *services.Provider, id int) (*models.User, error){
+func (u *User) GetUserFromID(id int) (*models.User, error){
 	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_ID = $1`
-	row := prv.DB.QueryRowx(rq, id)
+	row := u.DB.QueryRowx(rq, id)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -20,8 +34,8 @@ func GetUserFromID(prv *services.Provider, id int) (*models.User, error){
 }
 
 // GetUserFromUsername returns a user from an id
-func GetUserFromUsername(prv *services.Provider, username string) (*models.User, error){
-	row := prv.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
+func (u *User) GetUserFromUsername(username string) (*models.User, error){
+	row := u.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -32,8 +46,8 @@ func GetUserFromUsername(prv *services.Provider, username string) (*models.User,
 	return &user, err
 }
 
-func Login(prv *services.Provider, user *models.User, ip string) (token string, err error) {
-	row := prv.DB.QueryRow(`INSERT INTO LOGIN_TOKENS (USER_ID, USER_IP) VALUES ($1, $2) RETURNING LOGIN_TOKEN`, user.UserID, ip)
+func (u *User) Login(user *models.User, ip string) (token string, err error) {
+	row := u.DB.QueryRow(`INSERT INTO LOGIN_TOKENS (USER_ID, USER_IP) VALUES ($1, $2) RETURNING LOGIN_TOKEN`, user.UserID, ip)
 	if row.Err() != nil {
 		return "", row.Err()
 	}
@@ -42,8 +56,8 @@ func Login(prv *services.Provider, user *models.User, ip string) (token string, 
 	return token, err
 }
 
-func FetchUserFromToken(prv *services.Provider, authToken string) (*models.User, error) {
-	row := prv.DB.QueryRowx(`
+func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
+	row := u.DB.QueryRowx(`
 		SELECT su.USER_ID, su.USER_NAME, su.USER_EMAIL, su.USER_PASSWORD, su.VALIDATED, su.VALIDATION_CODE
 		FROM SCINNA_USER su
 		INNER JOIN LOGIN_TOKENS lt ON lt.USER_ID = su.USER_ID 

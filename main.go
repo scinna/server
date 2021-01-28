@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/config"
 	"github.com/scinna/server/cron"
-	"github.com/scinna/server/dal"
 	"github.com/scinna/server/fixtures"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/routes"
@@ -70,7 +69,11 @@ func start() error {
 	}()
 
 	if !prv.Config.Registration.Allowed {
-		code, err := dal.GenerateInviteIfNeeded(prv)
+		firstUserInvite, err := prv.GenerateUID()
+		if err != nil {
+			return err
+		}
+		code, err := prv.Dal.Registration.GenerateInviteIfNeeded(firstUserInvite)
 		if err != nil {
 			return err
 		}

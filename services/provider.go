@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/scinna/server/dal"
 	"net/smtp"
 	"strconv"
 	"strings"
@@ -19,6 +20,7 @@ import (
 
 type Provider struct {
 	DB          *sqlx.DB
+	Dal         *dal.Dal
 	ArgonParams *ArgonParams
 	MailClient  smtp.Auth
 	Config      *config.Config
@@ -41,8 +43,11 @@ func NewProvider(cfg *config.Config) (*Provider, error) {
 		KeyLength:   32,
 	}
 
+	dalObject := dal.NewDal(sqlxDb)
+
 	return &Provider{
 		DB:          sqlxDb,
+		Dal:         &dalObject,
 		ArgonParams: argonParams,
 		Config:      cfg,
 	}, nil

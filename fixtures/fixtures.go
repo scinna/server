@@ -60,6 +60,24 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 		log.InfoAlwaysShown(fmt.Sprintf("\t- Table %v created.", t.GetTableName()))
 	}
 
+	// Inserting default user
+	pwd, err := prv.HashPassword("admin")
+	if err != nil {
+		panic(err)
+	}
+
+	user := &models.User{
+		Name:           "admin",
+		Email:          "admin@scinna.app",
+		Password:       pwd,
+		Validated:      true,
+	}
+
+	log.InfoAlwaysShown("\t- Inserting default user (admin:admin)")
+	err = prv.Dal.User.InsertUser(user)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func createVersionTable(prv *services.Provider, version string) {

@@ -10,7 +10,6 @@ import (
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/mux"
-	"github.com/scinna/server/dal"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/models"
@@ -37,7 +36,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		media, err := dal.FindMedia(prv, mediaID)
+		media, err := prv.Dal.Medias.FindMedia(mediaID)
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
@@ -56,7 +55,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 				return
 			}
 
-			if dal.MediaBelongsToToken(prv, media, token) {
+			if prv.Dal.Medias.MediaBelongsToToken(media, token) {
 				serrors.NotOwner.Write(w)
 				return
 			}
@@ -110,7 +109,14 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		parentFolder := prv.Config.MediaPath + "/" + user.UserID + "/"
 		os.MkdirAll(parentFolder, os.ModePerm)
 
+		uid, err := prv.GenerateUID()
+		if err != nil {
+			serrors.WriteError(w, err)
+			return
+		}
+
 		pict := models.Media{
+			MediaID:     uid,
 			Title:       title,
 			Description: desc,
 			Visibility:  visibInt,
@@ -118,7 +124,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 			Mimetype:    mime.String(),
 		}
 
-		err = dal.CreatePicture(prv, &pict, collection)
+		err = prv.Dal.Medias.CreatePicture(&pict, collection)
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
@@ -127,7 +133,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		outputFile, err := os.Create(parentFolder + pict.MediaID)
 		if err != nil {
 			serrors.WriteError(w, err)
-			dal.DeleteMedia(prv, &pict)
+			prv.Dal.Medias.DeleteMedia(&pict)
 			return
 		}
 		defer outputFile.Close()

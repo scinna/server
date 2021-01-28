@@ -11,7 +11,7 @@ import (
 )
 
 func CheckVersion(prv *services.Provider, scinnaVersion string) error {
-	version, err := dal.FetchVersion(prv)
+	version, err := dal.FetchVersion(prv.DB)
 	if err != nil {
 		errFound := false
 		if pqErr, ok := err.(*pq.Error); ok {
