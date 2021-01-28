@@ -4,6 +4,8 @@
       <CustomInput type="text" label="Username" :model="username" required/>
       <CustomInput type="password" label="Password" :model="password" required/>
 
+      <router-link class="message" to="/">Forgotten password?</router-link>
+
       <CustomInput type="submit" />
     </form>
   </div>
@@ -40,4 +42,8 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
   @import '../assets/CenteredForm';
+
+  .forgot_password {
+
+  }
 </style>

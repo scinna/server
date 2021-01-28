@@ -4,21 +4,25 @@
 
     <font-awesome-icon class="nav--button" icon="bars" @click="showMenu"/>
 
-    <img class="nav--logo" src="../assets/logo.png" alt="Scinna logo"/>
+    <router-link to="/">
+      <img class="nav--logo" src="../assets/logo.png" alt="Scinna logo"/>
+    </router-link>
 
     <div :class="'nav--links ' + (menuOpened ? 'shown' : '')">
       <img class="nav--links-logo" src="../assets/logo.png" alt="Scinna logo"/>
 
-      <router-link class="link" to="/">Home</router-link>
-      <router-link class="link" to="/">Profile</router-link>
-      <router-link class="link" to="/">About</router-link>
-      <router-link class="link" to="/">Logout</router-link>
+      <router-link class="link" to="/" v-if="isLoggedIn">Profile</router-link>
+      <router-link class="link" to="/login" v-if="!isLoggedIn">Login</router-link>
+      <router-link class="link" to="/register" v-if="!isLoggedIn">Register</router-link>
+      <router-link class="link" to="/about">About</router-link>
+      <router-link class="link" to="/" v-if="isLoggedIn">Logout</router-link>
     </div>
   </nav>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import {mapGetters} from "vuex";
 
 export default Vue.extend({
   name: 'Navbar',
@@ -27,6 +31,9 @@ export default Vue.extend({
     return {
       menuOpened: false,
     }
+  },
+  computed: {
+    ...mapGetters(['isLoggedIn'])
   },
   methods: {
     showMenu: function () {

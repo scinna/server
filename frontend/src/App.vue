@@ -33,6 +33,7 @@ export default Vue.extend({
 
 <style lang="scss">
 @import 'assets/Colors.scss';
+@import 'assets/Global.scss';
 
 * {
   box-sizing: border-box;

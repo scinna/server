@@ -36,16 +36,25 @@ div {
 
   input {
     background: $background-lighter;
-    border: none;
     padding: .25em;
     color: $text;
     border-radius: 5px;
+    border: 2px solid $background;
+    margin-top: .5em;
 
     &[type="text"], &[type="password"] {
     }
 
     &[type="submit"] {
+      background: $accent-color;
+      color: $background-darker;
+      font-weight: bold;
       padding: .75em;
+
+      &:disabled {
+        background: darken($accent-color, 10%);
+        color: lighten($background-darker, 10%);
+      }
     }
   }
 }

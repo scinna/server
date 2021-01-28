@@ -68,6 +68,8 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		// @TODO: Validate email address
+
 		// Register the user
 		valcode, err := dal.RegisterUser(prv, &registerBody)
 		if err != nil {
