@@ -1,6 +1,6 @@
 export type Media = {
-    MediaID: string
-    Title: string
-    Description: string
-    Visibility: number
+    MediaID: string;
+    Title: string;
+    Description: string;
+    Visibility: number;
 }

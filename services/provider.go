@@ -27,7 +27,7 @@ type Provider struct {
 }
 
 func NewProvider(cfg *config.Config) (*Provider, error) {
-	db := cfg.ConfigDB
+	db := cfg.Database
 	dsn := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", db.Username, db.Password, db.Hostname, db.Port, db.Database)
 
 	sqlxDb, err := sqlx.Open("postgres", dsn)
@@ -165,7 +165,7 @@ func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
 			Support non-starttls auth
 			Add a way to stay connected to the SMTP server for X amt of time (If you have a huge userbase on your server you might not want to open a connection each email sent)
 	**/
-	smtpCfg := prv.Config.ConfigSMTP
+	smtpCfg := prv.Config.Mail
 	prv.MailClient = smtp.PlainAuth("", smtpCfg.Username, smtpCfg.Password, smtpCfg.Hostname)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,

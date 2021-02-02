@@ -11,13 +11,12 @@ import (
 )
 
 type Config struct {
-	ConfigSMTP    SMTP
-	ConfigDB      DB
+	Mail          SMTP
+	Database      DB
 	Registration  Registration
 	WebURL        string
 	ListeningAddr string
 	MediaPath     string
-	RealIpHeader  string
 }
 
 /** SMTP represents the configuration for the database **/

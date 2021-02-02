@@ -1,0 +1,12 @@
+{
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "forgotten_password": "Forgotten password?",
+    "errors": {
+      "invalid_credentials": "Unknown username or password",
+      "unknown": "An unknown error occured."
+    }
+  }
+}

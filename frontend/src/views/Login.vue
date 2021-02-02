@@ -1,14 +1,17 @@
 <template>
   <div id="content">
+    <!--
+        @TODO: Create a custom form component that will use the loader during the request and auto-map the values in it
+      -->
     <form @submit.prevent="login">
-      <CustomInput type="text" label="Username" v-model="username" required/>
-      <CustomInput type="password" label="Password" v-model="password" required/>
+      <CustomInput type="text" :label="$t('login.username')" v-model="username" required/>
+      <CustomInput type="password" :label="$t('login.password')" v-model="password" required/>
 
-      <span class="message error" v-if="error.length > 0">{{error}}</span>
+      <span class="message error" v-if="error.length > 0">{{ $t('login.errors.' + error) }}</span>
 
-      <router-link class="message" to="/">Forgotten password?</router-link>
+      <router-link class="message" to="/">{{ $t('login.forgotten_password') }}</router-link>
 
-      <CustomInput type="submit" />
+      <CustomInput type="submit" :value="$t('login.submit')" />
     </form>
   </div>
 </template>
@@ -41,6 +44,8 @@ export default Vue.extend({
         } else {
           this.error = 'unknown';
         }
+
+        this.password = '';
       });
     }
   }

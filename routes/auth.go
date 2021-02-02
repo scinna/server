@@ -94,7 +94,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		}
 
 		// Send the mail
-		if prv.Config.Registration.Validation == "email" && prv.Config.ConfigSMTP.Enabled {
+		if prv.Config.Registration.Validation == "email" && prv.Config.Mail.Enabled {
 			_, err := prv.SendValidationMail(registerBody.Email, valcode)
 			if err != nil {
 				// @TODO Add an error on for the user
@@ -164,7 +164,7 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 		}
 
 		if isValid {
-			token, err := prv.Dal.User.Login(user, utils.IPForRequest(prv.Config, r))
+			token, err := prv.Dal.User.Login(user, utils.IPForRequest(r))
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

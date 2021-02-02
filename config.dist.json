@@ -1,5 +1,5 @@
 {
-  "ConfigSMTP": {
+  "Mail": {
     "Enabled": true,
     "ConnectionType": "STARTTLS",
     "Hostname": "smtp.mailgun.org",
@@ -8,9 +8,9 @@
     "Password": "",
     "Sender": ""
   },
-  "ConfigDB": {
+  "Database": {
     "Hostname": "localhost",
-    "Port": 5433,
+    "Port": 5432,
     "Username": "scinna",
     "Password": "scinna",
     "Database": "scinna"
@@ -22,5 +22,4 @@
   "WebURL": "https://scinna.drx/",
   "ListeningAddr": "0.0.0.0:1635",
   "MediaPath": "/tmp/medias/",
-  "RealIpHeader": "X-Real-IP"
 }
