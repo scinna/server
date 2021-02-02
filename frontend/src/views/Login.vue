@@ -1,8 +1,10 @@
 <template>
   <div id="content">
     <form @submit.prevent="login">
-      <CustomInput type="text" label="Username" :model="username" required/>
-      <CustomInput type="password" label="Password" :model="password" required/>
+      <CustomInput type="text" label="Username" v-model="username" required/>
+      <CustomInput type="password" label="Password" v-model="password" required/>
+
+      <span class="message error" v-if="error.length > 0">{{error}}</span>
 
       <router-link class="message" to="/">Forgotten password?</router-link>
 
@@ -24,21 +26,22 @@ export default Vue.extend({
     return {
       username: '',
       password: '',
+      error: '',
     }
   },
   methods: {
     login: function() {
-      console.log(this.username, this.password)
-      return
-      /*
-      Authenticate({ Username: this.username, Password: this.password})
+      return Authenticate({ Username: this.username, Password: this.password})
       .then(resp => {
         this.$store.dispatch(Mutations.LOGIN_RESPONSE, resp.data);
       })
       .catch(err => {
-        console.error("Err: ", err);
+        if (err.response && err.response.data && err.response.data.Message) {
+          this.error = err.response.data.Message;
+        } else {
+          this.error = 'unknown';
+        }
       });
-       */
     }
   }
 });
@@ -46,8 +49,4 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
   @import '../assets/CenteredForm';
-
-  .forgot_password {
-
-  }
 </style>

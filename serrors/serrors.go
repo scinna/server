@@ -101,7 +101,7 @@ var ErrorEmailExists = New("This email is already used", 13, 500)
 var ErrorInvalidRegistration = New("Username, Email and Password can't be empty", 14, 400)
 
 // InvalidUsernameOrPassword
-var InvalidUsernameOrPassword = New("Invalid username or password", 15, 401)
+var InvalidUsernameOrPassword = New("invalid_credentials", 15, 401)
 
 // AccountNotValidated is sent when the user tries to login without being validated
 var AccountNotValidated = New("This account is not validated", 16, 401)

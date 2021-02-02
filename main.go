@@ -88,7 +88,7 @@ func start() error {
 
 	routes.WebApp(prv, router)
 
-	api := router.PathPrefix("/api")
+	api := router.PathPrefix("/api").Subrouter()
 	routes.Authentication(prv, api.PathPrefix("/auth").Subrouter())
 	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
 
