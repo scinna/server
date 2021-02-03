@@ -1,7 +1,7 @@
 import {Mutations} from "@/store/Mutations";
 import {FetchUserInfos} from "@/api/User";
 import {User} from "@/types/User";
-import {AddInterceptor} from "@/api/Scinnaxios";
+import {AddInterceptor, RemoveInterceptor} from "@/api/Interceptors";
 
 export const TOKEN_KEY = 'SCINNA_TOKEN';
 
@@ -48,6 +48,16 @@ const accounts = {
 
                 state.User = payload;
                 resolve();
+        }),
+        [Mutations.LOGOUT]: ({state}: {state: AccountStateProps}) => new Promise((resolve) => {
+            // @TODO
+
+            state.Token = null;
+            state.User = null;
+            localStorage.removeItem(TOKEN_KEY);
+            RemoveInterceptor();
+
+            resolve();
         })
     },
     getters: {

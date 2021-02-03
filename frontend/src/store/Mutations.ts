@@ -3,6 +3,7 @@ export enum Mutations {
     LOAD_USER_TOKEN = 'LOAD_USER_TOKEN',
 
     LOGIN_RESPONSE = 'LOGIN_RESPONSE',
+    LOGOUT = 'LOGOUT',
 
     FETCH_USER_INFOS = 'FETCH_USER_INFOS',
 

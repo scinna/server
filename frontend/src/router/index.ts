@@ -1,6 +1,7 @@
 import About from "@/views/About.vue";
 import Home from '@/views/Home.vue'
 import Login from "@/views/Login.vue";
+import Logout from "@/views/Logout.vue";
 import Media from "@/views/Media.vue";
 import NotFound from "@/views/NotFound.vue";
 import Register from "@/views/Register.vue";
@@ -37,6 +38,11 @@ const routes: Array<RouteConfig> = [
         path: '/login',
         name: 'Login',
         component: Login,
+    },
+    {
+        path: '/logout',
+        name: 'Logout',
+        component: Logout,
     },
     {
         path: '/register',

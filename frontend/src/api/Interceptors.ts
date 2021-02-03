@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+let tokenInterceptor = -1;
+
 export function AddInterceptor(token: string) {
-    axios.interceptors.request.use(
+    tokenInterceptor = axios.interceptors.request.use(
         (config) => {
             config.headers["Authorization"] = "Bearer " + token;
             return config;
@@ -10,4 +12,11 @@ export function AddInterceptor(token: string) {
             return err;
         }
     )
+}
+
+export function RemoveInterceptor() {
+    if (tokenInterceptor !== -1) {
+        axios.interceptors.request.eject(tokenInterceptor);
+        tokenInterceptor = -1;
+    }
 }

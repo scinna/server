@@ -15,7 +15,7 @@
       <router-link class="link" to="/login" v-if="!isLoggedIn">Login</router-link>
       <router-link class="link" to="/register" v-if="!isLoggedIn">Register</router-link>
       <router-link class="link" to="/about">About</router-link>
-      <router-link class="link" to="/" v-if="isLoggedIn">Logout</router-link>
+      <router-link class="link" to="/logout" v-if="isLoggedIn">Logout</router-link>
     </div>
   </nav>
 </template>
