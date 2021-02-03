@@ -1,1 +1,0 @@
-export const HOSTNAME = process.env.NODE_ENV === 'development' ? "https://scinna.drx" : "";

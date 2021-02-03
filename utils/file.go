@@ -6,4 +6,5 @@ var AllowedMimetypes = []string{
 	"image/jpeg",
 	"image/png",
 	"image/tiff",
+	"image/webp",
 }
