@@ -8,5 +8,16 @@
       "invalid_credentials": "Unknown username or password",
       "unknown": "An unknown error occured."
     }
+  },
+  "logout": {
+
+  },
+  "about": {
+    "first_paragraph": "Scinna is an open-source, self-hosted screenshot and picture sharing server designed to be used with Scinnapse, Scinna CLIent, and Scinnamon.",
+    "second_paragraph": "The goal of this project is to provide a simple way to make it's own picture sharing server and to have a fully-featured client on all platforms.",
+    "come_take_look": "Come take a look at",
+    "website": "our website",
+    "or": "or",
+    "github": "our github"
   }
 }

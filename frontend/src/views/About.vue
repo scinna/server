@@ -1,8 +1,8 @@
 <template>
   <div class="content">
-    <p>Scinna is an open-source, self-hosted screenshot and picture sharing server designed to be used with Scinnapse, Scinna CLIent, and Scinnamon.</p>
-    <p>The goal of this project is to provide a simple way to make it's own picture sharing server and to have a fully-featured client on all platforms.</p>
-    <p>Come take a look at <a href="https://scinna.app/">our website</a> or <a href="https://github.com/scinna">our github</a>.</p>
+    <p>{{ $t('about.first_paragraph') }}</p>
+    <p>{{ $t('about.second_paragraph')}}</p>
+    <p>{{ $t('about.come_take_look')}} <a href="https://scinna.app/">{{ $t('about.website') }}</a> {{ $t('about.or') }} <a href="https://github.com/scinna">{{ $t('about.github') }}</a>.</p>
   </div>
 </template>
 

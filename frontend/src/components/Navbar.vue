@@ -79,7 +79,7 @@ export default Vue.extend({
   }
 
   &--logo {
-    margin: .25em;
+    margin: .25em .25em .25em 1.5em;
     height: 2em;
   }
 
