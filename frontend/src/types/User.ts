@@ -4,5 +4,6 @@ export type User = {
     UserID: string;
     Name: string;
     Email: string;
-    Collections: Collection[];
+    IsAdmin: boolean;
+    Collections?: Collection[];
 }

@@ -1,6 +1,7 @@
 import {Mutations} from "@/store/Mutations";
 import {FetchUserInfos} from "@/api/User";
 import {User} from "@/types/User";
+import {AddInterceptor} from "@/api/Scinnaxios";
 
 export const TOKEN_KEY = 'SCINNA_TOKEN';
 
@@ -22,6 +23,7 @@ const accounts = {
             const token = localStorage.getItem(TOKEN_KEY) || '';
             if (token.length > 0) {
                 state.Token = token;
+                AddInterceptor(token);
 
                 FetchUserInfos()
                     .then(resp => {
@@ -39,6 +41,13 @@ const accounts = {
                         reject();
                     })
             }
+        }),
+        [Mutations.LOGIN_RESPONSE]: ({state}: {state: AccountStateProps}, payload: {Token: string} & User) => new Promise((resolve, reject) => {
+                state.Token = payload.Token;
+                localStorage.setItem(TOKEN_KEY, payload.Token);
+
+                state.User = payload;
+                resolve();
         })
     },
     getters: {

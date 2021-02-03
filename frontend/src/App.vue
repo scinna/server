@@ -25,7 +25,7 @@ export default Vue.extend({
 
     this.$store.dispatch(Mutations.LOAD_USER_TOKEN)
         .then(() => {
-          console.log("ok")
+          console.log("User loaded: ", this.$store.state.User.Name);
         })
         .catch(() => {
           console.log("err");

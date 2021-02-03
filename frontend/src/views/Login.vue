@@ -36,7 +36,7 @@ export default Vue.extend({
     login: function() {
       return Authenticate({ Username: this.username, Password: this.password})
       .then(resp => {
-        this.$store.dispatch(Mutations.LOGIN_RESPONSE, resp.data);
+        this.$store.dispatch(Mutations.LOGIN_RESPONSE, resp.data).then(() => this.$router.push("/"))
       })
       .catch(err => {
         if (err.response && err.response.data && err.response.data.Message) {
