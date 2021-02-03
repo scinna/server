@@ -93,7 +93,7 @@ func start() error {
 	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
 
 	// Last one (Matching the media_id)
-	routes.Medias(prv, router.PathPrefix("/").Subrouter())
+	routes.Medias(prv, router.PathPrefix("").Subrouter())
 
 	srv := &http.Server{
 		Handler:           router,
