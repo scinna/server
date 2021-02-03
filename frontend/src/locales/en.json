@@ -9,6 +9,25 @@
       "unknown": "An unknown error occured."
     }
   },
+  "upload": {
+    "title": "Title",
+    "desc": "Description",
+    "visibility": {
+      "private": {
+        "text": "Private",
+        "tooltip": "A private picture is only accessible when you are logged in your account"
+      },
+      "unlisted": {
+        "text": "Unlisted",
+        "tooltip": "An unlisted picture is not visible on your profile, it can only be accessed knowning the link"
+      },
+      "public": {
+        "text": "Public",
+        "tooltip": "A public picture is listed on your profile and visible to everyone"
+      }
+    },
+    "send": "Send !"
+  },
   "logout": {
 
   },
