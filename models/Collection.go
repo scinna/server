@@ -1,10 +1,12 @@
 package models
 
 type Collection struct {
-	Title      string  `db:"title"`
-	User       *User   `db:"user"`
-	Visibility int     `db:"visibility"`
-	Medias     []Media `db:"-"`
+	CollectionID string  `db:"clc_id"`
+	Title        string  `db:"title"`
+	User         *User   `db:"user"`
+	Visibility   int     `db:"visibility"`
+	IsDefault    bool    `db:"default_collection"`
+	Medias       []Media `db:"-"`
 }
 
 func (c Collection) GetTableName() string {

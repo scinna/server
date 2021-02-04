@@ -91,6 +91,7 @@ func start() error {
 	api := router.PathPrefix("/api").Subrouter()
 	routes.Authentication(prv, api.PathPrefix("/auth").Subrouter())
 	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
+	routes.Upload(prv, api.PathPrefix("/upload").Subrouter())
 
 	// Last one (Matching the media_id)
 	routes.Medias(prv, router.PathPrefix("").Subrouter())

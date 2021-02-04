@@ -78,6 +78,10 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	if err != nil {
 		panic(err)
 	}
+
+	log.InfoAlwaysShown("\t- Creating his default collection")
+	_, err = prv.Dal.Collections.CreateDefaultCollection(user)
+
 }
 
 func createVersionTable(prv *services.Provider, version string) {
