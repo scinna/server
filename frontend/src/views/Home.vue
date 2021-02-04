@@ -2,8 +2,8 @@
   <div id="content">
     <Loader/>
 
-    <Uploader />
-    <FloatingActionButton icon="plus" @click="() => {  }"/>
+    <Uploader v-if="IsUploaderVisible" :hide="() => this.IsUploaderVisible = false"/>
+    <FloatingActionButton icon="plus" @click="() => this.IsUploaderVisible = true"/>
   </div>
 </template>
 
@@ -16,5 +16,10 @@ import Uploader from "@/components/Uploader.vue";
 export default Vue.extend({
   name: 'Home',
   components: {Uploader, FloatingActionButton, Loader },
+  data: function() {
+    return {
+      IsUploaderVisible: false,
+    }
+  }
 });
 </script>

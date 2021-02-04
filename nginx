@@ -1,7 +1,10 @@
 server {
     listen      80;
     server_name i.scinna.drx;
-    return 301 https://$server_name$request_uri;
+    
+    # Using 307 ensure that the client will follow the redirection on POST requests
+    # Cf. https://softwareengineering.stackexchange.com/questions/99894/why-doesnt-http-have-post-redirect
+    return 307 https://$server_name$request_uri;
 }
 
 server {

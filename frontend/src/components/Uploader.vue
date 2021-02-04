@@ -1,5 +1,7 @@
 <template>
-  <div id="upload--background">
+  <!-- https://www.raymondcamden.com/2019/08/08/drag-and-drop-file-upload-in-vuejs -->
+  <!-- No need for dropzone -->
+  <div id="upload--background" ref="Background" @click="(e) => closeUploader(e)">
     <form id="upload">
       <CustomInput id="Title" type="text" :label="$t('upload.title')" v-model="Title" required/>
       <CustomInput id="Description" type="text" :label="$t('upload.desc')" v-model="Description"/>
@@ -25,11 +27,25 @@ import CustomInput from "@/components/CustomInput";
 export default {
   name: "Uploader",
   components: {CustomInput},
+  props: {
+    hide: { type: Function }
+  },
   data: function() {
     return {
       Title: '',
       Description: '',
       Visibility: 0,
+    }
+  },
+  mounted() {
+  },
+  methods: {
+    closeUploader(event) {
+      if (event.target !== this.$refs.Background) {
+        return
+      }
+
+      this.hide();
     }
   }
 }
@@ -74,6 +90,8 @@ export default {
       margin-top: 0;
     }
   }
+
+
 
 }
 

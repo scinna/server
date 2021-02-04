@@ -19,11 +19,11 @@ import (
 )
 
 func Medias(prv *services.Provider, r *mux.Router) {
-	sr := r.PathPrefix("/").Subrouter()
+	sr := r.PathPrefix("").Subrouter()
 	sr.Use(middlewares.LoggedInMiddleware(prv))
 	sr.Use(middlewares.Json)
 
-	sr.HandleFunc("/upload", uploadMedia(prv))
+	sr.HandleFunc("", uploadMedia(prv)).Methods(http.MethodPost)
 
 	r.HandleFunc("/{media_id}", getMedia(prv))
 }
