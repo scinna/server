@@ -37,8 +37,6 @@ export default {
       Visibility: 0,
     }
   },
-  mounted() {
-  },
   methods: {
     closeUploader(event) {
       if (event.target !== this.$refs.Background) {

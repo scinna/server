@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <Loader/>
+    <Browser :username="username" />
 
     <Uploader v-if="IsUploaderVisible" :hide="() => this.IsUploaderVisible = false"/>
     <FloatingActionButton icon="plus" @click="() => this.IsUploaderVisible = true"/>
@@ -9,17 +9,20 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Loader from "@/components/Loader.vue";
 import FloatingActionButton from "@/components/FloatingActionButton.vue";
 import Uploader from "@/components/Uploader.vue";
+import Browser from "@/components/Browser.vue";
 
 export default Vue.extend({
   name: 'Home',
-  components: {Uploader, FloatingActionButton, Loader },
+  components: {Browser, Uploader, FloatingActionButton},
+  computed: {
+    username: state => state.User.Name,
+  },
   data: function() {
     return {
       IsUploaderVisible: false,
     }
-  }
+  },
 });
 </script>
