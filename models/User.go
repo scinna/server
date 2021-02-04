@@ -10,8 +10,6 @@ type User struct {
 	Password       string  `db:"user_password" json:"-"`
 	Validated      bool    `db:"validated" json:"-"`
 	ValidationCode *string `db:"validation_code" json:"-"`
-
-	Collections []Collection
 }
 
 func (u User) GetTableName() string {

@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/scinna/server/dto"
 	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
@@ -11,6 +13,7 @@ import (
 
 func Medias(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/{media_id}", getMedia(prv))
+	r.HandleFunc("/{media_id}/infos", getMediaInfos(prv))
 }
 
 func getMedia(prv *services.Provider) http.HandlerFunc {
@@ -47,5 +50,26 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 		}
 
 		http.ServeFile(w, r, file)
+	}
+}
+
+func getMediaInfos(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		mediaID := mux.Vars(r)["media_id"]
+		if len(mediaID) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		mediaInfo, err := prv.Dal.Medias.FindMedia(mediaID)
+		if serrors.WriteError(w, err) {
+			return
+		}
+
+		mediaDto := dto.GetMediasInfos(mediaInfo)
+
+		jsonBytes, _ := json.Marshal(mediaDto)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonBytes)
 	}
 }

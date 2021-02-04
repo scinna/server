@@ -10,7 +10,7 @@ type Collections struct {
 	DB *sqlx.DB
 }
 
-func (c *Collections) InsertCollection(collection *models.Collection) error {
+func (c *Collections) Create(collection *models.Collection) error {
 	if collection.User == nil {
 		return errors.New("the user is not set")
 	}
@@ -36,7 +36,7 @@ func (c *Collections) InsertCollection(collection *models.Collection) error {
 	return nil
 }
 
-func (c *Collections) CreateDefaultCollection(user *models.User) (*models.Collection, error) {
+func (c *Collections) CreateDefault(user *models.User) (*models.Collection, error) {
 	collection := models.Collection{
 		Title:      "Default collection", // @Todo: localize this given the registration locale (?)
 		IsDefault:  true,
@@ -45,7 +45,36 @@ func (c *Collections) CreateDefaultCollection(user *models.User) (*models.Collec
 		Medias:     []models.Media{},
 	}
 
-	err := c.InsertCollection(&collection)
+	err := c.Create(&collection)
 
 	return &collection, err
+}
+
+func (c *Collections) FetchRoot(user *models.User) (*models.Collection, error) {
+	row := c.DB.QueryRowx(`SELECT TITLE, USER_ID, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND DEFAULT_COLLECTION = true`, user.UserID)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	var collection models.Collection
+	err := row.StructScan(&collection)
+
+	return &collection, err
+}
+
+func (c *Collections) Fetch(user *models.User, name string) (*models.Collection, error) {
+	row := c.DB.QueryRowx(`SELECT TITLE, USER_ID, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND TITLE = $2`, user.UserID, name)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	var collection models.Collection
+	err := row.StructScan(&collection)
+
+	return &collection, err
+}
+
+func (c *Collections) Delete(collection *models.Collection) error {
+
+	return nil
 }

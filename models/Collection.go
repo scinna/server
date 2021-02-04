@@ -19,7 +19,7 @@ func (c Collection) GenerateTable() string {
 		(
 			CLC_ID             uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
 			TITLE              VARCHAR,
-			USER_ID            uuid REFERENCES SCINNA_USER (USER_ID) NOT NULL,
+			USER_ID            uuid REFERENCES SCINNA_USER (USER_ID) ON DELETE CASCADE NOT NULL,
 			VISIBILITY         INTEGER,
 			DEFAULT_COLLECTION BOOL DEFAULT FALSE,
 			UNIQUE (USER_ID, TITLE)

@@ -80,7 +80,7 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	}
 
 	log.InfoAlwaysShown("\t- Creating his default collection")
-	_, err = prv.Dal.Collections.CreateDefaultCollection(user)
+	_, err = prv.Dal.Collections.CreateDefault(user)
 
 }
 
