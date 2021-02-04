@@ -21,5 +21,5 @@
   },
   "WebURL": "https://scinna.drx/",
   "ListeningAddr": "0.0.0.0:1635",
-  "MediaPath": "/tmp/medias/",
+  "MediaPath": "/tmp/medias/"
 }
