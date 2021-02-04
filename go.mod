@@ -13,4 +13,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	google.golang.org/appengine v1.6.6 // indirect
+	syreclabs.com/go/faker v1.2.3
 )

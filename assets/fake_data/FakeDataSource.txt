@@ -1,0 +1,17 @@
+Thanks to these people for the data used in dev, nice pictures to test with :)
+All of these comes from Unsplash
+
+Currently only using landscape pictures but we will need to try with portraits one when it's time to do responsive ;)
+
+@danielsessler
+    0.jpg: https://unsplash.com/photos/z_9VmsxR8hs
+    4.jpg https://unsplash.com/photos/rQ6rgzM0aI0
+    5.jpg https://unsplash.com/photos/WriYACWKelg
+
+@oneyearchennai
+    1.jpg: https://unsplash.com/photos/YACZKc1jXTs
+    6.jpg: https://unsplash.com/photos/lavAmF7vjRg
+
+@jqb
+    3.jpg: https://unsplash.com/photos/iT97VrHqzaY
+    7.jpg: https://unsplash.com/photos/Hs4ruQeJ4yo

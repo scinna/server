@@ -31,3 +31,7 @@ golang.org/x/crypto/blake2b
 golang.org/x/sys/cpu
 # google.golang.org/appengine v1.6.6
 ## explicit
+# syreclabs.com/go/faker v1.2.3
+## explicit
+syreclabs.com/go/faker
+syreclabs.com/go/faker/locales

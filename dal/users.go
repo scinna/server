@@ -10,8 +10,8 @@ type User struct {
 }
 
 func (u *User) InsertUser(user *models.User) error {
-	rq := `INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED) VALUES ($1, $2, $3, $4) RETURNING USER_ID`
-	row := u.DB.QueryRowx(rq, user.Name, user.Email, user.Password, user.Validated)
+	rq := `INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, IS_ADMIN) VALUES ($1, $2, $3, $4, $5) RETURNING USER_ID`
+	row := u.DB.QueryRowx(rq, user.Name, user.Email, user.Password, user.Validated, user.IsAdmin)
 	if row.Err() != nil {
 		return row.Err()
 	}
@@ -21,7 +21,7 @@ func (u *User) InsertUser(user *models.User) error {
 
 // GetUserFromID returns a user from an id
 func (u *User) GetUserFromID(id int) (*models.User, error){
-	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_ID = $1`
+	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE, IS_ADMIN FROM SCINNA_USER WHERE USER_ID = $1`
 	row := u.DB.QueryRowx(rq, id)
 	if row.Err() != nil {
 		return nil, row.Err()

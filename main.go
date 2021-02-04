@@ -92,6 +92,7 @@ func start() error {
 	routes.Authentication(prv, api.PathPrefix("/auth").Subrouter())
 	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
 	routes.Upload(prv, api.PathPrefix("/upload").Subrouter())
+	routes.Browser(prv, api.PathPrefix("/browse").Subrouter())
 
 	// Last one (Matching the media_id)
 	routes.Medias(prv, router.PathPrefix("").Subrouter())

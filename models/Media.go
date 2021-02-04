@@ -13,6 +13,8 @@ type Media struct {
 	PublishedAt time.Time `db:"published_at"`
 	Mimetype    string    `db:"mimetype" json:"-"`
 
+	Collection Collection `db:"collection"`
+
 	User *User `db:"User"`
 }
 

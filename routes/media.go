@@ -24,7 +24,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		media, err := prv.Dal.Medias.FindMedia(mediaID)
+		media, err := prv.Dal.Medias.Find(mediaID)
 		if err != nil {
 			serrors.WriteError(w, err)
 			return
@@ -61,12 +61,24 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		mediaInfo, err := prv.Dal.Medias.FindMedia(mediaID)
+		media, err := prv.Dal.Medias.Find(mediaID)
 		if serrors.WriteError(w, err) {
 			return
 		}
+		if media.Visibility == 2 {
+			token, err := middlewares.GetTokenFromRequest(r)
+			if err != nil {
+				serrors.WriteError(w, err)
+				return
+			}
 
-		mediaDto := dto.GetMediasInfos(mediaInfo)
+			if prv.Dal.Medias.MediaBelongsToToken(media, token) {
+				serrors.NotOwner.Write(w)
+				return
+			}
+		}
+
+		mediaDto := dto.GetMediasInfos(media)
 
 		jsonBytes, _ := json.Marshal(mediaDto)
 		w.Header().Set("Content-Type", "application/json")

@@ -69,6 +69,7 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	user := &models.User{
 		Name:           "admin",
 		Email:          "admin@scinna.app",
+		IsAdmin:        true,
 		Password:       pwd,
 		Validated:      true,
 	}
@@ -80,8 +81,11 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	}
 
 	log.InfoAlwaysShown("\t- Creating his default collection")
-	_, err = prv.Dal.Collections.CreateDefault(user)
+	defaultCollection, err := prv.Dal.Collections.CreateDefault(user)
 
+	if true {
+		InsertFakeData(prv, user, defaultCollection)
+	}
 }
 
 func createVersionTable(prv *services.Provider, version string) {

@@ -6,7 +6,7 @@ type Collection struct {
 	User         *User   `db:"user"`
 	Visibility   int     `db:"visibility"`
 	IsDefault    bool    `db:"default_collection"`
-	Medias       []Media `db:"-"`
+	Medias       []Media `db:"-" json:",omitempty"`
 }
 
 func (c Collection) GetTableName() string {

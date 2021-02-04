@@ -9,7 +9,7 @@ type Medias struct {
 	DB *sqlx.DB
 }
 
-func (m *Medias) FindMedia(mediaID string) (*models.Media, error) {
+func (m *Medias) Find(mediaID string) (*models.Media, error) {
 	rq := `
 	SELECT m.MEDIA_ID, m.TITLE, m.DESCRIPTION, m.PATH, m.VISIBILITY, su.USER_ID as "User.user_id", su.user_name as "User.user_name", '' as "User.user_email", '' as "User.user_password", true as "User.validated", '' as "User.validation_code" 
 	FROM MEDIA m
@@ -25,6 +25,38 @@ func (m *Medias) FindMedia(mediaID string) (*models.Media, error) {
 
 	err := row.StructScan(&media)
 	return &media, err
+}
+
+func (m *Medias) FindFromCollection(id string, withHidden bool) ([]models.Media, error) {
+	rows, err := m.DB.Queryx(`
+		SELECT MEDIA_ID, TITLE, DESCRIPTION, PATH, VISIBILITY
+		FROM MEDIA
+		WHERE 
+			CLC_ID = $1
+		  AND
+			(
+				(VISIBILITY = 0)
+				OR
+				$2
+			)
+	`, id, withHidden)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var medias []models.Media
+	for rows.Next() {
+		media := models.Media{}
+		err = rows.StructScan(&media)
+		if err != nil {
+			continue
+		}
+
+		medias = append(medias, media)
+	}
+
+	return medias, err
 }
 
 func (m *Medias) MediaBelongsToToken(pict *models.Media, token string) bool {
