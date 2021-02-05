@@ -131,3 +131,4 @@ var NotOwner = New("You don't have permission to reach this resource", 403, 403)
 
 
 var CollectionNotFound = New("collection_not_found", 400, 404)
+var CollectionAlreadyExists = New("collection_already_exists", 401, 400)

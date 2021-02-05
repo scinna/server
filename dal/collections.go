@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/serrors"
 )
@@ -26,6 +27,11 @@ func (c *Collections) Create(collection *models.Collection) error {
 	)
 
 	if row.Err() != nil {
+		if pqErr, ok := row.Err().(*pq.Error); ok {
+			if pqErr.Code == "23505" { // Duplicate key
+				return serrors.CollectionAlreadyExists
+			}
+		}
 		return row.Err()
 	}
 
@@ -65,7 +71,7 @@ func (c *Collections) FetchRoot(user *models.User) (*models.Collection, error) {
 }
 
 func (c *Collections) Fetch(user *models.User, name string) (*models.Collection, error) {
-	row := c.DB.QueryRowx(`SELECT TITLE, USER_ID, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND TITLE = $2`, user.UserID, name)
+	row := c.DB.QueryRowx(`SELECT CLC_ID, TITLE, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND TITLE = $2`, user.UserID, name)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -132,8 +138,7 @@ func (c *Collections) FetchFromUsernameWithMedias(dalMedias Medias, user string,
 				(LENGTH($2) > 0 AND TITLE = $2)
 			   OR
 				(LENGTH($2) = 0 AND DEFAULT_COLLECTION = TRUE)
-			)
-`,
+			)`,
 		user,
 		name,
 	)
@@ -161,7 +166,67 @@ func (c *Collections) FetchFromUsernameWithMedias(dalMedias Medias, user string,
 	return &collection, err
 }
 
-func (c *Collections) Delete(collection *models.Collection) error {
+func (c *Collections) UpdateIfOwned(user *models.User, title, newTitle string, newVisibility int) (*models.Collection, error) {
+	res, err := c.DB.Exec(`
+		UPDATE
+			COLLECTIONS
+		SET
+			TITLE = $1,
+			VISIBILITY = $2
+		WHERE
+			TITLE = $3
+   		  AND
+			USER_ID = $4
+		  AND
+		    DEFAULT_COLLECTION = false
+`, newTitle, newVisibility, title, user.UserID)
+
+	if err != nil {
+
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" { // Duplicate key
+				return nil, serrors.CollectionAlreadyExists
+			}
+		}
+
+		return nil, err
+	}
+
+	amtRowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	if amtRowsAffected == 0 {
+		return nil, serrors.CollectionNotFound
+	}
+
+	return c.Fetch(user, newTitle)
+}
+
+func (c *Collections) DeleteIfOwned(user *models.User, title string) error {
+	res, err := c.DB.Exec(`
+		DELETE FROM collections
+		WHERE 
+			USER_ID = $1
+		  AND
+		    TITLE = $2
+		  AND
+		      DEFAULT_COLLECTION = false
+`, user.UserID, title)
+
+	if err != nil {
+		return err
+	}
+
+	amtRowsDeleted, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if amtRowsDeleted == 0 {
+		return serrors.CollectionNotFound
+	}
 
 	return nil
 }
