@@ -6,24 +6,26 @@ import (
 )
 
 type MediaInfo struct {
-	MediaID string `json:"mediaId"`
+	MediaID string
 
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string
+	Description string
 
-	Visibility  int       `json:"visibility"`
-	PublishedAt time.Time `json:"publishedAt"`
+	Visibility  int
+	PublishedAt time.Time
 
-	Author string `json:"author"`
+	Collection string
+	Author     string
 }
 
-func GetMediasInfos (media *models.Media) MediaInfo {
+func GetMediasInfos(media *models.Media) MediaInfo {
 	return MediaInfo{
 		MediaID:     media.MediaID,
 		Title:       media.Title,
 		Description: media.Description,
 		Visibility:  media.Visibility,
 		PublishedAt: media.PublishedAt,
+		Collection:  media.Collection.Title,
 		Author:      media.User.Name,
 	}
 }

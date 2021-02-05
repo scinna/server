@@ -11,10 +11,31 @@ type Medias struct {
 
 func (m *Medias) Find(mediaID string) (*models.Media, error) {
 	rq := `
-	SELECT m.MEDIA_ID, m.TITLE, m.DESCRIPTION, m.PATH, m.VISIBILITY, su.USER_ID as "User.user_id", su.user_name as "User.user_name", '' as "User.user_email", '' as "User.user_password", true as "User.validated", '' as "User.validation_code" 
-	FROM MEDIA m
-	INNER JOIN SCINNA_USER su ON su.USER_ID = m.USER_ID
-	WHERE m.MEDIA_ID = $1
+	SELECT 
+		m.MEDIA_ID,
+		m.TITLE,
+		m.DESCRIPTION,
+		m.PATH,
+		m.VISIBILITY,
+		su.USER_ID as "User.user_id",
+		su.user_name as "User.user_name",
+		'' as "User.user_email",
+		'' as "User.user_password",
+		true as "User.validated",
+		'' as "User.validation_code",
+		c.clc_id as "collection.clc_id",
+		CASE WHEN c.DEFAULT_COLLECTION = TRUE
+			 THEN ''
+			 ELSE c.title
+		END as "collection.title",
+		c.visibility as "collection.visibility",
+		c.default_collection "collection.default_collection"
+	FROM 
+		MEDIA m
+		INNER JOIN SCINNA_USER su ON su.USER_ID = m.USER_ID
+		INNER JOIN COLLECTIONS c ON c.CLC_ID = m.CLC_ID
+	WHERE
+		m.MEDIA_ID = $1
 `
 
 	var media models.Media
