@@ -19,21 +19,21 @@ var (
 
 func InsertFakeData(prv *services.Provider, user *models.User, defaultCollection *models.Collection) {
 	log.InfoAlwaysShown("\t- Inserting default pictures in collection")
-	for i := 0; i < r.Intn(10); i++ {
+	for i := 0; i < r.Intn(50); i++ {
 		err := generatePicture(prv, user, defaultCollection)
 		if err != nil {
 			fmt.Printf("Error generating picture %v (Default collection): %v\n", i, err)
 		}
 	}
 
-	for i := 0; i < r.Intn(3); i++ {
+	for i := 0; i < r.Intn(20); i++ {
 		col, err := generateCollection(prv, user)
 		if err != nil {
 			fmt.Printf("Failed to generate collection %v: %v\n", i, err)
 			continue
 		}
 
-		for k := 0; k < r.Intn(10); k++ {
+		for k := 0; k < r.Intn(100); k++ {
 			err := generatePicture(prv, user, col)
 			if err != nil {
 				fmt.Printf("Error generating picture %v (collection #%v): %v\n", i, k, err)

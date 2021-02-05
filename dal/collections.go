@@ -1,9 +1,11 @@
 package dal
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/models"
+	"github.com/scinna/server/serrors"
 )
 
 type Collections struct {
@@ -77,8 +79,8 @@ func (c *Collections) Fetch(user *models.User, name string) (*models.Collection,
 func (c *Collections) FetchWithMedias(dalMedias Medias, user *models.User, name string, showHidden bool) (*models.Collection, error) {
 	row := c.DB.QueryRowx(`
 		SELECT 
+			CLC_ID,
 			TITLE,
-			USER_ID,
 			VISIBILITY,
 			DEFAULT_COLLECTION
 		FROM
@@ -142,6 +144,10 @@ func (c *Collections) FetchFromUsernameWithMedias(dalMedias Medias, user string,
 	var collection models.Collection
 	err := row.StructScan(&collection)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, serrors.CollectionNotFound
+		}
+
 		return nil, err
 	}
 

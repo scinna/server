@@ -85,6 +85,11 @@ func NewUnknown(err error) *SError {
 	}
 }
 
+/**
+	@TODO: Standardize errors with the text being the translation key
+	@TODO: Check if they are all required because there seems to be a lot of them here...
+**/
+
 // ErrorBadInviteCode is shown when the user tries to register with no invitation code or an invalid one
 var ErrorBadInviteCode = New("The server requires a valid invitation code", 10, 400)
 
@@ -123,3 +128,6 @@ var InvalidVisibility = New("The visibility must be 0 (Public), 1 (Unlisted) or 
 
 var NoToken = New("You can't access this resource without a valid authentication token", 401, 401)
 var NotOwner = New("You don't have permission to reach this resource", 403, 403)
+
+
+var CollectionNotFound = New("collection_not_found", 400, 404)

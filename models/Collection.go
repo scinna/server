@@ -3,7 +3,7 @@ package models
 type Collection struct {
 	CollectionID string  `db:"clc_id"`
 	Title        string  `db:"title"`
-	User         *User   `db:"user"`
+	User         *User   `db:"user" json:",omitempty"`
 	Visibility   int     `db:"visibility"`
 	IsDefault    bool    `db:"default_collection"`
 	Medias       []Media `db:"-" json:",omitempty"`

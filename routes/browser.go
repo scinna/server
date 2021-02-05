@@ -9,6 +9,7 @@ import (
 	"github.com/scinna/server/services"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 func Browser(prv *services.Provider, r *mux.Router) {
@@ -38,7 +39,8 @@ func stripPrefix(uri, username string) string {
 func list(prv *services.Provider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username := mux.Vars(r)["user"]
-		uri := stripPrefix(r.URL.RequestURI(), username)
+		uriParsed, err := url.QueryUnescape(r.URL.RequestURI())
+		uriParsed = stripPrefix(uriParsed, username)
 
 		token, err := middlewares.GetTokenFromRequest(r)
 		if err != nil && err != serrors.NoToken {
@@ -58,9 +60,9 @@ func list(prv *services.Provider) http.Handler {
 
 		// @TODO Make something better which will also pull the medias in the same query
 		if user != nil && user.Name == username {
-			collection, err = prv.Dal.Collections.FetchWithMedias(prv.Dal.Medias, user, uri, true)
+			collection, err = prv.Dal.Collections.FetchWithMedias(prv.Dal.Medias, user, uriParsed, true)
 		} else {
-			collection, err = prv.Dal.Collections.FetchFromUsernameWithMedias(prv.Dal.Medias, username, uri, false)
+			collection, err = prv.Dal.Collections.FetchFromUsernameWithMedias(prv.Dal.Medias, username, uriParsed, false)
 		}
 
 		if serrors.WriteError(w, err) {

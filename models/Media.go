@@ -13,9 +13,9 @@ type Media struct {
 	PublishedAt time.Time `db:"published_at"`
 	Mimetype    string    `db:"mimetype" json:"-"`
 
-	Collection Collection `db:"collection"`
+	Collection *Collection `db:"collection" json:",omitempty"`
 
-	User *User `db:"User"`
+	User *User `db:"User" json:",omitempty"`
 }
 
 func (m Media) GetTableName() string {
