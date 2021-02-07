@@ -19,7 +19,7 @@ export default Vue.extend({
   components: {Browser, Uploader, FloatingActionButton},
   computed: {
     ...mapState({
-      username: state => state.User.Name,
+      username: state => state.Account.User.Name,
     })
   },
   data: function() {

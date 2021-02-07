@@ -2,6 +2,7 @@ import {Mutations} from "@/store/Mutations";
 import {FetchUserInfos} from "@/api/User";
 import {User} from "@/types/User";
 import {AddInterceptor, RemoveInterceptor} from "@/api/Interceptors";
+import {Commit} from "vuex";
 
 export const TOKEN_KEY = 'SCINNA_TOKEN';
 
@@ -17,17 +18,28 @@ const defaultState: AccountStateProps = {
 
 const accounts = {
     state: defaultState,
-    mutations: {},
+    mutations: {
+        [Mutations.LOAD_USER_TOKEN]: (state: AccountStateProps, token: string|null) => {
+            state.Token = token;
+        },
+        [Mutations.LOGIN_RESPONSE]: (state: AccountStateProps, payload: {token: string} & User) => {
+            state.User = { ...payload};
+        },
+        [Mutations.LOGOUT]: (state: AccountStateProps) => {
+            state.Token = null;
+            state.User = null;
+        }
+    },
     actions: {
-        [Mutations.LOAD_USER_TOKEN]: ({state}: { state: AccountStateProps}) => new Promise((resolve, reject) => {
+        [Mutations.LOAD_USER_TOKEN]: ({commit}: { commit: Commit }) => new Promise((resolve, reject) => {
             const token = localStorage.getItem(TOKEN_KEY) || '';
             if (token.length > 0) {
-                state.Token = token;
+                commit(Mutations.LOAD_USER_TOKEN, token);
                 AddInterceptor(token);
 
                 FetchUserInfos()
                     .then(resp => {
-                        state.User = resp.data as User;
+                        commit(Mutations.LOGIN_RESPONSE, resp.data as User);
                         resolve();
                     })
                     .catch(err => {
@@ -35,25 +47,25 @@ const accounts = {
                         // e.g. 502 if the server is down
                         if (err.response.statusCode === 401) {
                             localStorage.removeItem(TOKEN_KEY);
-                            state.Token = null;
+                            commit(Mutations.LOAD_USER_TOKEN, null);
                         }
 
                         reject();
                     })
             }
-        }),
-        [Mutations.LOGIN_RESPONSE]: ({state}: {state: AccountStateProps}, payload: {Token: string} & User) => new Promise((resolve, reject) => {
-                state.Token = payload.Token;
-                localStorage.setItem(TOKEN_KEY, payload.Token);
 
-                state.User = payload;
-                resolve();
+            resolve()
         }),
-        [Mutations.LOGOUT]: ({state}: {state: AccountStateProps}) => new Promise((resolve) => {
-            // @TODO
+        [Mutations.LOGIN_RESPONSE]: ({commit}: { commit: Commit }, payload: { Token: string } & User) => new Promise((resolve) => {
+            localStorage.setItem(TOKEN_KEY, payload.Token);
 
-            state.Token = null;
-            state.User = null;
+            commit(Mutations.LOGIN_RESPONSE, payload)
+            resolve();
+        }),
+        [Mutations.LOGOUT]: ({commit}: { commit: Commit }) => new Promise((resolve) => {
+            // @TODO send request to server to disable the token
+
+            commit(Mutations.LOGOUT);
             localStorage.removeItem(TOKEN_KEY);
             RemoveInterceptor();
 
