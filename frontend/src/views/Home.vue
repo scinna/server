@@ -1,6 +1,7 @@
 <template>
   <div id="content">
-    <Browser :username="username" />
+    <Browser v-if="user !== null" :username="user.Name" />
+    <Loader v-else/>
 
     <Uploader v-if="IsUploaderVisible" :hide="() => this.IsUploaderVisible = false"/>
     <FloatingActionButton icon="plus" @click="() => this.IsUploaderVisible = true"/>
@@ -13,13 +14,14 @@ import FloatingActionButton from "@/components/FloatingActionButton.vue";
 import Uploader from "@/components/Uploader.vue";
 import Browser from "@/components/Browser.vue";
 import {mapState} from "vuex";
+import Loader from "@/components/Loader.vue";
 
 export default Vue.extend({
   name: 'Home',
-  components: {Browser, Uploader, FloatingActionButton},
+  components: {Loader, Browser, Uploader, FloatingActionButton},
   computed: {
     ...mapState({
-      username: state => state.Account.User.Name,
+      user: state => state.Account.User,
     })
   },
   data: function() {
@@ -29,3 +31,11 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+#content {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+</style>

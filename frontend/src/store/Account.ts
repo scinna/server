@@ -45,7 +45,9 @@ const accounts = {
                     .catch(err => {
                         // If the server does not answer 401 it means that the token could be still valid and there is an error server side
                         // e.g. 502 if the server is down
-                        if (err.response.statusCode === 401) {
+                        console.log(err.response.status);
+                        if (err.response.status === 401) {
+                            console.log("removing");
                             localStorage.removeItem(TOKEN_KEY);
                             commit(Mutations.LOAD_USER_TOKEN, null);
                         }
@@ -53,8 +55,6 @@ const accounts = {
                         reject();
                     })
             }
-
-            resolve()
         }),
         [Mutations.LOGIN_RESPONSE]: ({commit}: { commit: Commit }, payload: { Token: string } & User) => new Promise((resolve) => {
             localStorage.setItem(TOKEN_KEY, payload.Token);
