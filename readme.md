@@ -25,11 +25,12 @@ The first version will have the basic feature expected from a self-hosted image 
 - [x] PostgreSQL
 - [x] Database auto-initialization (--generate-db)
 - [ ] Database auto-upgrading
-- [ ] Localization
+- [x] Localization
+- [x] Collections to sort your pictures
 
 ### Version 2.0
 
-- [ ] Folders to sort your pictures
+- [ ] Nested collections
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
 - [ ] Video sharing
 - More to come
@@ -38,6 +39,7 @@ The first version will have the basic feature expected from a self-hosted image 
 
 - [ ] Real folders (Like folders with sub-folders)
 - [ ] Support for S3 storage (Maybe?)
+- [ ] LDAP ?
 - More to come
 
 ## Contributing
