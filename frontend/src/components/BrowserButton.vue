@@ -1,10 +1,7 @@
 <template>
-  <div class="browser--button" v-if="!isSpacer">
-    <img src="" :alt="title"/>
-    <span>{{title}}</span>
-  </div>
-  <div class="browser--spacer" v-else>
-
+  <div :class="'browser--button ' + (this.disabled ? 'disabled' : '')" @click="() => { !this.disabled && this.$emit('click') }">
+    <font-awesome-icon :icon="icon" />
+    <!--<span>{{title}}</span>-->
   </div>
 </template>
 
@@ -13,19 +10,45 @@ export default {
   name: "BrowserButton",
   props: {
     title: { type: String },
-    isSpacer: { type: Boolean },
+    icon: { type: String },
+    disabled: { type: Boolean}
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/Colors.scss";
+
 .browser--button {
-  background: lightgray;
+  $size: 3em;
+
+  flex: 0 0 $size;
+
+  background: $background-lighter;
   border-radius: 5px;
 
-  width: 2em;
-  height: 2em;
+  color: $accent-color;
+
+  width: $size;
+  height: $size;
   margin: 0 .25em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &.disabled {
+    background: $background;
+  }
+
+  &:not(.disabled):hover {
+    background: lighten($background-lighter, 5%);
+  }
+
+  svg {
+    height: #{$size * .65};
+  }
 }
 
 .browser--spacer {

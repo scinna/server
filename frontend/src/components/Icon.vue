@@ -27,6 +27,8 @@ export default {
 
     padding: .25em;
 
+    flex: 1 1 0;
+
     img {
       width: 4em;
       height: 4em;

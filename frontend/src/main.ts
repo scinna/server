@@ -4,15 +4,14 @@ import router from './router'
 import store from './store'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import i18n from './i18n'
 
-library.add(faBars);
-library.add(faPlus);
+library.add(faPlus, faBars, faChevronLeft, faChevronRight);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
