@@ -1,43 +1,63 @@
 <template>
   <div id="browser" v-if="isLoaded">
     <div class="browser--bar">
-      <BrowserButton style="grid-area: b" title="Previous" icon="chevron-left" @click="previous" disabled />
-      <BrowserButton style="grid-area: c" title="Next" icon="chevron-right" @click="next"/>
+      <BrowserButton style="grid-area: b" title="Previous" icon="chevron-left" @click="previous" disabled/>
+      <BrowserButton style="grid-area: c" title="Next" icon="chevron-right" @click="next" disabled/>
+      <BrowserButton style="grid-area: d" :disabled="!user || username !== user.Name" title="Create folder" icon="folder-plus" @click="() => {}"/>
 
-      <h1 style="grid-area: a">/{{ browserUsername }}/{{!content.IsDefault ? content.Title : ''}}</h1>
+      <h1 style="grid-area: a">/{{ browserUsername }}/{{ !content.IsDefault ? content.Title : '' }}</h1>
     </div>
     <div class="browser--content">
-      <Icon v-for="collection in content.Collections" :key="collection.CollectionID + collection.Title + collection.Visibility" :collection="collection" />
-      <Icon v-for="media in content.Medias" :key="media.MediaID + media.Title + media.Visibility" :media="media"/>
+      <Icon v-for="collection in content.Collections"
+            :key="collection.CollectionID + collection.Title + collection.Visibility" :collection="collection"
+            v-on:click="() => browse(collection)"/>
+      <Icon v-for="media in content.Medias" :key="media.MediaID + media.Title + media.Visibility" :media="media"
+            v-on:click="() => showMedia(media)"/>
     </div>
 
-    <Uploader v-if="IsUploaderVisible" :hide="() => this.IsUploaderVisible = false"/>
-    <FloatingActionButton icon="plus" @click="() => this.IsUploaderVisible = true"/>
+    <Uploader v-if="isUploaderVisible" :hide="() => this.isUploaderVisible = false"/>
+    <FloatingActionButton icon="plus" @click="() => this.isUploaderVisible = true"/>
   </div>
   <Loader v-else/>
 </template>
 
-<script>
-import BrowserButton from "@/components/BrowserButton";
-import Loader from "@/components/Loader";
+<script lang="ts">
+import BrowserButton         from "@/components/BrowserButton";
+import Loader                from "@/components/Loader";
 import {Browse as ApiBrowse} from "@/api/Collections";
-import Icon from "@/components/Icon";
-import Uploader from "@/components/Uploader";
-import FloatingActionButton from "@/components/FloatingActionButton";
+import Icon                  from "@/components/Icon";
+import Uploader              from "@/components/Uploader";
+import FloatingActionButton  from "@/components/FloatingActionButton";
+import {Collection}          from "@/types/Collection";
+import {Media}               from "@/types/Media";
+import {mapState}            from "vuex";
+
+type Data = {
+  browserUsername: string;
+  browserCollection: string;
+  isLoaded: boolean;
+  content: any;
+  isUploaderVisible: boolean;
+}
 
 export default {
   name: "Browser",
   components: {Loader, BrowserButton, Icon, Uploader, FloatingActionButton},
   props: {
-    username: { type: String },
+    username: {type: String},
   },
-  data: function () {
+  computed: {
+    ...mapState({
+      user: state => state.Account.User,
+    })
+  },
+  data: function (): Data {
     return {
       browserUsername: '',
       browserCollection: '',
       isLoaded: false,
       content: null,
-      IsUploaderVisible: false,
+      isUploaderVisible: false,
     }
   },
   methods: {
@@ -46,13 +66,18 @@ export default {
     },
     next() {
       console.log("Next");
-    }
+    },
+    browse(collection: Collection) {
+      this.$router.push({ name: 'Browse user', params: { username: this.browserUsername, collection: collection.Title } })
+    },
+    showMedia(media: Media) {
+      console.log("showing", media.Title)
+    },
   },
   mounted() {
     this.browserUsername = this.username.length > 0 ? this.username : this.$route.params.username;
-    this.browserCollection = this.$route.params.collection ?? '';
 
-    ApiBrowse(this.browserUsername, this.browserCollection)
+    ApiBrowse(this.browserUsername, this.$route.params.collection ?? '')
         .then(resp => {
           this.content = resp.data;
           this.isLoaded = true;
@@ -75,9 +100,9 @@ export default {
   padding: 1em;
   gap: 1em;
 
-  grid-template-areas: "a a" "b c";
+  grid-template-areas: "a a a" "b c d";
   @media (min-width: $size-xs) {
-    grid-template-areas: "b c a";
+    grid-template-areas: "b c d a";
     justify-content: left;
   }
 

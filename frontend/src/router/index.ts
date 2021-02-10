@@ -15,8 +15,6 @@ import store from '@/store';
 
 Vue.use(VueRouter);
 
-
-
 const routes: Array<RouteConfig> = [
     {
         path: '/',
@@ -25,7 +23,7 @@ const routes: Array<RouteConfig> = [
         meta: { anonymous: true },
     },
     {
-        path: '/user/:username',
+        path: '/browse/:username/:collection?',
         name: 'Browse user',
         component: BrowseUser,
         meta: { anonymous: true },

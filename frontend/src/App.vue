@@ -25,10 +25,10 @@ export default Vue.extend({
 
     this.$store.dispatch(Mutations.LOAD_USER_TOKEN)
         .then(() => {
-          console.log("User loaded: ", this.$store.state.User.Name);
+          console.log("User loaded: ", this.$store.state.Account.User.Name);
         })
-        .catch(() => {
-          console.log("err");
+        .catch((resp) => {
+          console.log("err", resp);
         });
   }
 });

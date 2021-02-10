@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import CustomInput from "@/components/CustomInput";
 export default {
   name: "Uploader",

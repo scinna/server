@@ -1,7 +1,5 @@
 <template>
   <div id="content">
-    <Browser v-if="user !== null" :username="user.Name" />
-    <Loader v-else/>
   </div>
 </template>
 
@@ -13,12 +11,16 @@ import Loader from "@/components/Loader.vue";
 
 export default Vue.extend({
   name: 'Home',
-  components: {Loader, Browser},
-  computed: {
-    ...mapState({
-      user: state => state.Account.User,
+  mounted() {
+    if (this.$store.state.Account.User)
+    this.$router.push({
+      name: 'Browse user',
+      params: {
+        username: this.$store.state.Account.User.Name,
+        collection: '',
+      }
     })
-  },
+  }
 });
 </script>
 
