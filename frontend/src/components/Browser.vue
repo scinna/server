@@ -7,7 +7,8 @@
       <h1 style="grid-area: a">/{{ browserUsername }}/{{!content.IsDefault ? content.Title : ''}}</h1>
     </div>
     <div class="browser--content">
-      <Icon v-for="media in content.Medias" :key="media.MediaID" :is-directory="false" :name="media.Title" />
+      <Icon v-for="collection in content.Collections" :key="collection.CollectionID + collection.Title + collection.Visibility" :collection="collection" />
+      <Icon v-for="media in content.Medias" :key="media.MediaID + media.Title + media.Visibility" :media="media"/>
     </div>
 
     <Uploader v-if="IsUploaderVisible" :hide="() => this.IsUploaderVisible = false"/>
@@ -19,7 +20,7 @@
 <script>
 import BrowserButton from "@/components/BrowserButton";
 import Loader from "@/components/Loader";
-import {FetchCollection} from "@/api/Collections";
+import {Browse as ApiBrowse} from "@/api/Collections";
 import Icon from "@/components/Icon";
 import Uploader from "@/components/Uploader";
 import FloatingActionButton from "@/components/FloatingActionButton";
@@ -51,7 +52,7 @@ export default {
     this.browserUsername = this.username.length > 0 ? this.username : this.$route.params.username;
     this.browserCollection = this.$route.params.collection ?? '';
 
-    FetchCollection(this.browserUsername, this.browserCollection)
+    ApiBrowse(this.browserUsername, this.browserCollection)
         .then(resp => {
           this.content = resp.data;
           this.isLoaded = true;

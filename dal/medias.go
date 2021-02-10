@@ -16,6 +16,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 		m.TITLE,
 		m.DESCRIPTION,
 		m.PATH,
+		m.THUMBNAIL,
 		m.VISIBILITY,
 		su.USER_ID as "User.user_id",
 		su.user_name as "User.user_name",
@@ -50,7 +51,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 
 func (m *Medias) FindFromCollection(id string, withHidden bool) ([]models.Media, error) {
 	rows, err := m.DB.Queryx(`
-		SELECT MEDIA_ID, TITLE, DESCRIPTION, PATH, VISIBILITY
+		SELECT MEDIA_ID, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY
 		FROM MEDIA
 		WHERE 
 			CLC_ID = $1
@@ -104,11 +105,11 @@ func (m *Medias) CreatePicture(pict *models.Media, collection string) error {
 	pict.Path = pict.User.UserID + "/" + pict.MediaID
 
 	_, err := m.DB.Exec(`
-		INSERT INTO MEDIA (MEDIA_ID, USER_ID, TITLE, DESCRIPTION, PATH, VISIBILITY, MIMETYPE, CLC_ID)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, 
-		        CASE WHEN LENGTH($8) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND TITLE = $8)
+		INSERT INTO MEDIA (MEDIA_ID, USER_ID, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, MIMETYPE, CLC_ID)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 
+		        CASE WHEN LENGTH($9) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND TITLE = $9)
 		        ELSE (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $2 AND DEFAULT_COLLECTION = true)
-		END)`, pict.MediaID, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Visibility, pict.Mimetype, collection)
+		END)`, pict.MediaID, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Thumbnail, pict.Visibility, pict.Mimetype, collection)
 
 	return err
 }

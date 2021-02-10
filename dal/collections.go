@@ -82,6 +82,31 @@ func (c *Collections) Fetch(user *models.User, name string) (*models.Collection,
 	return &collection, err
 }
 
+// clcid is there when i'll have the faith to implement nested collections
+// By procrastinating on the fact of doing it maybe I can prepare it fine enough that it won't be a pain to do
+// when time will come
+func (c *Collections) FetchSubCollection(user *models.User, clcid string) ([]models.Collection, error) {
+	rows, err := c.DB.Queryx(`SELECT CLC_ID, TITLE, VISIBILITY FROM COLLECTIONS WHERE USER_ID = $1 AND DEFAULT_COLLECTION = false`, user.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var collections []models.Collection
+	for rows.Next() {
+		collection := models.Collection{
+			IsDefault: false,
+		}
+		err = rows.StructScan(&collection)
+		if err != nil {
+			return nil, err
+		}
+
+		collections = append(collections, collection)
+	}
+
+	return collections, err
+}
+
 func (c *Collections) FetchWithMedias(dalMedias Medias, user *models.User, name string, showHidden bool) (*models.Collection, error) {
 	row := c.DB.QueryRowx(`
 		SELECT 
@@ -110,6 +135,17 @@ func (c *Collections) FetchWithMedias(dalMedias Medias, user *models.User, name 
 	err := row.StructScan(&collection)
 	if err != nil {
 		return nil, err
+	}
+
+	if collection.IsDefault {
+		cols, err := c.FetchSubCollection(user, collection.CollectionID)
+		if err != nil {
+			return nil, err
+		}
+
+		collection.Collections = cols
+	} else {
+		collection.Collections = []models.Collection{}
 	}
 
 	medias, err := dalMedias.FindFromCollection(collection.CollectionID, showHidden)

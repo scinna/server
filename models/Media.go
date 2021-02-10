@@ -1,6 +1,13 @@
 package models
 
-import "time"
+import (
+	"bufio"
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"time"
+)
 
 type Media struct {
 	MediaID string `db:"media_id"`
@@ -12,10 +19,32 @@ type Media struct {
 	Visibility  int       `db:"visibility"`
 	PublishedAt time.Time `db:"published_at"`
 	Mimetype    string    `db:"mimetype" json:"-"`
+	Thumbnail   string    `db:"thumbnail"`
 
 	Collection *Collection `db:"collection" json:",omitempty"`
 
 	User *User `db:"User" json:",omitempty"`
+}
+
+// GenerateThumbnail takes a source path for the picture and generates it's thumnail attribute. Only works for pictures for now
+func (m *Media) GenerateThumbnail(source string) error {
+	/**
+	 * @TODO: Thumbnailise it
+	 */
+	f, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+
+	reader := bufio.NewReader(f)
+	content, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+
+	m.Thumbnail = fmt.Sprintf("data:%v;base64,%v", m.Mimetype, base64.StdEncoding.EncodeToString(content))
+
+	return nil
 }
 
 func (m Media) GetTableName() string {
@@ -33,6 +62,7 @@ func (m Media) GenerateTable() string {
 			DESCRIPTION VARCHAR,
 			PATH        VARCHAR,
 			VISIBILITY  INTEGER,
+			THUMBNAIL   TEXT,
 			MIMETYPE    VARCHAR
 		);
 	`

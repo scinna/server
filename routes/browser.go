@@ -60,7 +60,6 @@ func list(prv *services.Provider) http.Handler {
 
 		var collection *models.Collection
 
-		// @TODO Make something better which will also pull the medias in the same query
 		if user != nil && user.Name == username {
 			collection, err = prv.Dal.Collections.FetchWithMedias(prv.Dal.Medias, user, uriParsed, true)
 		} else {

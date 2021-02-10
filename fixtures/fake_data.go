@@ -77,14 +77,8 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 		Mimetype:    "image/jpeg",
 	}
 
-	err := prv.Dal.Medias.CreatePicture(&pict, collection.Title)
-	if err != nil {
-		return err
-	}
-
 	outputFile, err := os.Create(parentFolder + pict.MediaID)
 	if err != nil {
-		prv.Dal.Medias.DeleteMedia(&pict)
 		return err
 	}
 	defer outputFile.Close()
@@ -95,7 +89,16 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 	}
 
 	_, err = io.Copy(outputFile, file)
-	return err
+	if err != nil {
+		return err
+	}
+
+	err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
+	if err != nil {
+		return err
+	}
+
+	return prv.Dal.Medias.CreatePicture(&pict, collection.Title)
 }
 
 func findRandomPicture() (*os.File, error) {
