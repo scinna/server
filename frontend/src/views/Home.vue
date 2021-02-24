@@ -5,9 +5,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Browser from "@/components/Browser.vue";
-import {mapState} from "vuex";
-import Loader from "@/components/Loader.vue";
 
 export default Vue.extend({
   name: 'Home',

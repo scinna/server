@@ -6,14 +6,16 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue, {PropType} from 'vue';
+
+export default Vue.extend({
   name: "BrowserButton",
   props: {
-    title: { type: String },
-    icon: { type: String },
-    disabled: { type: Boolean}
+    title: { type: Function as PropType<string> },
+    icon: { type: Function as PropType<string> },
+    disabled: { type: Function as PropType<boolean> }
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>

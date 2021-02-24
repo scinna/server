@@ -5,13 +5,15 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue, {PropType} from 'vue';
+
+export default Vue.extend({
   name: "FloatingActionButton",
   props: {
-    icon: { type: String },
+    icon: { type: Function as PropType<string> },
     click: { type: Function }
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>

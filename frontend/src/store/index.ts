@@ -1,9 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Account from "@/store/Account";
-import Server from "@/store/Server";
+import Account, {AccountStateProps} from "@/store/Account";
+import Server, {ServerProps} from "@/store/Server";
 
 Vue.use(Vuex)
+
+export type GlobalState = {
+  Account: AccountStateProps;
+  Server: ServerProps;
+}
 
 export default new Vuex.Store({
   state: {

@@ -12,36 +12,44 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import {Collection} from "@/types/Collection";
 import {Media} from "@/types/Media";
+import {PropType} from "vue";
 
-export default {
+export default Vue.extend({
   name: "Icon",
-  props: ['collection', 'media'], // @TODO: Find how to type the vars >:(
+  props: {
+    collection: {
+      type: Function as PropType<Collection|null|undefined> ,
+    },
+    media: {
+      type: Function as PropType<Media|null|undefined> ,
+    },
+  },
   methods: {
-    isCollection() {
+    isCollection(): boolean {
       return this.collection !== undefined && this.collection !== null;
     },
-    getTitle() {
-      if (this.isCollection()) {
+    getTitle(): string {
+      if (this.collection) {
         return this.collection.Title;
       }
 
-      return this.media.Title;
+      return this.media ? this.media.Title : '';
     },
-    getIconFromVisibility() {
-      switch (this.isCollection() ? this.collection.Visibility : this.media.Visibility) {
+    getIconFromVisibility(): string {
+      switch (this.collection ? this.collection.Visibility : this.media ? this.media.Visibility : null) {
         case 1:
           return 'eye-slash';
         case 2:
           return 'lock'
         default:
           return 'globe'
-
       }
     }
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>

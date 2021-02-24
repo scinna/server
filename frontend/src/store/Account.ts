@@ -6,7 +6,7 @@ import {Commit} from "vuex";
 
 export const TOKEN_KEY = 'SCINNA_TOKEN';
 
-interface AccountStateProps {
+export interface AccountStateProps {
     User: User | null;
     Token: string | null;
 }

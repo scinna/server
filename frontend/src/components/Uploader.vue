@@ -23,12 +23,14 @@
 </template>
 
 <script lang="ts">
-import CustomInput from "@/components/CustomInput";
-export default {
+import Vue, {PropType} from 'vue';
+import CustomInput from "@/components/CustomInput.vue";
+
+export default Vue.extend({
   name: "Uploader",
   components: {CustomInput},
   props: {
-    hide: { type: Function }
+    hide: { type: Function as PropType<Function> }
   },
   data: function() {
     return {
@@ -38,7 +40,7 @@ export default {
     }
   },
   methods: {
-    closeUploader(event) {
+    closeUploader(event: any) {
       if (event.target !== this.$refs.Background) {
         return
       }
@@ -46,7 +48,7 @@ export default {
       this.hide();
     }
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>

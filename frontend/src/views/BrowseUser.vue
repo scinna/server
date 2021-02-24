@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Browser from "@/components/Browser";
+import Browser from "@/components/Browser.vue";
 
 export default {
   name: "BrowseUser",

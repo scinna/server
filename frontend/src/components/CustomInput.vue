@@ -5,22 +5,24 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, {PropType} from 'vue';
+
+export default Vue.extend({
   name   : "CustomInput",
   props  : {
-    id      : {type: String},
-    label   : {type: String},
-    type    : {type: String},
-    value   : {type: String},
-    required: {type: Boolean},
+    id      : {type: Function as PropType<string>},
+    label   : {type: Function as PropType<string>},
+    type    : {type: Function as PropType<string>},
+    value   : {type: Function as PropType<string>},
+    required: {type: Function as PropType<boolean>},
   },
   methods: {
-    updateValue: function (value) {
+    updateValue: function (value: any) {
       this.$emit('input', value);
     }
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>

@@ -22,15 +22,16 @@
 </template>
 
 <script lang="ts">
-import BrowserButton         from "@/components/BrowserButton";
-import Loader                from "@/components/Loader";
+import BrowserButton         from "@/components/BrowserButton.vue";
+import Loader                from "@/components/Loader.vue";
 import {Browse as ApiBrowse} from "@/api/Collections";
-import Icon                  from "@/components/Icon";
-import Uploader              from "@/components/Uploader";
-import FloatingActionButton  from "@/components/FloatingActionButton";
+import Icon                  from "@/components/Icon.vue";
+import Uploader              from "@/components/Uploader.vue";
+import FloatingActionButton  from "@/components/FloatingActionButton.vue";
 import {Collection}          from "@/types/Collection";
 import {Media}               from "@/types/Media";
 import {mapState}            from "vuex";
+import Vue, {PropType}       from "vue";
 
 type Data = {
   browserUsername: string;
@@ -40,11 +41,11 @@ type Data = {
   isUploaderVisible: boolean;
 }
 
-export default {
+export default Vue.extend({
   name: "Browser",
   components: {Loader, BrowserButton, Icon, Uploader, FloatingActionButton},
   props: {
-    username: {type: String},
+    username: {type: Function as PropType<string>},
   },
   computed: {
     ...mapState({
@@ -86,7 +87,7 @@ export default {
           console.log(err.response)
         })
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>
