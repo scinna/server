@@ -18,7 +18,7 @@ The first version will have the basic feature expected from a self-hosted image 
 
 ### Version 1.0
 
-- [ ] Server management (Private, public, custom naming, ...)
+- [ ] Server management through config file (Private, public, custom naming, ...)
 - [ ] Account management
 - [ ] Uploading pictures
 - [ ] Picture infos (Title, Description, Date, public/private/unlisted)
@@ -30,22 +30,22 @@ The first version will have the basic feature expected from a self-hosted image 
 
 ### Version 2.0
 
-- [ ] Nested collections
+- [ ] User roles (Simple user, admin, ...)
+- [ ] Server admin panel
+- [ ] Support for abstract filesystems (local, S3, ftp, ...)
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
-- [ ] Video sharing
-- More to come
+- [ ] LDAP ?
 
 ### Version 3.0
 
-- [ ] Real folders (Like folders with sub-folders)
-- [ ] Support for S3 storage (Maybe?)
-- [ ] LDAP ?
+- [ ] Nested collections (Like folders with sub-folders)
+- [ ] Video sharing
 - More to come
 
 ## Contributing
 
-Since there are no contributing.md yet, please act nice when creating PR, following the same code conventions as we do.
+Since there are no contributing.md yet, please act nice when creating PR, following the same code conventions as we do. We have a clear idea about how the software will grow in features so if you are not sure, please come by the discord to ask if the feature you want to implement is following our vision.
 
 There will be a contributing.md file later for clarification.
 
-Oh, and we are using [SemVer](https://semver.org/) so remember to up the SCINNA_VERSION number in main.go if you have changed something related to the database, as intended. For everything else, just change the SCINNA_PATCH number
+Oh, and we are using [SemVer-ish](https://semver.org/) so remember to up the SCINNA_VERSION number in main.go if you have changed something related to the database, as intended. For everything else, just change the SCINNA_PATCH number. For more explanation, look at the [Our pledge](#Our pledge) section.
