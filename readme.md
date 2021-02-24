@@ -10,7 +10,7 @@ Ready to setup your own scinna instance ? Go take at look at the [Wiki](https://
 
 ## Our pledge
 
-We aim to build a stable and easy to use software. Thus we pledge to never break database compatibility across last digit version (e.g. 1.2.3 has the same database structure as 1.2.4 and will not break either upgrading it or downgrading it). The second digit shows an update in the database which will go painlessly (Migration are applied when needed for upgrade, can rollback manually with a flag). Most feature will bump the second number, large features (e.g. nested folder) will bump the first digit. This is more-or-less following the (semver)[https://semver.org] standard.
+We aim to build a stable and easy to use software. Thus we pledge to never break database compatibility across last digit version (e.g. 1.2.3 has the same database structure as 1.2.4 and will not break either upgrading it or downgrading it). The second digit shows an update in the database which will go painlessly (Migration are applied when needed for upgrade, can rollback manually with a flag). Most feature will bump the second number, large features (e.g. nested folder) will bump the first digit. This is more-or-less following the [semver](https://semver.org) standard.
 
 ## Roadmap
 
@@ -48,4 +48,4 @@ Since there are no contributing.md yet, please act nice when creating PR, follow
 
 There will be a contributing.md file later for clarification.
 
-Oh, and we are using [SemVer-ish](https://semver.org/) so remember to up the SCINNA_VERSION number in main.go if you have changed something related to the database, as intended. For everything else, just change the SCINNA_PATCH number. For more explanation, look at the [Our pledge](#Our pledge) section.
+Oh, and we are using [SemVer-ish](https://semver.org/) so remember to up the SCINNA_VERSION number in main.go if you have changed something related to the database, as intended. For everything else, just change the SCINNA_PATCH number. For more explanation, look at the [Our pledge](#our-pledge) section.
