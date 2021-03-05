@@ -13,16 +13,12 @@ import (
 func WebApp(prv *services.Provider, r *mux.Router) {
 	// /app will show the frontend app
 	// We can't use / since it will be used to serve pictures and it would conflict with assets serving
-	// A solution would be to move al assets to a sub-directory and configure the frontend to let access on /assets for example
-	r.HandleFunc("/app", homeRoute(prv))
+	// A solution would be to move all assets to a sub-directory and configure the frontend to let access on /assets for example
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/app/", http.StatusPermanentRedirect)
+	})
+	r.PathPrefix("/app").Handler(http.StripPrefix("/app/", http.FileServer(http.FS(*prv.Webapp))))
 	r.HandleFunc("/api/infos", configRoute(prv))
-}
-
-func homeRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to scinna webapp"))
-		// @TODO use pkger to serve the webapp
-	}
 }
 
 func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {

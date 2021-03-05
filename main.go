@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
 	"net/http"
@@ -25,6 +26,9 @@ const (
 	SCINNA_PATCH   = "0"
 )
 
+//go:embed frontend/dist
+var frontend embed.FS
+
 func main() {
 	err := start()
 	if err != nil {
@@ -45,7 +49,7 @@ func start() error {
 		return err
 	}
 
-	prv, err := services.NewProvider(cfg)
+	prv, err := services.NewProvider(cfg, &frontend)
 	if err != nil {
 		return err
 	}

@@ -17,6 +17,7 @@ const defaultState: AccountStateProps = {
 }
 
 const accounts = {
+    namespaced: true,
     state: defaultState,
     mutations: {
         [Mutations.LOAD_USER_TOKEN]: (state: AccountStateProps, token: string|null) => {

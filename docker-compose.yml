@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+    scinna:
+        image: scinna
+        restart: unless-stopped
+        volumes:
+            - ./config.json:/app/config.json
+            - medias:/medias
+        ports:
+            - 1635:1635
+
     postgres:
         image: postgres:13-alpine
         restart: unless-stopped
@@ -22,3 +31,4 @@ services:
 
 volumes:
   pgdata:
+  medias:

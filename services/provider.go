@@ -4,10 +4,12 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"crypto/tls"
+	"embed"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/scinna/server/dal"
+	"io/fs"
 	"net/smtp"
 	"strconv"
 	"strings"
@@ -19,6 +21,7 @@ import (
 )
 
 type Provider struct {
+	Webapp      *fs.FS
 	DB          *sqlx.DB
 	Dal         *dal.Dal
 	ArgonParams *ArgonParams
@@ -26,7 +29,12 @@ type Provider struct {
 	Config      *config.Config
 }
 
-func NewProvider(cfg *config.Config) (*Provider, error) {
+func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
+	correctedFS, err := fs.Sub(webapp, "frontend/dist")
+	if err != nil {
+		return nil, err
+	}
+
 	db := cfg.Database
 	dsn := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", db.Username, db.Password, db.Hostname, db.Port, db.Database)
 
@@ -46,6 +54,7 @@ func NewProvider(cfg *config.Config) (*Provider, error) {
 	dalObject := dal.NewDal(sqlxDb)
 
 	return &Provider{
+		Webapp:      &correctedFS,
 		DB:          sqlxDb,
 		Dal:         &dalObject,
 		ArgonParams: argonParams,

@@ -1,6 +1,6 @@
 module github.com/scinna/server
 
-go 1.15
+go 1.16
 
 require (
 	github.com/gabriel-vasile/mimetype v1.1.1

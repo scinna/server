@@ -13,6 +13,7 @@ const defaultState: ServerProps = {
 }
 
 const server = {
+    namespaced: true,
     state: defaultState,
     mutations: {
         [Mutations.GOT_SERVER_INFOS]: (state: ServerProps, payload: ServerProps) => {

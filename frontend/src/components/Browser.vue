@@ -48,9 +48,7 @@ export default Vue.extend({
     username: {type: Function as PropType<string>},
   },
   computed: {
-    ...mapState({
-      user: state => state.Account.User,
-    })
+    ...mapState('Account', [ 'User']),
   },
   data: function (): Data {
     return {

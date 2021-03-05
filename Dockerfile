@@ -1,8 +1,23 @@
-FROM scratch
+FROM node:14 AS BUILDFRONT
 
-COPY ./server /
-COPY ./templates/ /templates/
+WORKDIR /app
+COPY ./frontend /app
 
-WORKDIR /
+RUN yarn
+RUN yarn build
 
-CMD [ "/server" ]
+FROM golang:1.16-alpine AS BUILDBACK
+
+WORKDIR /app
+COPY . /app
+COPY --from=BUILDFRONT /app/dist /app/frontend/dist
+
+RUN go mod vendor
+RUN go mod download
+RUN go build -o server
+
+FROM alpine
+WORKDIR /app
+COPY --from=BUILDBACK /app/server /app/server
+
+CMD [ "/app/server" ]
