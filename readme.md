@@ -8,6 +8,8 @@ Scinna is a self-hosted picture sharing website focusing on screenshot.
 
 Ready to setup your own scinna instance ? Go take at look at the [Wiki](https://github.com/scinna/server/wiki) where everything is explained.
 
+Versions 0.0.x are private indev version they should NOT be used in any way shape or form. Nothing is guarenteed on those and things WILL break.
+
 ## Our pledge
 
 We aim to build a stable and easy to use software. Thus we pledge to never break database compatibility across last digit version (e.g. 1.2.3 has the same database structure as 1.2.4 and will not break either upgrading it or downgrading it). The second digit shows an update in the database which will go painlessly (Migration are applied when needed for upgrade, can rollback manually with a flag). Most feature will bump the second number, large features (e.g. nested folder) will bump the first digit. This is more-or-less following the [semver](https://semver.org) standard.
@@ -34,6 +36,7 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] Server admin panel
 - [ ] Support for abstract filesystems (local, S3, ftp, ...)
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
+- [ ] 2FA
 - [ ] LDAP ?
 
 ### Version 3.0
