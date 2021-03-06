@@ -33,12 +33,12 @@ func (r *Registration) DisableInvite(invite *models.InviteCode) {
 	r.DB.Exec(`UPDATE invite_code SET used = true WHERE invite_code = $1`, invite.InviteCode)
 }
 
-func (r *Registration) RegisterUser(request *requests.RegisterRequest, canRegister bool) (string, error){
+func (r *Registration) RegisterUser(request *requests.RegisterRequest, registerWithoutValidation bool) (string, error){
 	rq := ` INSERT INTO SCINNA_USER (USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED)
 			VALUES ($1, $2, $3, $4)
 			RETURNING USER_ID, VALIDATION_CODE`
 
-	row := r.DB.QueryRowx(rq, request.Username, request.Email, request.HashedPassword, canRegister)
+	row := r.DB.QueryRowx(rq, request.Username, request.Email, request.HashedPassword, registerWithoutValidation)
 	if row.Err() != nil {
 		return "", row.Err()
 	}

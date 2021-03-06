@@ -3,11 +3,9 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"github.com/scinna/server/log"
 	"io/ioutil"
 	"os"
-	"strings"
-
-	"github.com/scinna/server/log"
 )
 
 type Config struct {
@@ -19,31 +17,26 @@ type Config struct {
 	MediaPath     string
 }
 
-/** SMTP represents the configuration for the database **/
-type SMTP struct {
-	Enabled        bool
-	ConnectionType string
+func (c Config) Validate() error {
+	err := []error{
+		c.Mail.Validate(),
+		c.Database.Validate(),
+		c.Registration.Validate(),
+	}
 
-	Hostname string
-	Port     int
-	Username string
-	Password string
-	Sender   string
-}
+	if len(c.WebURL) == 0 {
+		err = append(err, errors.New("WebURL can't be empty"))
+	}
 
-/** DB represents the configuration for the database **/
-type DB struct {
-	Hostname string
-	Port     int
-	Username string
-	Password string
-	Database string
-}
+	if len(c.ListeningAddr) == 0 {
+		err = append(err, errors.New("ListeningAddr can't be empty"))
+	}
 
-type Registration struct {
-	HasUser    bool
-	Allowed    bool
-	Validation string
+	if len(c.MediaPath) == 0 {
+		err = append(err, errors.New("MediaPath can't be empty"))
+	}
+
+	return combineErrors(err...)
 }
 
 func Load() (*Config, error) {
@@ -75,11 +68,11 @@ func loadFile(file string) (*Config, error) {
 	}
 
 	err = json.Unmarshal(bytesInFile, &cfg)
-
-	cfg.Registration.Validation = strings.ToLower(cfg.Registration.Validation)
-	if err == nil && cfg.Registration.Validation != "open" && cfg.Registration.Validation != "email" && cfg.Registration.Validation != "admin" {
-		err = errors.New("Registration validation must match one of these values: \"open\", \"email\" or \"admin\"")
+	if err != nil {
+		return nil, err
 	}
+
+	err = cfg.Validate()
 
 	return &cfg, err
 }

@@ -169,11 +169,7 @@ func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
 	subject = "Subject: " + subject + "!\n"
 	msg := []byte(subject + mime + "\n" + body)
 
-	/**
-		@TODO:
-			Support non-starttls auth
-			Add a way to stay connected to the SMTP server for X amt of time (If you have a huge userbase on your server you might not want to open a connection each email sent)
-	**/
+	// @TODO: Add a way to stay connected to the SMTP server for X amt of time (If you have a huge userbase on your server you might not want to open a connection each email sent)
 	smtpCfg := prv.Config.Mail
 	prv.MailClient = smtp.PlainAuth("", smtpCfg.Username, smtpCfg.Password, smtpCfg.Hostname)
 	tlsConfig := &tls.Config{
@@ -186,9 +182,11 @@ func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
 		return false, err
 	}
 
-	err = c.StartTLS(tlsConfig)
-	if err != nil {
-		return false, err
+	if prv.Config.Mail.ConnectionType == "STARTTLS" {
+		err = c.StartTLS(tlsConfig)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if err := smtp.SendMail(smtpCfg.Hostname+":"+strconv.Itoa(smtpCfg.Port), prv.MailClient, smtpCfg.Sender, []string{dest}, msg); err != nil {
@@ -204,15 +202,13 @@ func (prv *Provider) SendValidationMail(dest, validationCode string) (bool, erro
 		url = url + "/"
 	}
 
-	/**
-	@TODO HTML template for pretty emails
-	*/
+	// @TODO make the registration go through the webapp (No need for template or anything) + template for the email
 	return prv.SendMail(dest, "Scinna: Activate your account", fmt.Sprintf(`
 		Hello,
 
 		You have registred for an account on a Scinna server.
 		Please validate your account.
-		%vauth/register/%v
+		%vapi/auth/register/%v
 
 		Keep in mind that this link will only work for one hour after registration. If you missed the validation, you need to register again.`, url, validationCode))
 }

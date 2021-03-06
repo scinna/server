@@ -3,24 +3,26 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"net/http"
-	"strings"
-
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
+	"github.com/scinna/server/models"
 	"github.com/scinna/server/requests"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"github.com/scinna/server/utils"
+	"html/template"
+	"net/http"
 )
 
 func Authentication(prv *services.Provider, r *mux.Router) {
 	r.Use(middlewares.Json)
 
+	/**
+	 * Maybe we will switch to JWT at some point, but not now, there are few enough users that it doesn't matter
+	 */
 	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
 
 	r.HandleFunc("/register", findRegistrationType(prv)).Methods(http.MethodGet)
@@ -51,25 +53,25 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		// @TODO Maybe we can prevent the blacklist of the "me" username by combining the /me and the /user_id endpoint
-		// It would simply add complete infos when requesting the current user
-		if len(registerBody.Username) == 0 || len(registerBody.Email) == 0 || len(registerBody.Password) == 0 || strings.ToLower(registerBody.Username) == "me" {
+		if len(registerBody.Username) == 0 || len(registerBody.Email) == 0 || len(registerBody.Password) == 0 {
 			serrors.ErrorInvalidRegistration.Write(w)
 			return
 		}
 
 		// Check if the invite code exists
-		invite := prv.Dal.Registration.FindInvite(registerBody.InviteCode)
-		if !prv.Config.Registration.Allowed && (invite == nil || invite.Used) {
+		var invite *models.InviteCode
+		if !prv.Config.Registration.Allowed {
+			invite = prv.Dal.Registration.FindInvite(registerBody.InviteCode)
 			if invite == nil {
 				serrors.ErrorBadInviteCode.Write(w)
+				return
 			} else if invite.Used {
 				serrors.ErrorInviteUsed.Write(w)
+				return
 			}
-			return
 		}
 
-		// @TODO: Validate email address
+		// @TODO: Validate email address (regex)
 
 		hashedPassword, err := prv.HashPassword(registerBody.Password)
 		if err != nil {
@@ -99,7 +101,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		if prv.Config.Registration.Validation == "email" && prv.Config.Mail.Enabled {
 			_, err := prv.SendValidationMail(registerBody.Email, valcode)
 			if err != nil {
-				// @TODO Add an error on for the user
+				// @TODO Add a warning for the user
 				log.Warn(err.Error())
 			}
 		}
@@ -124,7 +126,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// @TODO: Use pkger to embed the template
+		// @TODO: Embed the template with go:embed
 		w.Header().Del("Content-Type")
 
 		validationCode := mux.Vars(r)["validation_code"]

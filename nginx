@@ -1,7 +1,7 @@
 server {
     listen      80;
     server_name i.scinna.drx;
-    
+
     # Using 307 ensure that the client will follow the redirection on POST requests
     # Cf. https://softwareengineering.stackexchange.com/questions/99894/why-doesnt-http-have-post-redirect
     return 307 https://$server_name$request_uri;
@@ -45,4 +45,74 @@ server {
 
 }
 
+server {
+    listen      80;
+    server_name mail.scinna.drx;
+    return 301 https://$server_name$request_uri;
+}
 
+server {
+    listen 443 ssl http2;
+    server_name i.scinna.drx;
+
+    ssl_certificate /opt/ssl/scinna.drx.pem;
+    ssl_certificate_key /opt/ssl/scinna.drx-key.pem;
+
+    include snippets/ssl.conf;
+
+    location / {
+        proxy_pass http://localhost:1635;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+
+        proxy_pass_request_headers      on;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+
+    location /app {
+        proxy_pass http://localhost:8080;
+    }
+
+    location /sockjs-node {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location = / {
+        return 301 $scheme://$host/app;
+    }
+
+}
+
+server {
+    listen      80;
+    server_name mail.scinna.drx;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name mail.scinna.drx;
+
+    ssl_certificate /opt/ssl/scinna.drx.pem;
+    ssl_certificate_key /opt/ssl/scinna.drx-key.pem;
+
+    include snippets/ssl.conf;
+
+    location / {
+        proxy_pass http://localhost:8025;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+
+        proxy_pass_request_headers      on;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+
+}

@@ -11,3 +11,8 @@ services:
         ports:
             - 8080:8080
 
+    mail:
+        image: mailhog/mailhog
+        ports:
+            - 8025:8025
+            - 1025:1025

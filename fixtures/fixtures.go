@@ -83,7 +83,7 @@ func InitializeTable(prv *services.Provider, scinnaVersion string, force bool) {
 	log.InfoAlwaysShown("\t- Creating his default collection")
 	defaultCollection, err := prv.Dal.Collections.CreateDefault(user)
 
-	if false {
+	if true {
 		InsertFakeData(prv, user, defaultCollection)
 	}
 }
