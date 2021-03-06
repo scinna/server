@@ -22,6 +22,7 @@ func Browser(prv *services.Provider, r *mux.Router) {
 	r.PathPrefix("/{user}").Handler(http.StripPrefix("/api/browse/", middlewares.LoggedInMiddleware(prv)(delete(prv)))).Methods(http.MethodDelete)
 }
 
+// stripPrefix removes the username from a URI requested in order to have only the "path" for the given collection
 func stripPrefix(uri, username string) string {
 	uri = uri[len(username):]
 
@@ -41,8 +42,12 @@ func stripPrefix(uri, username string) string {
 func list(prv *services.Provider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username := mux.Vars(r)["user"]
-		uriParsed, err := url.QueryUnescape(r.URL.RequestURI())
-		uriParsed = stripPrefix(uriParsed, username)
+		path, err := url.QueryUnescape(r.URL.RequestURI())
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		path = stripPrefix(path, username)
 
 		token, err := middlewares.GetTokenFromRequest(r)
 		if err != nil && err != serrors.NoToken {
@@ -60,10 +65,11 @@ func list(prv *services.Provider) http.Handler {
 
 		var collection *models.Collection
 
+		// If the requested user is the logged in user, we can fetch more infos and private pictures
 		if user != nil && user.Name == username {
-			collection, err = prv.Dal.Collections.FetchWithMedias(prv.Dal.Medias, user, uriParsed, true)
+			collection, err = prv.Dal.Collections.FetchWithMedias(prv.Dal.Medias, user, path, true)
 		} else {
-			collection, err = prv.Dal.Collections.FetchFromUsernameWithMedias(prv.Dal.Medias, username, uriParsed, false)
+			collection, err = prv.Dal.Collections.FetchFromUsernameWithMedias(prv.Dal.Medias, username, path, false)
 		}
 
 		if serrors.WriteError(w, err) {
@@ -71,7 +77,7 @@ func list(prv *services.Provider) http.Handler {
 		}
 
 		collectionJSON, _ := json.Marshal(collection)
-		w.Write(collectionJSON)
+		_, _ = w.Write(collectionJSON)
 	})
 }
 
@@ -98,11 +104,11 @@ func create(prv *services.Provider) http.Handler {
 		}
 
 		var newCollectionRequest struct {
-			Visibility int
+			Visibility models.Visibility
 		}
 
 		err = json.Unmarshal(body, &newCollectionRequest)
-		if err != nil {
+		if err != nil || !newCollectionRequest.Visibility.IsValid() {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -122,7 +128,7 @@ func create(prv *services.Provider) http.Handler {
 		collection.User = nil
 
 		collectionJSON, _ := json.Marshal(collection)
-		w.Write(collectionJSON)
+		_, _ = w.Write(collectionJSON)
 	})
 }
 
@@ -155,7 +161,7 @@ func edit(prv *services.Provider) http.Handler {
 
 		var query struct {
 			Title      string
-			Visibility int
+			Visibility models.Visibility
 		}
 
 		err = json.Unmarshal(body, &query)
@@ -164,12 +170,7 @@ func edit(prv *services.Provider) http.Handler {
 			return
 		}
 
-		if len(query.Title) == 0 || query.Visibility < 0 || query.Visibility > 2 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if query.Visibility < 0 || query.Visibility > 2 {
+		if len(query.Title) == 0 || !query.Visibility.IsValid() {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -180,7 +181,7 @@ func edit(prv *services.Provider) http.Handler {
 		}
 
 		collectionJson, _ := json.Marshal(&col)
-		w.Write(collectionJson)
+		_, _ = w.Write(collectionJson)
 	})
 }
 
@@ -198,15 +199,15 @@ func delete(prv *services.Provider) http.Handler {
 			return
 		}
 
-		uriParsed, err := url.QueryUnescape(r.URL.RequestURI())
-		uriParsed = stripPrefix(uriParsed, username)
+		path, err := url.QueryUnescape(r.URL.RequestURI())
+		path = stripPrefix(path, username)
 
-		if len(uriParsed) == 0 {
+		if len(path) == 0 {
 			serrors.CollectionNotFound.Write(w)
 			return
 		}
 
-		err = prv.Dal.Collections.DeleteIfOwned(user, uriParsed)
+		err = prv.Dal.Collections.DeleteIfOwned(user, path)
 		if serrors.WriteError(w, err) {
 			return
 		}

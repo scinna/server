@@ -44,14 +44,14 @@ func InsertFakeData(prv *services.Provider, user *models.User, defaultCollection
 }
 
 func generateCollection(prv *services.Provider, user *models.User) (*models.Collection, error) {
-	visib := r.Intn(2)
+	var visibility = models.VisibilityFromInt(r.Intn(2))
 
 	col := models.Collection{
-		Title:       fmt.Sprintf("[%v] %v]", visib, faker.Lorem().Sentence(2)),
-		User:         user,
-		Visibility:   visib,
-		IsDefault:    false,
-		Medias:       nil,
+		Title:      fmt.Sprintf("[%v] %v]", visibility, faker.Lorem().Sentence(2)),
+		User:       user,
+		Visibility: visibility,
+		IsDefault:  false,
+		Medias:     nil,
 	}
 
 	err := prv.Dal.Collections.Create(&col)
@@ -59,20 +59,19 @@ func generateCollection(prv *services.Provider, user *models.User) (*models.Coll
 	return &col, err
 }
 
-
 func generatePicture(prv *services.Provider, user *models.User, collection *models.Collection) error {
 	parentFolder := prv.Config.MediaPath + "/" + user.UserID + "/"
-	os.MkdirAll(parentFolder, os.ModePerm)
+	_ = os.MkdirAll(parentFolder, os.ModePerm)
 
 	uid, _ := prv.GenerateUID()
 
-	visib := r.Intn(2)
+	var visibility = models.VisibilityFromInt(r.Intn(2))
 
 	pict := models.Media{
 		MediaID:     uid,
-		Title:       fmt.Sprintf("[%v] %v]", visib, faker.Lorem().Sentence(3)),
+		Title:       fmt.Sprintf("[%v] %v]", visibility, faker.Lorem().Sentence(3)),
 		Description: faker.Lorem().Sentence(15),
-		Visibility:  visib,
+		Visibility:  visibility,
 		User:        user,
 		Mimetype:    "image/jpeg",
 	}
@@ -93,18 +92,20 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 		return err
 	}
 
-	err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
-	if err != nil {
-		return err
-	}
+	/*
+		err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
+		if err != nil {
+			return err
+		}
+	*/
 
 	return prv.Dal.Medias.CreatePicture(&pict, collection.Title)
 }
 
 func findRandomPicture() (*os.File, error) {
-	var files = []string{}
+	var files []string
 
-	filepath.Walk("assets/fake_data", func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk("assets/fake_data", func(path string, info os.FileInfo, err error) error {
 		if path != "assets/fake_data" && path != "assets/fake_data/FakeDataSource.txt" {
 			files = append(files, path)
 		}

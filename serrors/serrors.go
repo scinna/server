@@ -8,7 +8,7 @@ import (
 // SError is a custom error type for Scinna
 type SError struct {
 	Message   string
-	Errcode   int
+	ErrCode   int
 	HTTPError int `json:"-"`
 }
 
@@ -31,7 +31,7 @@ func (s *SError) Write(w http.ResponseWriter) {
 	w.Header().Del("Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(s.HTTPError)
-	w.Write(s.JSON())
+	_, _ = w.Write(s.JSON())
 }
 
 // WriteError writes the error to the response. Return false if there is no error
@@ -71,7 +71,7 @@ func WriteLoggableError(w http.ResponseWriter, err error) bool {
 func New(msg string, errCode, err int) *SError {
 	return &SError{
 		Message:   msg,
-		Errcode:   errCode,
+		ErrCode:   errCode,
 		HTTPError: err,
 	}
 }
@@ -80,7 +80,7 @@ func New(msg string, errCode, err int) *SError {
 func NewUnknown(err error) *SError {
 	return &SError{
 		Message:   err.Error(),
-		Errcode:   -1,
+		ErrCode:   -1,
 		HTTPError: http.StatusInternalServerError,
 	}
 }
@@ -123,8 +123,7 @@ var UserRegistered = New("You can now use your account", 122, 201)
 // InvalidType is sent when the user tries to upload a non autorized mime-type file
 var InvalidType = New("Please upload a PICTURE file only", 4250, 400)
 
-// InvalidVisibility is sent when the visibility for picture uploading is < 0 or > 2
-var InvalidVisibility = New("The visibility must be 0 (Public), 1 (Unlisted) or 2 (Private)", 4251, 400)
+var InvalidValidationCode = New("This validation code does not exists or is already used", 4251, 400)
 
 var NoToken = New("You can't access this resource without a valid authentication token", 401, 401)
 var NotOwner = New("You don't have permission to reach this resource", 403, 403)

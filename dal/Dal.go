@@ -1,12 +1,25 @@
 package dal
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
+)
 
 type Dal struct {
 	User         User
 	Registration Registration
 	Medias       Medias
 	Collections  Collections
+}
+
+func (d Dal) IsPostgresError(err error, constraint string) bool {
+	if pgErr, ok := err.(*pq.Error); ok {
+		if pgErr.Constraint == constraint {
+			return true
+		}
+	}
+
+	return false
 }
 
 func NewDal(db *sqlx.DB) Dal {

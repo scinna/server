@@ -16,5 +16,7 @@ func (r Registration) Validate() error {
 		return errors.New("Registration.Validation must be either \"open\", \"email\" or \"admin\"")
 	}
 
+	r.Validation = strings.ToLower(r.Validation)
+
 	return nil
 }

@@ -15,11 +15,11 @@ type Media struct {
 	Title       string `db:"title"`
 	Description string `db:"description"`
 
-	Path        string    `db:"path" json:"-"`
-	Visibility  int       `db:"visibility"`
-	PublishedAt time.Time `db:"published_at"`
-	Mimetype    string    `db:"mimetype" json:"-"`
-	Thumbnail   string    `db:"thumbnail"`
+	Path        string     `db:"path" json:"-"`
+	Visibility  Visibility `db:"visibility"`
+	PublishedAt time.Time  `db:"published_at"`
+	Mimetype    string     `db:"mimetype" json:"-"`
+	Thumbnail   string     `db:"thumbnail"`
 
 	Collection *Collection `db:"collection" json:",omitempty"`
 

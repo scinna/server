@@ -32,22 +32,27 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		r.ParseMultipartForm(10 << 20) // @TODO Max upload size customizable
+		err := r.ParseMultipartForm(10 << 20) // @TODO Max upload size customizable
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
 		title := r.FormValue("title")
-		desc := r.FormValue("description")
-		visib := r.FormValue("visibility")
+		description := r.FormValue("description")
 		collection := r.FormValue("collection")
-		visibInt, err := strconv.Atoi(visib)
+
+		visibilityStr := r.FormValue("visibility")
+		visibilityInt, err := strconv.Atoi(visibilityStr)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		if visibInt < 0 || visibInt > 2 {
-			// @TODO: remove this, just send a bad request
-			serrors.InvalidVisibility.Write(w)
+		visibility := models.VisibilityFromInt(visibilityInt)
+		if !visibility.IsValid() {
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -66,7 +71,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		}
 
 		parentFolder := prv.Config.MediaPath + "/" + user.UserID + "/"
-		os.MkdirAll(parentFolder, os.ModePerm)
+		_ = os.MkdirAll(parentFolder, os.ModePerm)
 
 		uid, err := prv.GenerateUID()
 		if err != nil {
@@ -77,8 +82,8 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		pict := models.Media{
 			MediaID:     uid,
 			Title:       title,
-			Description: desc,
-			Visibility:  visibInt,
+			Description: description,
+			Visibility:  visibility,
 			User:        user,
 			Mimetype:    mime.String(),
 		}
@@ -92,12 +97,12 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		outputFile, err := os.Create(parentFolder + pict.MediaID)
 		if err != nil {
 			serrors.WriteError(w, err)
-			prv.Dal.Medias.DeleteMedia(&pict)
+			_ = prv.Dal.Medias.DeleteMedia(&pict)
 			return
 		}
 		defer outputFile.Close()
 
-		file.Seek(0, io.SeekStart)
+		_, _ = file.Seek(0, io.SeekStart)
 
 		_, err = io.Copy(outputFile, file)
 		if err != nil {
@@ -107,7 +112,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		str, _ := json.Marshal(pict)
 		w.WriteHeader(http.StatusCreated)
-		w.Write(str)
+		_, _ = w.Write(str)
 	}
 }
 

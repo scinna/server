@@ -25,6 +25,8 @@ func (smtp SMTP) Validate() error {
 			err = append(err, errors.New("Mail.ConnectionType must be either \"STARTTLS\" or \"PLAIN\""))
 		}
 
+		smtp.ConnectionType = strings.ToLower(smtp.ConnectionType)
+
 		if len(smtp.Hostname) == 0  {
 			err = append(err, errors.New("Mail.Hostname can't be empty"))
 		}

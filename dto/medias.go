@@ -11,7 +11,7 @@ type MediaInfo struct {
 	Title       string
 	Description string
 
-	Visibility  int
+	Visibility  models.Visibility
 	PublishedAt time.Time
 
 	Collection string

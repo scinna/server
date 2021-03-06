@@ -36,7 +36,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		if media.Visibility == 2 {
+		if media.Visibility.IsPrivate() {
 			token, err := middlewares.GetTokenFromRequest(r)
 			if err != nil {
 				serrors.WriteError(w, err)
@@ -65,7 +65,7 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 		if serrors.WriteError(w, err) {
 			return
 		}
-		if media.Visibility == 2 {
+		if media.Visibility.IsPrivate() {
 			token, err := middlewares.GetTokenFromRequest(r)
 			if err != nil {
 				serrors.WriteError(w, err)
@@ -82,6 +82,6 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 
 		jsonBytes, _ := json.Marshal(mediaDto)
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonBytes)
+		_, _ = w.Write(jsonBytes)
 	}
 }

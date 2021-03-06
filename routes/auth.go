@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/lib/pq"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
@@ -13,7 +12,6 @@ import (
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"github.com/scinna/server/utils"
-	"html/template"
 	"net/http"
 )
 
@@ -25,17 +23,10 @@ func Authentication(prv *services.Provider, r *mux.Router) {
 	 */
 	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
 
-	r.HandleFunc("/register", findRegistrationType(prv)).Methods(http.MethodGet)
 	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
 	r.HandleFunc("/register/{validation_code}", validateAccount(prv)).Methods(http.MethodGet)
 
 	/** @TODO: Logout route: revoking the token but keeping the infos **/
-}
-
-func findRegistrationType(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(fmt.Sprintf(`{ "Registration": %v, "Validation": "%v" }`, prv.Config.Registration.Allowed, prv.Config.Registration.Validation)))
-	}
 }
 
 func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
@@ -82,24 +73,25 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		registerBody.HashedPassword = hashedPassword
 
 		// Register the user
-		valcode, err := prv.Dal.Registration.RegisterUser(&registerBody, prv.Config.Registration.Validation == "open")
+		valCode, err := prv.Dal.Registration.RegisterUser(&registerBody, prv.Config.Registration.Validation == "open")
 		if err != nil {
-			if err, ok := err.(*pq.Error); ok {
-				if err.Constraint == "scinna_user_user_name_key" {
-					serrors.ErrorUserExists.Write(w)
-				} else if err.Constraint == "scinna_user_user_email_key" {
-					serrors.ErrorEmailExists.Write(w)
-				} else {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-
+			if prv.Dal.IsPostgresError(err, "scinna_user_user_name_key") {
+				serrors.ErrorUserExists.Write(w)
 				return
 			}
+
+			if prv.Dal.IsPostgresError(err, "scinna_user_user_email_key") {
+				serrors.ErrorEmailExists.Write(w)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		// Send the mail
-		if prv.Config.Registration.Validation == "email" && prv.Config.Mail.Enabled {
-			_, err := prv.SendValidationMail(registerBody.Email, valcode)
+		if prv.Config.Mail.Enabled && prv.Config.Registration.Validation == "email" {
+			_, err := prv.SendValidationMail(registerBody.Email, valCode)
 			if err != nil {
 				// @TODO Add a warning for the user
 				log.Warn(err.Error())
@@ -112,13 +104,12 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		}
 
 		// Send the response
-		if prv.Config.Registration.Validation == "admin" {
+		switch prv.Config.Registration.Validation {
+		case "admin":
 			serrors.UserNeedValidationAdmin.Write(w)
-			return
-		} else if prv.Config.Registration.Validation == "email" {
+		case "email":
 			serrors.UserNeedValidationEmail.Write(w)
-			return
-		} else {
+		default:
 			serrors.UserRegistered.Write(w)
 		}
 	}
@@ -126,18 +117,14 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// @TODO: Embed the template with go:embed
-		w.Header().Del("Content-Type")
-
 		validationCode := mux.Vars(r)["validation_code"]
 		user := prv.Dal.Registration.ValidateUser(validationCode)
 
-		t := template.Must(template.ParseFiles("templates/validated.html"))
-		t.Execute(w, struct {
-			Username string
-		}{
-			Username: user,
-		})
+		if len(user) == 0 {
+			serrors.InvalidValidationCode.Write(w)
+		}
+
+		_, _ = w.Write([]byte(fmt.Sprintf(`{ "username": "%s" }`, user)))
 	}
 }
 
@@ -167,24 +154,23 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		if isValid {
-			token, err := prv.Dal.User.Login(user, utils.IPForRequest(r))
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			authResp := dto.AuthDto{
-				User:  user,
-				Token: token,
-			}
-
-			resp, _ := json.Marshal(authResp)
-			w.Write(resp)
-
+		if !isValid {
+			serrors.InvalidUsernameOrPassword.Write(w)
 			return
 		}
 
-		serrors.InvalidUsernameOrPassword.Write(w)
+		token, err := prv.Dal.User.Login(user, utils.IPForRequest(r))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		authResp := dto.AuthDto{
+			User:  user,
+			Token: token,
+		}
+
+		resp, _ := json.Marshal(authResp)
+		_, _ = w.Write(resp)
 	}
 }

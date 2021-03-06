@@ -49,7 +49,7 @@ func (c *Collections) CreateDefault(user *models.User) (*models.Collection, erro
 		Title:      "Default collection", // @Todo: localize this given the registration locale (?)
 		IsDefault:  true,
 		User:       user,
-		Visibility: 0,
+		Visibility: models.VisibilityPublic,
 		Medias:     []models.Media{},
 	}
 
@@ -202,7 +202,7 @@ func (c *Collections) FetchFromUsernameWithMedias(dalMedias Medias, user string,
 	return &collection, err
 }
 
-func (c *Collections) UpdateIfOwned(user *models.User, title, newTitle string, newVisibility int) (*models.Collection, error) {
+func (c *Collections) UpdateIfOwned(user *models.User, title, newTitle string, newVisibility models.Visibility) (*models.Collection, error) {
 	res, err := c.DB.Exec(`
 		UPDATE
 			COLLECTIONS
@@ -218,7 +218,6 @@ func (c *Collections) UpdateIfOwned(user *models.User, title, newTitle string, n
 `, newTitle, newVisibility, title, user.UserID)
 
 	if err != nil {
-
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" { // Duplicate key
 				return nil, serrors.CollectionAlreadyExists

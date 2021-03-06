@@ -30,6 +30,6 @@ func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		w.Write(bytes)
+		_, _ = w.Write(bytes)
 	}
 }

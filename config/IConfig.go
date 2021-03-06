@@ -9,7 +9,9 @@ type Configuration interface {
 func combineErrors(err ...error) error {
 	str := ""
 	for _, e := range err {
-		str += e.Error() + "\n"
+		if e != nil {
+			str += e.Error() + "\n"
+		}
 	}
 
 	if len(str) == 0 {

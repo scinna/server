@@ -182,7 +182,7 @@ func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
 		return false, err
 	}
 
-	if prv.Config.Mail.ConnectionType == "STARTTLS" {
+	if prv.Config.Mail.ConnectionType == "starttls" {
 		err = c.StartTLS(tlsConfig)
 		if err != nil {
 			return false, err
