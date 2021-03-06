@@ -17,15 +17,15 @@ type SMTP struct {
 	Sender   string
 }
 
-func (smtp SMTP) Validate() error {
+func (smtp *SMTP) Validate() error {
 	if smtp.Enabled {
 		var err []error
 
-		if strings.ToLower(smtp.ConnectionType) != "starttls" && strings.ToLower(smtp.ConnectionType) != "plain" {
+		smtp.ConnectionType = strings.ToLower(smtp.ConnectionType)
+		if smtp.ConnectionType != "starttls" && smtp.ConnectionType != "plain" {
 			err = append(err, errors.New("Mail.ConnectionType must be either \"STARTTLS\" or \"PLAIN\""))
 		}
 
-		smtp.ConnectionType = strings.ToLower(smtp.ConnectionType)
 
 		if len(smtp.Hostname) == 0  {
 			err = append(err, errors.New("Mail.Hostname can't be empty"))

@@ -17,7 +17,7 @@ type Config struct {
 	MediaPath     string
 }
 
-func (c Config) Validate() error {
+func (c *Config) Validate() error {
 	err := []error{
 		c.Mail.Validate(),
 		c.Database.Validate(),

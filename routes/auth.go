@@ -122,6 +122,7 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 
 		if len(user) == 0 {
 			serrors.InvalidValidationCode.Write(w)
+			return
 		}
 
 		_, _ = w.Write([]byte(fmt.Sprintf(`{ "username": "%s" }`, user)))

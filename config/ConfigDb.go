@@ -11,7 +11,7 @@ type DB struct {
 	Database string
 }
 
-func (db DB) Validate() error {
+func (db *DB) Validate() error {
 	var err []error
 	if len(db.Hostname) == 0 {
 		err = append(err, errors.New("Database.Hostname can't be empty"))
