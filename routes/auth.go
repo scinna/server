@@ -15,6 +15,12 @@ import (
 	"net/http"
 )
 
+/**
+ * @TODO: For every forms in this app (Register, authentication, upload, collection creation, profile edition) add a symfony/api-platform-like error handling
+ * Server should answer with a "errors" array mapping the field name to the error
+ * This will need to rework how the user is registered since we wait for postgres' answer to colliding username / email
+ */
+
 func Authentication(prv *services.Provider, r *mux.Router) {
 	r.Use(middlewares.Json)
 
