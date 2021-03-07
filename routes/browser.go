@@ -51,14 +51,14 @@ func list(prv *services.Provider) http.Handler {
 
 		token, err := middlewares.GetTokenFromRequest(r)
 		if err != nil && err != serrors.NoToken {
-			serrors.WriteError(w, err)
+			serrors.WriteError(w, r, err)
 			return
 		}
 
 		var user *models.User
 		if err == nil {
 			user, err = prv.Dal.User.FetchUserFromToken(token)
-			if serrors.WriteError(w, err) {
+			if serrors.WriteError(w, r, err) {
 				return
 			}
 		}
@@ -72,7 +72,7 @@ func list(prv *services.Provider) http.Handler {
 			collection, err = prv.Dal.Collections.FetchFromUsernameWithMedias(prv.Dal.Medias, username, path, false)
 		}
 
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -99,7 +99,7 @@ func create(prv *services.Provider) http.Handler {
 		uriParsed = stripPrefix(uriParsed, username)
 
 		body, err := ioutil.ReadAll(r.Body)
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -121,7 +121,7 @@ func create(prv *services.Provider) http.Handler {
 		}
 
 		err = prv.Dal.Collections.Create(&collection)
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -150,12 +150,12 @@ func edit(prv *services.Provider) http.Handler {
 		uriParsed = stripPrefix(uriParsed, username)
 
 		if len(uriParsed) == 0 {
-			serrors.CollectionNotFound.Write(w)
+			serrors.CollectionNotFound.Write(w, r)
 			return
 		}
 
 		body, err := ioutil.ReadAll(r.Body)
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -176,7 +176,7 @@ func edit(prv *services.Provider) http.Handler {
 		}
 
 		col, err := prv.Dal.Collections.UpdateIfOwned(user, uriParsed, query.Title, query.Visibility)
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -203,12 +203,12 @@ func delete(prv *services.Provider) http.Handler {
 		path = stripPrefix(path, username)
 
 		if len(path) == 0 {
-			serrors.CollectionNotFound.Write(w)
+			serrors.CollectionNotFound.Write(w, r)
 			return
 		}
 
 		err = prv.Dal.Collections.DeleteIfOwned(user, path)
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 

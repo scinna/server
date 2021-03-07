@@ -1,0 +1,32 @@
+{
+  "errors": {
+    "invite": {
+      "bad_code": "The server requires a valid invitation code",
+      "used": "This invite code has already been used"
+    },
+    "registration": {
+      "username_exists": "This username is already used",
+      "email_exists": "This email is already used",
+      "invalid_form": "Username, Email and Password can't be empty",
+      "validation": {
+        "unknown": "This validation code does not exists or is already used",
+        "none": "You can now use your account",
+        "email": "You have been registered. Please click the link on the email you have received to activate your account",
+        "admin": "You have been registered. The admin now needs to validate your account"
+      }
+    },
+    "login": {
+      "invalid_credentials": "Invalid credentials",
+      "not_validated": "This account is not validated"
+    },
+    "authorization": {
+      "no_token": "You can't access this resource without a valid authentication token",
+      "not_owner": "You don't have permission to reach this resource"
+    },
+    "collection": {
+      "not_found": "Collection not found",
+      "already_exists": "This collection already exists"
+    },
+    "invalid_filetype": "Please upload a PICTURE file only"
+  }
+}

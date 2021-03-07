@@ -1,0 +1,32 @@
+{
+  "errors": {
+    "invite": {
+      "bad_code": "Le serveur nécessite un code d'invitation",
+      "used": "Ce code d'invitation à déjà été utilisé"
+    },
+    "registration": {
+      "username_exists": "Ce pseudo est déjà pris",
+      "email_exists": "Cette email est déjà utilisée",
+      "invalid_form": "Pseudo, email et mot de passe ne peuvent être vide",
+      "validation": {
+        "unknown": "Ce code de validation n'existe pas ou a déjà été utilisé",
+        "none": "Vous pouvez maintenant utiliser votre compte",
+        "email": "Vous avez été inscrit. Un email vous a été envoyé, merci de cliquer sur le lien dedans pour activer votre compte",
+        "admin": "Vous avez été inscrit. Un administrateur doit activer votre compte"
+      }
+    },
+    "login": {
+      "invalid_credentials": "Pseudo ou mot de passe invalide",
+      "not_validated": "Ce compte n'est pas activé"
+    },
+    "authorization": {
+      "no_token": "Vous ne pouvez pas accéder à cette ressource sans un jeton d'authentification valide",
+      "not_owner": "Vous n'avez pas la permission d'accéder à cette ressource"
+    },
+    "collection": {
+      "not_found": "Collection non trouvée",
+      "already_exists": "Cette collection existe déjà"
+    },
+    "invalid_filetype": "Merci de téléverser uniquement des IMAGES"
+  }
+}

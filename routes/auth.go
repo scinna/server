@@ -46,12 +46,12 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 		// If the server requires an invite code and is not given, we kick the user
 		if !prv.Config.Registration.Allowed && len(registerBody.InviteCode) == 0 {
-			serrors.ErrorBadInviteCode.Write(w)
+			serrors.ErrorBadInviteCode.Write(w, r)
 			return
 		}
 
 		if len(registerBody.Username) == 0 || len(registerBody.Email) == 0 || len(registerBody.Password) == 0 {
-			serrors.ErrorInvalidRegistration.Write(w)
+			serrors.ErrorInvalidRegistration.Write(w, r)
 			return
 		}
 
@@ -60,10 +60,10 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		if !prv.Config.Registration.Allowed {
 			invite = prv.Dal.Registration.FindInvite(registerBody.InviteCode)
 			if invite == nil {
-				serrors.ErrorBadInviteCode.Write(w)
+				serrors.ErrorBadInviteCode.Write(w, r)
 				return
 			} else if invite.Used {
-				serrors.ErrorInviteUsed.Write(w)
+				serrors.ErrorInviteUsed.Write(w, r)
 				return
 			}
 		}
@@ -82,12 +82,12 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		valCode, err := prv.Dal.Registration.RegisterUser(&registerBody, prv.Config.Registration.Validation == "open")
 		if err != nil {
 			if prv.Dal.IsPostgresError(err, "scinna_user_user_name_key") {
-				serrors.ErrorUserExists.Write(w)
+				serrors.ErrorUserExists.Write(w, r)
 				return
 			}
 
 			if prv.Dal.IsPostgresError(err, "scinna_user_user_email_key") {
-				serrors.ErrorEmailExists.Write(w)
+				serrors.ErrorEmailExists.Write(w, r)
 				return
 			}
 
@@ -112,11 +112,11 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		// Send the response
 		switch prv.Config.Registration.Validation {
 		case "admin":
-			serrors.UserNeedValidationAdmin.Write(w)
+			serrors.UserNeedValidationAdmin.Write(w, r)
 		case "email":
-			serrors.UserNeedValidationEmail.Write(w)
+			serrors.UserNeedValidationEmail.Write(w, r)
 		default:
-			serrors.UserRegistered.Write(w)
+			serrors.UserRegistered.Write(w, r)
 		}
 	}
 }
@@ -127,7 +127,7 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 		user := prv.Dal.Registration.ValidateUser(validationCode)
 
 		if len(user) == 0 {
-			serrors.InvalidValidationCode.Write(w)
+			serrors.InvalidValidationCode.Write(w, r)
 			return
 		}
 
@@ -146,12 +146,12 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 
 		user, err := prv.Dal.User.GetUserFromUsername(authRq.Username)
 		if err != nil {
-			serrors.InvalidUsernameOrPassword.Write(w)
+			serrors.InvalidUsernameOrPassword.Write(w, r)
 			return
 		}
 
 		if !user.Validated {
-			serrors.AccountNotValidated.Write(w)
+			serrors.AccountNotValidated.Write(w, r)
 			return
 		}
 
@@ -162,7 +162,7 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 		}
 
 		if !isValid {
-			serrors.InvalidUsernameOrPassword.Write(w)
+			serrors.InvalidUsernameOrPassword.Write(w, r)
 			return
 		}
 

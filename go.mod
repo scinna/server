@@ -10,8 +10,10 @@ require (
 	github.com/lib/pq v1.3.0
 	github.com/matoous/go-nanoid v1.4.1
 	github.com/mattn/go-sqlite3 v1.14.3 // indirect
+	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
+	golang.org/x/text v0.3.3
 	google.golang.org/appengine v1.6.6 // indirect
 	syreclabs.com/go/faker v1.2.3
 )

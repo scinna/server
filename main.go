@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"github.com/scinna/server/translations"
 	"net/http"
 	"os"
 	"os/signal"
@@ -38,6 +39,8 @@ func main() {
 
 func start() error {
 	fmt.Printf("Scinna [v%v.%v] by %v\n", SCINNA_VERSION, SCINNA_PATCH, SCINNA_AUTHOR)
+
+	translations.Initialize()
 
 	generateDb := flag.Bool("generate-db", false, "Generate the default database")
 	forceGenerateDb := flag.Bool("auto-yes", false, "Automatically answer yes to the dropping of the old tables (CAUTION!)")

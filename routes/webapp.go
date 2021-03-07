@@ -26,7 +26,7 @@ func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Req
 		w.Header().Set("Content-Type", "application/json")
 
 		bytes, err := json.Marshal(dto.NewServerConfig(prv))
-		if serrors.WriteError(w, err) {
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 

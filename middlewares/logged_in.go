@@ -15,7 +15,7 @@ func LoggedInMiddleware(prv *services.Provider) func(handler http.Handler) http.
 
 			user, err := ValidateRequest(prv, r)
 			if err != nil {
-				serrors.NoToken.Write(w)
+				serrors.NoToken.Write(w, r)
 				return
 			}
 

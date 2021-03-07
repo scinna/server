@@ -28,7 +28,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value("user").(*models.User)
 		if user == nil {
-			serrors.NoToken.Write(w)
+			serrors.NoToken.Write(w, r)
 			return
 		}
 
@@ -66,7 +66,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		mime, _ := mimetype.DetectReader(file)
 		if !mimetype.EqualsAny(mime.String(), utils.AllowedMimetypes...) {
-			serrors.InvalidType.Write(w)
+			serrors.InvalidType.Write(w, r)
 			return
 		}
 
@@ -75,7 +75,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		uid, err := prv.GenerateUID()
 		if err != nil {
-			serrors.WriteError(w, err)
+			serrors.WriteError(w, r, err)
 			return
 		}
 
@@ -90,13 +90,13 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		err = prv.Dal.Medias.CreatePicture(&pict, collection)
 		if err != nil {
-			serrors.WriteError(w, err)
+			serrors.WriteError(w, r, err)
 			return
 		}
 
 		outputFile, err := os.Create(parentFolder + pict.MediaID)
 		if err != nil {
-			serrors.WriteError(w, err)
+			serrors.WriteError(w, r, err)
 			_ = prv.Dal.Medias.DeleteMedia(&pict)
 			return
 		}
@@ -106,7 +106,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		_, err = io.Copy(outputFile, file)
 		if err != nil {
-			serrors.WriteError(w, err)
+			serrors.WriteError(w, r, err)
 			return
 		}
 
