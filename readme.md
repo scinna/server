@@ -1,5 +1,5 @@
-![](https://discordapp.com/api/guilds/806593726859837460/widget.png?style=shield)
 # Scinna - Server
+![Shield](https://discordapp.com/api/guilds/806593726859837460/widget.png?style=shield)
 
 ## What is it ?
 
