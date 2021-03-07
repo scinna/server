@@ -1,3 +1,4 @@
+![](https://discordapp.com/api/guilds/806593726859837460/widget.png?style=shield)
 # Scinna - Server
 
 ## What is it ?
