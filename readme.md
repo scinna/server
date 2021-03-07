@@ -20,15 +20,16 @@ The first version will have the basic feature expected from a self-hosted image 
 
 ### Version 1.0
 
-- [ ] Server management through config file (Private, public, custom naming, ...)
+- [~] Server management through config file (Private, public, custom naming, ...)
 - [ ] Account management
-- [ ] Uploading pictures
-- [ ] Picture infos (Title, Description, Date, public/private/unlisted)
+- [x] Uploading pictures
+- [x] Picture infos (Title, Description, Date, public/private/unlisted)
 - [x] PostgreSQL
 - [x] Database auto-initialization (--generate-db)
 - [ ] Database auto-upgrading
 - [x] Localization
 - [x] Collections to sort your pictures
+- [ ] Web UI
 
 ### Version 2.0
 
