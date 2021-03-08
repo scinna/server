@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/goware/emailx"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
@@ -68,7 +69,11 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 			}
 		}
 
-		// @TODO: Validate email address (regex)
+		err = emailx.Validate(registerBody.Email)
+		if err != nil {
+			serrors.InvalidEmail.Write(w, r)
+			return
+		}
 
 		hashedPassword, err := prv.HashPassword(registerBody.Password)
 		if err != nil {

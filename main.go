@@ -84,7 +84,6 @@ func start() error {
 		if err != nil {
 			return err
 		}
-
 		if code != "NONE" {
 			log.InfoAlwaysShown("Your server is invite only and there are no users registered.")
 			log.InfoAlwaysShown("Please use this code to create your admin account: " + code)

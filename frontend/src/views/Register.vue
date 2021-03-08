@@ -1,51 +1,79 @@
 <template>
   <div id="content" class="centeredContent">
     <form @submit.prevent="register" class="centeredBox">
-      <CustomInput type="text" label="Username" :model="Request.username" required/>
-      <CustomInput type="email" label="Email" :model="Request.email" required/>
-      <CustomInput type="password" label="Password" :model="Request.password" required/>
-      <CustomInput type="password" label="Repeat password" :model="Request.password2" required/>
+      <CustomInput type="text" label="Username" v-model="username" :required="true"/>
+      <CustomInput type="email" label="Email" v-model="email" :required="true"/>
+      <CustomInput type="password" label="Password" v-model="password" :required="true"/>
+      <CustomInput type="password" label="Repeat password" v-model="password2" :required="true"/>
 
-      <CustomInput type="text" v-if="!RegistrationAllowed" label="Invitation code" :model="Request.inviteCode" required/>
+      <CustomInput type="text" v-if="!RegistrationAllowed" label="Invitation code" :model="inviteCode"
+                   :required="true"/>
 
       <span class="message error" v-if="error.length > 0">{{ error }}</span>
 
-      <CustomInput type="submit" />
+      <CustomSubmit :disabled="status === 'pending'"/>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import CustomInput from "@/components/CustomInput.vue";
-import {mapState} from "vuex";
+import Vue          from 'vue';
+import CustomInput  from "@/components/CustomInput.vue";
+import CustomSubmit from "@/components/CustomSubmit.vue";
+import {mapState}   from "vuex";
 
 export default Vue.extend({
   name: 'Register',
-  components: { CustomInput },
+  components: {CustomInput, CustomSubmit},
   data() {
     return {
-      Request: {
-        username: '',
-        email: '',
-        password: '',
-        password2: '',
-        inviteCode: '',
-      },
+      username: '',
+      email: '',
+      password: '',
+      password2: '',
+      inviteCode: '',
+      status: 'none',
       error: '',
     }
   },
   computed: {
-    ...mapState('Server', [ 'RegistrationAllowed' ])
+    ...mapState({
+      RegistrationAllowed: (state: any) => state.Server.RegistrationAllowed,
+    })
   },
   methods: {
-    register: () => {
-      console.log("lol");
+    register: function () {
+      this.status = 'pending';
+
+      this.$http.post("/api/auth/register", {
+        Username: this.username,
+        Email: this.email,
+        Password: this.password,
+        InviteCode: this.inviteCode,
+      })
+          .then(resp => {
+            //this.error = resp.data.Message;
+
+            this.username = '';
+            this.password = '';
+            this.password2 = '';
+            this.email = '';
+
+            //this.error = "Succes";
+            //this.status = 'success';
+          })
+          .catch(err => {
+            this.error = err.response.data.Message;
+            this.status = 'none';
+            this.password = '';
+            this.password2 = '';
+          })
     }
   }
 });
 </script>
 
 <style lang="scss" scoped>
-  @import "../assets/CenteredForm.scss";
+@import "../assets/CenteredForm.scss";
+
 </style>

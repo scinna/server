@@ -104,6 +104,9 @@ var ErrorUserExists = New("registration.username_exists", 12, 500)
 // ErrorEmailExists is shown when the user tries to register with an already existing email
 var ErrorEmailExists = New("registration.email_exists", 13, 500)
 
+// InvalidEmail is shown when the registration email is invalid
+var InvalidEmail = New("registration.invalid_email", 17, 500)
+
 // ErrorInvalidRegistration is shown when the user tries to register with an empty username, password or email
 var ErrorInvalidRegistration = New("registration.invalid_form", 14, 400)
 

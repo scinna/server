@@ -7,6 +7,7 @@
     "registration": {
       "username_exists": "This username is already used",
       "email_exists": "This email is already used",
+      "invalid_email": "The email is invalid",
       "invalid_form": "Username, Email and Password can't be empty",
       "validation": {
         "unknown": "This validation code does not exists or is already used",

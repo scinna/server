@@ -1,21 +1,23 @@
 <template>
   <div>
     <label :for="id" v-if="label && label.length > 0">{{ label }}: </label>
-    <input :id="id" :type="type" :required="required" :value="value" v-on:input="updateValue($event.target.value)"/>
+    <input v-if="!disabled" :id="id" :type="type" :required="required" :value="value" v-on:input="updateValue($event.target.value)" />
+    <input v-else :id="id" :type="type" :required="required" :value="value" v-on:input="updateValue($event.target.value)" disabled />
   </div>
 </template>
 
 <script lang="ts">
-import Vue, {PropType} from 'vue';
+import Vue from 'vue';
 
 export default Vue.extend({
   name   : "CustomInput",
   props  : {
-    id      : {type: Function as PropType<string>},
-    label   : {type: Function as PropType<string>},
-    type    : {type: Function as PropType<string>},
-    value   : {type: Function as PropType<string>},
-    required: {type: Function as PropType<boolean>},
+    id      : {type: String},
+    label   : {type: String},
+    type    : {type: String},
+    value   : {type: String},
+    required: {type: Boolean},
+    disabled: {type: Boolean},
   },
   methods: {
     updateValue: function (value: any) {

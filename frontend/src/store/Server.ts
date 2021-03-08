@@ -1,13 +1,13 @@
 import {Mutations} from "@/store/Mutations";
 
 export interface ServerProps {
-    RegistrationAllowed: string | null;
+    RegistrationAllowed: boolean;
     Validation: string | null;
     WebURL: string | null;
 }
 
 const defaultState: ServerProps = {
-    RegistrationAllowed: null,
+    RegistrationAllowed: false,
     Validation: null,
     WebURL: null,
 }
