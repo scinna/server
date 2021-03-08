@@ -1,47 +1,17 @@
 @import './Colors.scss';
 
-#content {
-  display: flex;
-  flex-direction: column;
+#content form {
+  input[type="submit"], label:not(:first-child) {
+    margin-top: 1em;
+  }
 
-  align-items: center;
-  justify-content: center;
-
-  form {
-    $formWidth: 400px;
-    box-shadow: 0 0 2px rgba(black, .5);
-
-    display: flex;
-    flex-direction: column;
-
-    width: $formWidth;
-    padding: 2em;
-    border-radius: $border-radius;
-
-    background: $background-darker;
-
-    input[type="submit"], label:not(:first-child) {
-      margin-top: 1em;
+  .message {
+    &.error {
+      color: $error-color;
     }
 
-    .message {
-      padding: .25em;
-
-      color: $text-lighter;
-      text-align: center;
-
-      &.error {
-        color: $error-color;
-      }
-
-      &.success {
-        color: $error-color;
-      }
-    }
-
-    @media (max-width: $formWidth) {
-      border-radius: 0;
-      width: 100%;
+    &.success {
+      color: $error-color;
     }
   }
 }

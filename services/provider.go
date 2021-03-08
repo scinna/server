@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"crypto/rand"
 	"crypto/subtle"
 	"crypto/tls"
@@ -9,16 +10,26 @@ import (
 	"errors"
 	"fmt"
 	"github.com/scinna/server/dal"
+	"golang.org/x/text/language"
+	"html/template"
 	"io/fs"
+	"net/http"
 	"net/smtp"
 	"strconv"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
 	gonanoid "github.com/matoous/go-nanoid"
+	"github.com/pariz/gountries"
 	"github.com/scinna/server/config"
 	"golang.org/x/crypto/argon2"
 )
+
+//go:embed templates
+var templatesFS embed.FS
+var mailTemplates *template.Template
+
+var countries = gountries.New()
 
 type Provider struct {
 	Webapp      *fs.FS
@@ -27,6 +38,8 @@ type Provider struct {
 	ArgonParams *ArgonParams
 	MailClient  smtp.Auth
 	Config      *config.Config
+
+	languageMatcher language.Matcher
 }
 
 func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
@@ -37,6 +50,11 @@ func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
 
 	db := cfg.Database
 	dsn := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", db.Username, db.Password, db.Hostname, db.Port, db.Database)
+
+	mailTemplates, err = template.ParseFS(templatesFS, "templates/*")
+	if err != nil {
+		return nil, err
+	}
 
 	sqlxDb, err := sqlx.Open("postgres", dsn)
 	if err != nil {
@@ -59,6 +77,11 @@ func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
 		Dal:         &dalObject,
 		ArgonParams: argonParams,
 		Config:      cfg,
+
+		languageMatcher: language.NewMatcher([]language.Tag{
+			language.English,
+			language.French,
+		}),
 	}, nil
 }
 
@@ -164,10 +187,24 @@ func decodeHash(encodedHash string) (p *ArgonParams, salt, hash []byte, err erro
 }
 
 // SendMail sends a mail
-func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
-	mime := "MIME-version: 1.0;\nContent-Type: text/plain; charset=\"UTF-8\";\n\n"
-	subject = "Subject: " + subject + "!\n"
-	msg := []byte(subject + mime + "\n" + body)
+func (prv *Provider) SendMail(dest, subject, lang string, data interface{}) (bool, error) {
+	body := bytes.Buffer{}
+	headers := []byte(fmt.Sprintf("Subject: %v\nMIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n", subject))
+	body.Write(headers)
+	err := mailTemplates.ExecuteTemplate(&body, "validation_email." + lang + ".gohtml", data)
+	if err != nil {
+		// Unfortunately we'll have to go the ugly way since
+		// golang's templating thing is hardcoded with a fmt.Errorf
+		if err.Error()[len(err.Error())-12:] == "is undefined" {
+			fmt.Println("Unknown lang: " + lang)
+			err := mailTemplates.ExecuteTemplate(&body, "validation_email.en.gohtml", data)
+			if err != nil {
+				return false, err
+			}
+		} else {
+			return false, err
+		}
+	}
 
 	// @TODO: Add a way to stay connected to the SMTP server for X amt of time (If you have a huge userbase on your server you might not want to open a connection each email sent)
 	smtpCfg := prv.Config.Mail
@@ -189,26 +226,34 @@ func (prv *Provider) SendMail(dest, subject, body string) (bool, error) {
 		}
 	}
 
-	if err := smtp.SendMail(smtpCfg.Hostname+":"+strconv.Itoa(smtpCfg.Port), prv.MailClient, smtpCfg.Sender, []string{dest}, msg); err != nil {
+	if err := smtp.SendMail(smtpCfg.Hostname+":"+strconv.Itoa(smtpCfg.Port), prv.MailClient, smtpCfg.Sender, []string{dest}, body.Bytes()); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
 // SendValidationMail sends the validation mail for a user
-func (prv *Provider) SendValidationMail(dest, validationCode string) (bool, error) {
+func (prv *Provider) SendValidationMail(r *http.Request, dest, validationCode string) (bool, error) {
 	url := prv.Config.WebURL
 	if url[len(url)-1:] != "/" {
 		url = url + "/"
 	}
 
-	// @TODO make the registration go through the webapp (No need for template or anything) + template for the email
-	return prv.SendMail(dest, "Scinna: Activate your account", fmt.Sprintf(`
-		Hello,
+	url += "app/validate/" + validationCode
 
-		You have registred for an account on a Scinna server.
-		Please validate your account.
-		%vapi/auth/register/%v
+	acceptLanguage, _, err := language.ParseAcceptLanguage(r.Header.Get("Accept-Language"))
+	if err != nil {
+		return false, nil
+	}
+	tag, _, _ := prv.languageMatcher.Match(acceptLanguage...)
 
-		Keep in mind that this link will only work for one hour after registration. If you missed the validation, you need to register again.`, url, validationCode))
+	// It looks like golang can't get the 2 character code for the country
+	// so yeah we'll fallback for now. >:(
+
+	//return prv.SendMail(dest, translations.TLang(tag.String(), "registration.validation_email.subject"), tag.String(), struct {
+	return prv.SendMail(dest, "Scinna: Activate your account", tag.String(), struct {
+		Url string
+	} {
+		Url: url,
+	})
 }

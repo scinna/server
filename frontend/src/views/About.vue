@@ -1,8 +1,10 @@
 <template>
-  <div class="content">
-    <p>{{ $t('about.first_paragraph') }}</p>
-    <p>{{ $t('about.second_paragraph')}}</p>
-    <p>{{ $t('about.come_take_look')}} <a href="https://scinna.app/">{{ $t('about.website') }}</a> {{ $t('about.or') }} <a href="https://github.com/scinna">{{ $t('about.github') }}</a>.</p>
+  <div id="content" class="centeredContent">
+    <div class="centeredBox">
+      <p>{{ $t('about.first_paragraph') }}</p>
+      <p>{{ $t('about.second_paragraph')}}</p>
+      <p>{{ $t('about.come_take_look')}} <a href="https://scinna.app/">{{ $t('about.website') }}</a> {{ $t('about.or') }} <a href="https://github.com/scinna">{{ $t('about.github') }}</a>.</p>
+    </div>
   </div>
 </template>
 
@@ -14,19 +16,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/Colors.scss';
-
-.content {
-  width: 450px;
-  padding: 2em;
-  margin: auto;
-  text-align: justify;
-
-  background: $background-darker;
-  box-shadow: 0 0 2px rgba(black, .5);
-  border-radius: $border-radius;
-  color: $text-lighter;
-
-}
-
+@import '../assets/Global.scss';
 </style>

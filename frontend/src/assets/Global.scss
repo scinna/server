@@ -3,3 +3,41 @@
 a {
   color: $accent-color !important;
 }
+
+#content {
+  flex: 1;
+}
+
+.centeredContent {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  .centeredBox {
+    $formWidth: 400px;
+    box-shadow: 0 0 2px rgba(black, .5);
+
+    display: flex;
+    flex-direction: column;
+
+    width: $formWidth;
+    padding: 2em;
+    border-radius: $border-radius;
+
+    background: $background-darker;
+
+    .message {
+      padding: .25em;
+
+      color: $text-lighter;
+      text-align: center;
+    }
+
+    @media (max-width: $formWidth) {
+      border-radius: 0;
+      width: 100%;
+    }
+  }
+}

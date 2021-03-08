@@ -12,6 +12,7 @@ import VueRouter, {RouteConfig} from 'vue-router'
 
 
 import store from '@/store';
+import AccountValidation from "@/views/AccountValidation.vue";
 
 Vue.use(VueRouter);
 
@@ -26,6 +27,12 @@ const routes: Array<RouteConfig> = [
         path: '/browse/:username/:collection?',
         name: 'Browse user',
         component: BrowseUser,
+        meta: { anonymous: true },
+    },
+    {
+        path: '/validate/:account',
+        name: 'Validate an account',
+        component: AccountValidation,
         meta: { anonymous: true },
     },
     {

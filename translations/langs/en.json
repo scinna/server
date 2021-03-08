@@ -13,6 +13,9 @@
         "none": "You can now use your account",
         "email": "You have been registered. Please click the link on the email you have received to activate your account",
         "admin": "You have been registered. The admin now needs to validate your account"
+      },
+      "validation_email": {
+        "subject": "Scinna: Activate your account"
       }
     },
     "login": {

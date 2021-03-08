@@ -97,7 +97,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 
 		// Send the mail
 		if prv.Config.Mail.Enabled && prv.Config.Registration.Validation == "email" {
-			_, err := prv.SendValidationMail(registerBody.Email, valCode)
+			_, err := prv.SendValidationMail(r, registerBody.Email, valCode)
 			if err != nil {
 				// @TODO Add a warning for the user
 				log.Warn(err.Error())

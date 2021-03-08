@@ -1,6 +1,6 @@
 <template>
-  <div id="content">
-    <form @submit.prevent="register">
+  <div id="content" class="centeredContent">
+    <form @submit.prevent="register" class="centeredBox">
       <CustomInput type="text" label="Username" :model="Request.username" required/>
       <CustomInput type="email" label="Email" :model="Request.email" required/>
       <CustomInput type="password" label="Password" :model="Request.password" required/>

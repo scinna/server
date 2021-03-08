@@ -34,7 +34,11 @@ func T(r *http.Request, id string) string {
 		accept = r.Header.Get("Accept-Language")
 	}
 
-	l := i18n.NewLocalizer(bundle, accept, "en")
+	return TLang(accept, id)
+}
+
+func TLang(lang, id string) string {
+	l := i18n.NewLocalizer(bundle, lang, "en")
 	return l.MustLocalize(&i18n.LocalizeConfig{
 		MessageID: id,
 		DefaultMessage: &i18n.Message{

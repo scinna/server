@@ -13,6 +13,9 @@
         "none": "Vous pouvez maintenant utiliser votre compte",
         "email": "Vous avez été inscrit. Un email vous a été envoyé, merci de cliquer sur le lien dedans pour activer votre compte",
         "admin": "Vous avez été inscrit. Un administrateur doit activer votre compte"
+      },
+      "validation_email": {
+        "subject": "Scinna: Activate your account"
       }
     },
     "login": {

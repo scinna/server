@@ -1,9 +1,9 @@
 <template>
-  <div id="content">
+  <div id="content" class="centeredContent">
     <!--
         @TODO: Create a custom form component that will use the loader during the request and auto-map the values in it
       -->
-    <form @submit.prevent="login">
+    <form @submit.prevent="login" class="centeredBox">
       <CustomInput type="text" :label="$t('login.username')" v-model="username" required/>
       <CustomInput type="password" :label="$t('login.password')" v-model="password" required/>
 
@@ -53,5 +53,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
+  @import '../assets/Global';
   @import '../assets/CenteredForm';
 </style>
