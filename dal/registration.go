@@ -12,6 +12,28 @@ type Registration struct {
 	DB *sqlx.DB
 }
 
+func (r *Registration) IsEmailAvailable(email string) bool {
+	row := r.DB.QueryRowx(`SELECT user_email FROM SCINNA_USER WHERE user_email = $1`, email);
+	if row.Err() != nil {
+		return false
+	}
+
+	email = ""
+	_ = row.Scan(&email)
+	return len(email) == 0
+}
+
+func (r *Registration) IsUsernameAvailable(username string) bool {
+	row := r.DB.QueryRowx(`SELECT user_name FROM SCINNA_USER WHERE user_name = $1`, username);
+	if row.Err() != nil {
+		return false
+	}
+
+	username = ""
+	_ = row.Scan(&username)
+	return len(username) == 0
+}
+
 func (r *Registration) FindInvite(invite string) *models.InviteCode {
 	rq := `SELECT INVITE_CODE, INVITED_BY, USED FROM INVITE_CODE WHERE INVITE_CODE = $1`
 	row := r.DB.QueryRowx(rq, invite)

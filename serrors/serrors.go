@@ -98,12 +98,6 @@ var ErrorBadInviteCode = New("invite.bad_code", 10, 400)
 // ErrorInviteUsed is shown when the user tries to register with no invitation code or an invalid one
 var ErrorInviteUsed = New("invite.used", 11, 400)
 
-// ErrorUserExists is shown when the user tries to register with an already existing user
-var ErrorUserExists = New("registration.username_exists", 12, 500)
-
-// ErrorEmailExists is shown when the user tries to register with an already existing email
-var ErrorEmailExists = New("registration.email_exists", 13, 500)
-
 // InvalidEmail is shown when the registration email is invalid
 var InvalidEmail = New("registration.invalid_email", 17, 500)
 

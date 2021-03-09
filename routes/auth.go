@@ -6,12 +6,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/goware/emailx"
 	"github.com/scinna/server/dto"
+	"github.com/scinna/server/forms"
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/requests"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
+	"github.com/scinna/server/translations"
 	"github.com/scinna/server/utils"
 	"net/http"
 )
@@ -69,9 +71,20 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 			}
 		}
 
+		// meh this library, might change later or just check that there is an @ and no spaces in the str
 		err = emailx.Validate(registerBody.Email)
 		if err != nil {
 			serrors.InvalidEmail.Write(w, r)
+			return
+		}
+
+		// Maybe one day I'll have the motivation to rewrite this with golang's tag
+		violations := []forms.Constraint {
+			forms.ConstraintUniqueString(prv, "Email", "SCINNA_USER", "user_email", registerBody.Email, translations.T(r, "errors.registration.email_exists")),
+			forms.ConstraintUniqueString(prv, "Username", "SCINNA_USER", "user_name", registerBody.Username, translations.T(r, "errors.registration.user_exists")),
+		}
+
+		if forms.HasViolations(violations, w) {
 			return
 		}
 
@@ -86,16 +99,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		// Register the user
 		valCode, err := prv.Dal.Registration.RegisterUser(&registerBody, prv.Config.Registration.Validation == "open")
 		if err != nil {
-			if prv.Dal.IsPostgresError(err, "scinna_user_user_name_key") {
-				serrors.ErrorUserExists.Write(w, r)
-				return
-			}
-
-			if prv.Dal.IsPostgresError(err, "scinna_user_user_email_key") {
-				serrors.ErrorEmailExists.Write(w, r)
-				return
-			}
-
+			// @TODO do something better
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
