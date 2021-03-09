@@ -3,6 +3,7 @@
     <label :for="id" v-if="label && label.length > 0">{{ label }}: </label>
     <input v-if="!disabled" :id="id" :type="type" :required="required" :value="value" v-on:input="updateValue($event.target.value)" />
     <input v-else :id="id" :type="type" :required="required" :value="value" v-on:input="updateValue($event.target.value)" disabled />
+    <span class="error" v-if="violations[id]">{{violations[id]}}</span>
   </div>
 </template>
 
@@ -18,6 +19,7 @@ export default Vue.extend({
     value   : {type: String},
     required: {type: Boolean},
     disabled: {type: Boolean},
+    violations: {type: Array},
   },
   methods: {
     updateValue: function (value: any) {

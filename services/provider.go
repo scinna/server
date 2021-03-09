@@ -232,6 +232,7 @@ func (prv *Provider) SendMail(dest, subject, lang string, data interface{}) (boo
 	return true, nil
 }
 
+// @TODO: Write this using an async queueing system
 // SendValidationMail sends the validation mail for a user
 func (prv *Provider) SendValidationMail(r *http.Request, dest, validationCode string) (bool, error) {
 	url := prv.Config.WebURL

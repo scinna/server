@@ -1,12 +1,20 @@
 <template>
   <div id="content" class="centeredContent">
     <form @submit.prevent="register" class="centeredBox">
-      <CustomInput type="text" label="Username" v-model="username" :required="true"/>
-      <CustomInput type="email" label="Email" v-model="email" :required="true"/>
-      <CustomInput type="password" label="Password" v-model="password" :required="true"/>
-      <CustomInput type="password" label="Repeat password" v-model="password2" :required="true"/>
+      <CustomInput :violations="violations" id="Username" type="text" label="Username" v-model="username"
+                   :required="true"/>
 
-      <CustomInput type="text" v-if="!RegistrationAllowed" label="Invitation code" :model="inviteCode"
+      <CustomInput :violations="violations" id="Email" type="email" label="Email" v-model="email" :required="true"/>
+
+      <CustomInput :violations="violations" id="Password" type="password" label="Password" v-model="password"
+                   :required="true"/>
+
+      <CustomInput id="Password2" type="password" label="Repeat password" v-model="password2"
+                   :required="true"/>
+
+      <CustomInput :violations="violations" id="InviteCode" type="text" v-if="!RegistrationAllowed"
+                   label="Invitation code"
+                   :model="inviteCode"
                    :required="true"/>
 
       <span class="message error" v-if="error.length > 0">{{ error }}</span>
@@ -17,10 +25,10 @@
 </template>
 
 <script lang="ts">
-import Vue          from 'vue';
-import CustomInput  from "@/components/CustomInput.vue";
+import Vue from 'vue';
+import CustomInput from "@/components/CustomInput.vue";
 import CustomSubmit from "@/components/CustomSubmit.vue";
-import {mapState}   from "vuex";
+import {mapState} from "vuex";
 
 export default Vue.extend({
   name: 'Register',
@@ -34,6 +42,7 @@ export default Vue.extend({
       inviteCode: '',
       status: 'none',
       error: '',
+      violations: [],
     }
   },
   computed: {
@@ -63,10 +72,18 @@ export default Vue.extend({
             //this.status = 'success';
           })
           .catch(err => {
-            this.error = err.response.data.Message;
             this.status = 'none';
             this.password = '';
             this.password2 = '';
+
+            const data = err.response.data;
+            if (data.Message) {
+              this.error = err.response.data.Message;
+            }
+
+            if (data.Violations) {
+              this.violations = data.Violations;
+            }
           })
     }
   }
