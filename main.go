@@ -27,8 +27,11 @@ const (
 	SCINNA_PATCH   = "0"
 )
 
-//go:embed frontend/dist
+//go:embed frontend/build
 var frontend embed.FS
+
+//go:embed assets/logo.png
+var logoWide []byte
 
 func main() {
 	err := start()
@@ -52,7 +55,7 @@ func start() error {
 		return err
 	}
 
-	prv, err := services.NewProvider(cfg, &frontend)
+	prv, err := services.NewProvider(cfg, &frontend, logoWide)
 	if err != nil {
 		return err
 	}
@@ -99,6 +102,7 @@ func start() error {
 	routes.Accounts(prv, api.PathPrefix("/account").Subrouter())
 	routes.Upload(prv, api.PathPrefix("/upload").Subrouter())
 	routes.Browser(prv, api.PathPrefix("/browse").Subrouter())
+	routes.Server(prv, api.PathPrefix("/server").Subrouter())
 
 	// Last one (Matching the media_id)
 	routes.Medias(prv, router.PathPrefix("").Subrouter())

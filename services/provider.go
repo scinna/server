@@ -32,7 +32,9 @@ var mailTemplates *template.Template
 var countries = gountries.New()
 
 type Provider struct {
-	Webapp      *fs.FS
+	Webapp   *fs.FS
+	LogoFile []byte
+
 	DB          *sqlx.DB
 	Dal         *dal.Dal
 	ArgonParams *ArgonParams
@@ -42,8 +44,8 @@ type Provider struct {
 	languageMatcher language.Matcher
 }
 
-func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
-	correctedFS, err := fs.Sub(webapp, "frontend/dist")
+func NewProvider(cfg *config.Config, webapp *embed.FS, logo []byte) (*Provider, error) {
+	correctedFS, err := fs.Sub(webapp, "frontend/build")
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,9 @@ func NewProvider(cfg *config.Config, webapp *embed.FS) (*Provider, error) {
 	dalObject := dal.NewDal(sqlxDb)
 
 	return &Provider{
-		Webapp:      &correctedFS,
+		Webapp:   &correctedFS,
+		LogoFile: logo,
+
 		DB:          sqlxDb,
 		Dal:         &dalObject,
 		ArgonParams: argonParams,
@@ -191,7 +195,7 @@ func (prv *Provider) SendMail(dest, subject, lang string, data interface{}) (boo
 	body := bytes.Buffer{}
 	headers := []byte(fmt.Sprintf("Subject: %v\nMIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n", subject))
 	body.Write(headers)
-	err := mailTemplates.ExecuteTemplate(&body, "validation_email." + lang + ".gohtml", data)
+	err := mailTemplates.ExecuteTemplate(&body, "validation_email."+lang+".gohtml", data)
 	if err != nil {
 		// Unfortunately we'll have to go the ugly way since
 		// golang's templating thing is hardcoded with a fmt.Errorf
@@ -254,7 +258,7 @@ func (prv *Provider) SendValidationMail(r *http.Request, dest, validationCode st
 	//return prv.SendMail(dest, translations.TLang(tag.String(), "registration.validation_email.subject"), tag.String(), struct {
 	return prv.SendMail(dest, "Scinna: Activate your account", tag.String(), struct {
 		Url string
-	} {
+	}{
 		Url: url,
 	})
 }

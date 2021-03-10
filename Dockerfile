@@ -10,7 +10,7 @@ FROM golang:1.16-alpine AS BUILDBACK
 
 WORKDIR /app
 COPY . /app
-COPY --from=BUILDFRONT /app/dist /app/frontend/dist
+COPY --from=BUILDFRONT /app/build /app/frontend/build
 
 RUN go mod vendor
 RUN go mod download

@@ -4,12 +4,12 @@ services:
     node:
         image: node:15.6-alpine
         restart: unless-stopped
-        command: yarn serve
+        command: yarn start
         working_dir: /app
         volumes:
             - ./frontend:/app
         ports:
-            - 8080:8080
+            - 8080:3000
 
     mail:
         image: mailhog/mailhog

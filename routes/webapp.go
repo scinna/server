@@ -1,12 +1,9 @@
 package routes
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/scinna/server/dto"
-	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 )
 
@@ -18,18 +15,4 @@ func WebApp(prv *services.Provider, r *mux.Router) {
 		http.Redirect(w, r, "/app/", http.StatusPermanentRedirect)
 	})
 	r.PathPrefix("/app").Handler(http.StripPrefix("/app/", http.FileServer(http.FS(*prv.Webapp))))
-	r.HandleFunc("/api/infos", configRoute(prv))
-}
-
-func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
-		bytes, err := json.Marshal(dto.NewServerConfig(prv))
-		if serrors.WriteError(w, r, err) {
-			return
-		}
-
-		_, _ = w.Write(bytes)
-	}
 }

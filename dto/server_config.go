@@ -6,6 +6,7 @@ type ServerConfig struct {
 	RegistrationAllowed bool
 	Validation          string
 	WebURL              string
+	CustomBranding      string `json:",omitempty"`
 }
 
 func NewServerConfig(prv *services.Provider) ServerConfig {
@@ -13,5 +14,6 @@ func NewServerConfig(prv *services.Provider) ServerConfig {
 		RegistrationAllowed: prv.Config.Registration.Allowed,
 		Validation: prv.Config.Registration.Validation,
 		WebURL: prv.Config.WebURL,
+		CustomBranding: prv.Config.CustomBranding,
 	}
 }
