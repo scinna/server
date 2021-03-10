@@ -23,7 +23,8 @@
     "start": "PUBLIC_URL=/app react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint-css": "stylelint --fix src/assets/scss"
   },
   "eslintConfig": {
     "extends": [
@@ -42,5 +43,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "stylelint": "^13.12.0",
+    "stylelint-config-idiomatic-order": "^8.1.0",
+    "stylelint-config-sass-guidelines": "^8.0.0",
+    "stylelint-config-standard": "^21.0.0",
+    "stylelint-order": "^4.1.0"
   }
 }

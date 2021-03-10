@@ -1,0 +1,31 @@
+{
+    "extends": "stylelint-config-idiomatic-order",
+    "plugins": [
+        "stylelint-scss"
+    ],
+    "rules": {
+        "color-no-invalid-hex": true,
+        "block-no-empty": true,
+        "indentation": 2,
+        "font-family-name-quotes": "always-unless-keyword",
+        "function-calc-no-invalid": true,
+        "unit-no-unknown": true,
+        "declaration-block-no-duplicate-properties": true,
+        "media-feature-name-no-unknown": true,
+        "no-duplicate-selectors": true,
+        "color-named": "never",
+        "length-zero-no-unit": true,
+        "value-no-vendor-prefix": true,
+        "property-no-vendor-prefix": true,
+        "no-unknown-animations": true,
+        "color-hex-case": "lower",
+        "string-quotes": "single",
+        "unit-case": "lower",
+        "property-case": "lower",
+        "linebreaks": "unix",
+        "max-empty-lines": 2,
+        "no-eol-whitespace": true,
+        "no-empty-first-line": true,
+        "selector-max-id": 10
+    }
+}
