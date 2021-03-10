@@ -1,33 +1,72 @@
 import './assets/scss/App.scss';
-import {useToken}                           from "./utils/TokenProvider";
-import React, {useEffect}                   from "react";
-import {BrowserRouter, Switch, Route} from "react-router-dom";
-import Navigation                           from "./components/Navigation";
+import {useToken}                               from "./utils/TokenProvider";
+import React, {ReactNode, useEffect}            from "react";
+import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
+import {MuiThemeProvider as ThemeProvider}      from "@material-ui/core";
+import Navigation                               from "./components/Navigation";
+import {Register}                               from "./views/Register";
+import {Login}                                  from "./views/Login";
+import {Logout}                                 from "./views/Logout";
+import {Profile}                                from "./views/Profile";
+import {Browser}                                from "./views/Browser";
+import {ShowPicture}                            from "./views/ShowPicture";
+import {Home}                                   from "./views/Home";
+import {createMuiTheme}                         from "@material-ui/core";
+import {ScinnaTheme}                            from "./assets/js/theme";
+
+const AuthenticatedRoute = (node: ReactNode) => {
+    const {isAuthenticated} = useToken();
+    if (!isAuthenticated) {
+        return <Redirect to={{pathname: '/login'}}/>
+    }
+
+    return node;
+}
 
 function App() {
-    const {init, userInfos} = useToken();
+    const theme = createMuiTheme(ScinnaTheme);
+    const {init} = useToken();
+    // Yeah probably not what I'm supposed to do but meh it works for now
     useEffect(() => {
         init();
     }, [init])
 
     return (
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
-            <Navigation />
+        <ThemeProvider theme={theme}>
+            <BrowserRouter basename={process.env.PUBLIC_URL}>
+                <Navigation/>
 
-            <Switch>
-                <Route path="/logout">
-                    <div>Logging-out</div>
-                </Route>
+                <Switch>
+                    <Route exact path="/register">
+                        <Register/>
+                    </Route>
 
-                <Route path="/account">
-                    <div>My account</div>
-                </Route>
+                    <Route exact path="/login">
+                        <Login/>
+                    </Route>
 
-                <Route path="/">
-                    <div>Home</div>
-                </Route>
-            </Switch>
-        </BrowserRouter>
+                    <Route exact path="/logout">
+                        {AuthenticatedRoute(<Logout/>)}
+                    </Route>
+
+                    <Route exact path="/account">
+                        {AuthenticatedRoute(<Profile/>)}
+                    </Route>
+
+                    <Route path="/browse/:username/:path+">
+                        <Browser/>
+                    </Route>
+
+                    <Route path="/:pictureId">
+                        <ShowPicture/>
+                    </Route>
+
+                    <Route path="/">
+                        <Home/>
+                    </Route>
+                </Switch>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 }
 

@@ -13,6 +13,7 @@ type UserInfos = null | {
 type TokenProps = { token: string | null, loaded: Boolean, userInfos: UserInfos };
 type TokenContextProps = TokenProps & {
     init: () => void,
+    isAuthenticated: () => Boolean;
 };
 
 const TokenContext = createContext<TokenContextProps>({
@@ -20,6 +21,7 @@ const TokenContext = createContext<TokenContextProps>({
     loaded: false,
     init: () => {
     },
+    isAuthenticated: () => false,
     userInfos: null,
 });
 
@@ -53,7 +55,7 @@ export default function TokenProvider({children}: Props) {
             const response = await fetch("/api/account", {headers: {"Authorization": "Bearer " + token}})
             if (!response.ok) {
                 localStorage.remove(LS_SCINNA_KEY);
-                setContext({ ...context, loaded: true, token: null });
+                setContext({...context, loaded: true, token: null});
 
                 return;
             }
@@ -63,9 +65,12 @@ export default function TokenProvider({children}: Props) {
         setContext({...context, loaded: true, token, userInfos});
     }
 
+    const isAuthenticated = () => context.userInfos !== null;
+
     return (<TokenContext.Provider value={{
         ...context,
         init,
+        isAuthenticated
     }}>
         {children}
     </TokenContext.Provider>)
