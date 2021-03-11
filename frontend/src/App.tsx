@@ -12,7 +12,6 @@ import {Browser}                                from "./views/Browser";
 import {ShowPicture}                            from "./views/ShowPicture";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
-import {ScinnaTheme}                            from "./assets/js/theme";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
@@ -24,7 +23,11 @@ const AuthenticatedRoute = (node: ReactNode) => {
 }
 
 function App() {
-    const theme = createMuiTheme(ScinnaTheme);
+    const theme = createMuiTheme({
+        palette: {
+            type: 'dark',
+        },
+    });
     const {init} = useToken();
     // Yeah probably not what I'm supposed to do but meh it works for now
     useEffect(() => {

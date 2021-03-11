@@ -81,7 +81,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 		// Maybe one day I'll have the motivation to rewrite this with golang's tag
 		violations := []forms.Constraint {
 			forms.ConstraintUniqueString(prv, "Email", "SCINNA_USER", "user_email", registerBody.Email, translations.T(r, "errors.registration.email_exists")),
-			forms.ConstraintUniqueString(prv, "Username", "SCINNA_USER", "user_name", registerBody.Username, translations.T(r, "errors.registration.user_exists")),
+			forms.ConstraintUniqueString(prv, "Username", "SCINNA_USER", "user_name", registerBody.Username, translations.T(r, "errors.registration.username_exists")),
 		}
 
 		if forms.HasViolations(violations, w) {
