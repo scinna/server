@@ -1,9 +1,11 @@
-import {Controller, useForm} from "react-hook-form";
+import {Controller, useForm}           from "react-hook-form";
 
 import '../assets/scss/Login.scss';
 import {Button, InputLabel, TextField} from "@material-ui/core";
-import React, {useState} from "react";
-import i18n from "i18n-js";
+import React, {useState}               from "react";
+import {Redirect}                      from "react-router-dom";
+import i18n                            from "i18n-js";
+import {useToken}                      from "../utils/TokenProvider";
 
 interface IFormInputs {
     Username: string;
@@ -12,13 +14,46 @@ interface IFormInputs {
 
 export function Login() {
     const [status, setStatus] = useState<null | 'error' | 'success' | 'pending'>(null);
+    const [message, setMessage] = useState<null | String>(null);
     const {control, handleSubmit} = useForm<IFormInputs>();
+
+    const {isAuthenticated, setUserInfo} = useToken();
 
     const onSubmit = async function (data: IFormInputs) {
         setStatus('pending');
+        setMessage('');
+
+        const response = await fetch('/api/auth', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            setStatus('error');
+            try {
+                const responseData = await response.json();
+                if (responseData.Message) {
+                    setMessage(responseData.Message);
+                } else {
+                    setMessage(i18n.t('errors.unknown'))
+                }
+            } catch {
+                setMessage(i18n.t('errors.unknown'))
+            }
+
+            return;
+        }
+
+        setStatus('success');
+        const responseData = await response.json();
+        setUserInfo(responseData.Token, responseData);
     }
 
-    return <div className="centeredBlock">
+    if (isAuthenticated()) {
+        return <Redirect to="/"/>;
+    }
+
+    return <div className="centeredBlock login">
         <h1>{i18n.t('login.title')}</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel htmlFor="Username">{i18n.t('login.username')}</InputLabel>
@@ -53,6 +88,11 @@ export function Login() {
                     />
                 )}
             />
+
+            {
+                message
+                && <p className="error">{message}</p>
+            }
 
             <Button type="submit" disabled={status === 'pending'}>
                 {i18n.t('login.button')}

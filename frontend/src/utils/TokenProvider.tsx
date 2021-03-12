@@ -10,9 +10,15 @@ type UserInfos = null | {
     IsAdmin: Boolean,
 }
 
-type TokenProps = { token: string | null, loaded: Boolean, userInfos: UserInfos };
+type TokenProps = {
+    token: string | null,
+    loaded: Boolean,
+    userInfos: UserInfos
+};
+
 type TokenContextProps = TokenProps & {
     init: () => void,
+    setUserInfo: (token: string, userInfos: UserInfos) => void,
     isAuthenticated: () => Boolean;
 };
 
@@ -22,6 +28,7 @@ const TokenContext = createContext<TokenContextProps>({
     init: () => {
     },
     isAuthenticated: () => false,
+    setUserInfo: () => {},
     userInfos: null,
 });
 
@@ -65,12 +72,17 @@ export default function TokenProvider({children}: Props) {
         setContext({...context, loaded: true, token, userInfos});
     }
 
+    const setUserInfo = (token: string, userInfos: UserInfos) => {
+        setContext({ ...context, token, userInfos, loaded: true})
+    }
+
     const isAuthenticated = () => context.userInfos !== null;
 
     return (<TokenContext.Provider value={{
         ...context,
         init,
-        isAuthenticated
+        isAuthenticated,
+        setUserInfo,
     }}>
         {children}
     </TokenContext.Provider>)

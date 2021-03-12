@@ -1,7 +1,7 @@
 @import './_Responsive';
 @import './CenteredBlock';
 
-.centeredBlock {
+.centeredBlock.register {
   form {
     margin-top: 2em;
     width: $size-s;
@@ -24,11 +24,11 @@
     }
 
     .error {
-      color: red;
+      color: #f54d64;
     }
 
     .success {
-      color: lime;
+      color: #59ff80;
     }
   }
 }

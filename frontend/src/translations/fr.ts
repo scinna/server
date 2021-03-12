@@ -1,4 +1,7 @@
 export default {
+    errors: {
+        unknown: 'Erreur inconnue',
+    },
     registration: {
         title: "S'inscrire",
         username: "Pseudo",

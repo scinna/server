@@ -25,6 +25,7 @@ export function Register() {
 
     const onSubmit = async (data: IFormInputs) => {
         setStatus('pending');
+        setMessage("");
         const response = await fetch('/api/auth/register', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -35,7 +36,7 @@ export function Register() {
             try {
                 const data = await response.json();
                 if (data.Violations) {
-                    setValidationErrors(data.Violations);
+                    setValidationErrors(data);
                 } else {
                     setMessage(data.Message);
                 }
@@ -50,7 +51,7 @@ export function Register() {
         }
     }
 
-    return <div className="centeredBlock">
+    return <div className="centeredBlock register">
         <h1>{i18n.t('registration.title')}</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel htmlFor="Username">{i18n.t('registration.username')}</InputLabel>
@@ -61,6 +62,8 @@ export function Register() {
                 render={({onChange, value}) => <TextField onChange={onChange}
                                                           value={value}
                                                           disabled={status === 'pending'}
+                                                          error={validationErrors?.Violations?.hasOwnProperty("Username")}
+                                                          helperText={validationErrors?.Violations?.Username}
                                                           required
                                                           fullWidth/>}
             />
@@ -74,6 +77,8 @@ export function Register() {
                                                           disabled={status === 'pending'}
                                                           value={value}
                                                           type="email"
+                                                          error={validationErrors?.Violations?.hasOwnProperty("Email")}
+                                                          helperText={validationErrors?.Violations?.Email}
                                                           required
                                                           fullWidth/>}
             />
@@ -88,6 +93,8 @@ export function Register() {
                                                           value={value}
                                                           type="password"
                                                           autoComplete="new-password"
+                                                          error={validationErrors?.Violations?.hasOwnProperty("Password")}
+                                                          helperText={validationErrors?.Violations?.Password}
                                                           required
                                                           fullWidth/>}
             />
@@ -120,6 +127,8 @@ export function Register() {
                                                                   value={value}
                                                                   type="text"
                                                                   autoComplete="new-password"
+                                                                  error={validationErrors?.Violations?.hasOwnProperty("InviteCode")}
+                                                                  helperText={validationErrors?.Violations?.InviteCode}
                                                                   required
                                                                   fullWidth/>}
                     />
