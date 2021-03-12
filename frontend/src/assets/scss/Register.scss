@@ -1,0 +1,34 @@
+@import './_Responsive';
+@import './CenteredBlock';
+
+.centeredBlock {
+  form {
+    margin-top: 2em;
+    width: $size-s;
+    @media(max-width: $size-s) {
+      width: 85%;
+    }
+
+    label:not(:first-child){
+      margin-top: .75em;
+    }
+
+    button {
+      width: 100%;
+      margin-top: .75em;
+    }
+
+    .error, .success {
+      display: block;
+      margin: 1em;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: lime;
+    }
+  }
+}
