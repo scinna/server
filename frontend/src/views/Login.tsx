@@ -19,6 +19,7 @@ export function Login() {
 
     const {isAuthenticated, setUserInfo} = useToken();
 
+    // @TODO: Reset on failure
     const onSubmit = async function (data: IFormInputs) {
         setStatus('pending');
         setMessage('');

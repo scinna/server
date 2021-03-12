@@ -1,6 +1,7 @@
 export default {
     errors: {
         unknown: 'Unknown error',
+        passwordNotMatching: 'Password do not match',
     },
     registration: {
         title: "Register",
@@ -16,5 +17,10 @@ export default {
         username: 'Username',
         password: 'Password',
         button: 'Login'
-    }
+    },
+    'my_profile': {
+        title: 'My profile',
+        'fill_if_changed': 'Only fill those fields only if you want to change password',
+        update: 'Mettre à jour'
+    },
 };

@@ -1,0 +1,35 @@
+@import './_Responsive';
+@import './CenteredBlock';
+
+.centeredBlock.profile{
+  form {
+    width: $size-s;
+    margin-top: 2em;
+    @media(max-width: $size-s) {
+      width: 85%;
+    }
+
+    p {
+      margin: 2em;
+
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+    }
+
+    label:not(:first-child){
+      margin-top: .75em;
+    }
+
+    .error {
+      margin-top: 2em;
+
+      color: #f54d64;
+      text-align: center;
+    }
+
+    button {
+      width: 100%;
+      margin-top: .75em;
+    }
+  }
+}

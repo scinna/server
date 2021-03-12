@@ -23,7 +23,15 @@ export function Register() {
     const [status, setStatus] = useState<null | 'error' | 'success' | 'pending'>(null);
     const [message, setMessage] = useState<null | String>(null);
 
+    // @TODO: Reset on failure
     const onSubmit = async (data: IFormInputs) => {
+        if (data.Password !== data.Password2) {
+            setStatus('error');
+            setValidationErrors({ Violations: { 'Password': i18n.t('errors.passwordNotMatching') }})
+
+            return;
+        }
+
         setStatus('pending');
         setMessage("");
         const response = await fetch('/api/auth/register', {
