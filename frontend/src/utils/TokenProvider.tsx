@@ -20,16 +20,17 @@ type TokenContextProps = TokenProps & {
     init: () => void,
     setUserInfo: (token: string, userInfos: UserInfos) => void,
     isAuthenticated: () => Boolean;
+    logout: () => void;
 };
 
 const TokenContext = createContext<TokenContextProps>({
     token: null,
     loaded: false,
-    init: () => {
-    },
+    userInfos: null,
+    init: () => {},
     isAuthenticated: () => false,
     setUserInfo: () => {},
-    userInfos: null,
+    logout: () => {},
 });
 
 type Props = {
@@ -61,7 +62,7 @@ export default function TokenProvider({children}: Props) {
         if (token) {
             const response = await fetch("/api/account", {headers: {"Authorization": "Bearer " + token}})
             if (!response.ok) {
-                localStorage.remove(LS_SCINNA_KEY);
+                localStorage.removeItem(LS_SCINNA_KEY);
                 setContext({...context, loaded: true, token: null});
 
                 return;
@@ -70,6 +71,18 @@ export default function TokenProvider({children}: Props) {
             userInfos = await response.json();
         }
         setContext({...context, loaded: true, token, userInfos});
+    }
+
+    async function logout(): Promise<void> {
+        await fetch('/api/auth', {
+            method: 'DELETE',
+            headers: {
+                Authorization: 'Bearer ' + context.token,
+            },
+        })
+
+        localStorage.removeItem(LS_SCINNA_KEY);
+        setContext({ ...context, token: null, userInfos: null });
     }
 
     const setUserInfo = (token: string, userInfos: UserInfos) => {
@@ -81,6 +94,7 @@ export default function TokenProvider({children}: Props) {
     return (<TokenContext.Provider value={{
         ...context,
         init,
+        logout,
         isAuthenticated,
         setUserInfo,
     }}>
