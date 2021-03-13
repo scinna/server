@@ -1,35 +1,65 @@
 @import './_Responsive';
 @import './CenteredBlock';
 
-.centeredBlock.profile{
-  form {
-    width: $size-s;
-    margin-top: 2em;
-    @media(max-width: $size-s) {
-      width: 85%;
-    }
+.centeredBlock.profile {
+  display: flex;
+  flex-direction: row;
 
-    p {
-      margin: 2em;
+  &.profile {
+    form {
 
-      color: rgba(255, 255, 255, 0.7);
-      text-align: center;
-    }
-
-    label:not(:first-child){
-      margin-top: .75em;
-    }
-
-    .error {
+      width: $size-s;
       margin-top: 2em;
+      @media(max-width: $size-s) {
+        width: 85%;
+      }
 
-      color: #f54d64;
-      text-align: center;
-    }
+      p {
+        margin: 2em;
 
-    button {
-      width: 100%;
-      margin-top: .75em;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+      }
+
+      label:not(:first-child) {
+        margin-top: .75em;
+      }
+
+      .error {
+        margin-top: 2em;
+
+        color: #f54d64;
+        text-align: center;
+      }
+
+
+      button {
+        width: 100%;
+        margin-top: .75em;
+      }
     }
   }
+
+  .tokenLister {
+    max-height: 80%;
+    margin: 0 0 0 2em;
+    overflow-y: scroll;
+
+    .token {
+      padding: 1em 2em 0 0;
+
+      &.revoked {
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  @media(max-width: 900px) {
+    flex-direction: column;
+
+    .tokenLister {
+      margin: 2em 0 0 0;
+    }
+  }
+
 }

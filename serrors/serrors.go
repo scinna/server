@@ -19,6 +19,7 @@ func (s SError) Error() string {
 
 // JSON return the error as a JSON to be sent to the client
 func (s *SError) JSON(r *http.Request) []byte {
+	// @TODO: If not a custom error, do not translate it
 	translatedError := *s
 	translatedError.Message = translations.T(r, "errors." + s.Message)
 	tx, err := json.Marshal(translatedError)
@@ -39,23 +40,6 @@ func (s *SError) Write(w http.ResponseWriter, r *http.Request) {
 
 // WriteError writes the error to the response. Return false if there is no error
 func WriteError(w http.ResponseWriter, r *http.Request, err error) bool {
-	if err != nil {
-		cast, ok := err.(*SError)
-		if ok {
-			cast.Write(w, r)
-			return true
-		}
-
-		NewUnknown(err).Write(w, r)
-		return true
-	}
-
-	return false
-}
-
-// WriteLoggableError writes a generic error and save the real one to the database
-func WriteLoggableError(w http.ResponseWriter, r *http.Request, err error) bool {
-	// @TODO Save the error, send a generic message with an error code to send to the admin
 	if err != nil {
 		cast, ok := err.(*SError)
 		if ok {

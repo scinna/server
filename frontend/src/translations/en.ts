@@ -21,6 +21,9 @@ export default {
     'my_profile': {
         title: 'My profile',
         'fill_if_changed': 'Only fill those fields only if you want to change password',
-        update: 'Mettre à jour'
+        update: 'Mettre à jour',
+        loggedAt: 'Logged in at ',
+        'last_seen': 'Last seen',
+        never: 'Never'
     },
 };

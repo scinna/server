@@ -7,7 +7,7 @@ export function Home() {
 
     if (userInfos) {
         return <Redirect to={{
-            pathname: ""
+            pathname: "/browser/" + userInfos.Name
         }} />
     }
 

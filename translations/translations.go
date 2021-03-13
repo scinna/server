@@ -39,7 +39,7 @@ func T(r *http.Request, id string) string {
 
 func TLang(lang, id string) string {
 	l := i18n.NewLocalizer(bundle, lang, "en")
-	return l.MustLocalize(&i18n.LocalizeConfig{
+	translated, err := l.Localize(&i18n.LocalizeConfig{
 		MessageID: id,
 		DefaultMessage: &i18n.Message{
 			ID:    id,
@@ -51,6 +51,12 @@ func TLang(lang, id string) string {
 			Other: id,
 		},
 	})
+
+	if err != nil {
+		return id
+	}
+
+	return translated
 }
 
 // Stolen from https://github.com/nicksnyder/go-i18n/pull/246

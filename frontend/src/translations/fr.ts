@@ -21,6 +21,9 @@ export default {
     'my_profile': {
         title: 'Mon compte',
         'fill_if_changed': 'Remplissez ces champs seulement si vous voulez changer de mot de passe',
-        update: 'Mettre à jour'
+        update: 'Mettre à jour',
+        loggedAt: 'Connecté à',
+        'last_seen': 'Dernière utilisation',
+        never: 'Jamais',
     }
 };

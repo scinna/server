@@ -12,7 +12,6 @@ import {Browser}                                from "./views/Browser";
 import {ShowPicture}                            from "./views/ShowPicture";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
-import {useServerConfig} from "./utils/ServerConfigProvider";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
@@ -58,7 +57,12 @@ function App() {
                         {AuthenticatedRoute(<Profile/>)}
                     </Route>
 
+                    {/* Meh but react router seems to work only like this*/}
                     <Route path="/browse/:username/:path+">
+                        <Browser/>
+                    </Route>
+
+                    <Route path="/browse/:username">
                         <Browser/>
                     </Route>
 

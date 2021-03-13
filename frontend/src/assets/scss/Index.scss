@@ -20,6 +20,6 @@ body {
 }
 
 #root {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 4em calc(100% - 4em);
 }

@@ -76,5 +76,33 @@ func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
 }
 
 func (u *User) RevokeToken(authToken string) {
-	u.DB.Exec("UPDATE LOGIN_TOKENS SET REVOKED_AT = NOW() WHERE LOGIN_TOKEN = $1", authToken)
+	_, _ = u.DB.Exec("UPDATE LOGIN_TOKENS SET REVOKED_AT = NOW() WHERE LOGIN_TOKEN = $1", authToken)
+}
+
+func (u *User) FetchUserTokens(user *models.User) ([]models.AuthToken, error){
+	var tokens []models.AuthToken
+	// We take all non revoked token + revoked tokens revoked less than a month ago
+	rows, err := u.DB.Queryx(`
+		SELECT LOGIN_TOKEN, USER_IP, LOGIN_TIME, LAST_SEEN, REVOKED_AT
+		FROM LOGIN_TOKENS
+		WHERE USER_ID = $1
+		  AND (REVOKED_AT = NULL OR LOGIN_TIME > (NOW() - interval '1 month'))
+		ORDER BY LOGIN_TIME DESC
+	`, user.UserID)
+
+	if err != nil {
+		return tokens, err
+	}
+
+	for rows.Next() {
+		token := models.AuthToken{}
+		err = rows.StructScan(&token)
+		if err != nil {
+			return tokens, err
+		}
+
+		tokens = append(tokens, token)
+	}
+
+	return tokens, nil
 }

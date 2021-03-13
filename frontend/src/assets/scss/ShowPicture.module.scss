@@ -1,0 +1,22 @@
+.ShowPicture {
+  display: flex;
+  flex-direction: column;
+
+  &__Picture {
+    display: block;
+    max-height: 50%;
+
+    margin: 1em;
+    object-fit: contain;
+  }
+
+  &__Infos {
+    padding: 1em;
+
+    // Tmp til I do things great
+    * {
+      display: block;
+    }
+  }
+
+}
