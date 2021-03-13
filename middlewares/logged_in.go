@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"github.com/scinna/server/models"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"net/http"
@@ -12,14 +11,20 @@ import (
 func LoggedInMiddleware(prv *services.Provider) func(handler http.Handler) http.Handler {
 	return func (next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			user, err := ValidateRequest(prv, r)
+			authToken, err := GetTokenFromRequest(r)
 			if err != nil {
 				serrors.NoToken.Write(w, r)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "user", user)
+			user, err := prv.Dal.User.FetchUserFromToken(authToken)
+			if err != nil {
+				serrors.NoToken.Write(w, r)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), "token", authToken)
+			ctx = context.WithValue(ctx, "user", user)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
@@ -41,12 +46,4 @@ func GetTokenFromRequest(r *http.Request) (string, error) {
 	}
 
 	return "", serrors.NoToken
-}
-
-func ValidateRequest(prv *services.Provider, r *http.Request) (*models.User, error) {
-	authToken, err := GetTokenFromRequest(r)
-	if err != nil {
-		return nil, err
-	}
-	return prv.Dal.User.FetchUserFromToken(authToken)
 }

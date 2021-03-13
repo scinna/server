@@ -18,12 +18,6 @@ import (
 	"net/http"
 )
 
-/**
- * @TODO: For every forms in this app (Register, authentication, upload, collection creation, profile edition) add a symfony/api-platform-like error handling
- * Server should answer with a "errors" array mapping the field name to the error
- * This will need to rework how the user is registered since we wait for postgres' answer to colliding username / email
- */
-
 func Authentication(prv *services.Provider, r *mux.Router) {
 	r.Use(middlewares.Json)
 
@@ -31,14 +25,14 @@ func Authentication(prv *services.Provider, r *mux.Router) {
 	 * Maybe we will switch to JWT at some point, but not now, there are few enough users that it doesn't matter
 	 */
 	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
+	r.Handle("", middlewares.LoggedInMiddleware(prv)(logout(prv))).Methods(http.MethodDelete)
+
 
 	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
 	r.HandleFunc("/register/{validation_code}", validateAccount(prv)).Methods(http.MethodGet)
-
-	/** @TODO: Logout route: revoking the token but keeping the infos **/
 }
 
-func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
+func register(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var registerBody requests.RegisterRequest
 		err := json.NewDecoder(r.Body).Decode(&registerBody)
@@ -130,7 +124,7 @@ func register(prv *services.Provider) func(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
+func validateAccount(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		validationCode := mux.Vars(r)["validation_code"]
 		user := prv.Dal.Registration.ValidateUser(validationCode)
@@ -144,7 +138,7 @@ func validateAccount(prv *services.Provider) func(w http.ResponseWriter, r *http
 	}
 }
 
-func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
+func authenticate(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var authRq requests.LoginRequest
 		err := json.NewDecoder(r.Body).Decode(&authRq)
@@ -188,5 +182,12 @@ func authenticate(prv *services.Provider) func(w http.ResponseWriter, r *http.Re
 
 		resp, _ := json.Marshal(authResp)
 		_, _ = w.Write(resp)
+	}
+}
+
+func logout(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := r.Context().Value("token").(string)
+		prv.Dal.User.RevokeToken(token)
 	}
 }

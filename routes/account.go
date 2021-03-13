@@ -20,10 +20,6 @@ func Accounts(prv *services.Provider, r *mux.Router) {
 func fetchAccountInfos(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value("user").(*models.User)
-		if user == nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
 
 		u, _ := json.Marshal(user)
 		w.Write(u)

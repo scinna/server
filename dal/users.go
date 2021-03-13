@@ -74,3 +74,7 @@ func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
 
 	return &user, err
 }
+
+func (u *User) RevokeToken(authToken string) {
+	u.DB.Exec("UPDATE LOGIN_TOKENS SET REVOKED_AT = NOW() WHERE LOGIN_TOKEN = $1", authToken)
+}
