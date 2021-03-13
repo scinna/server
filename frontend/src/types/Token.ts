@@ -1,7 +1,7 @@
 export type Token = {
   Token: string;
   LoginIP: string;
-  CreatedAt: Date;
-  LastSeen: Date|null;
-  RevokedAt: Date|null;
+  CreatedAt: string;
+  LastSeen: string|null;
+  RevokedAt: string|null;
 };

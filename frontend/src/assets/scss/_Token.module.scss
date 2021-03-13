@@ -1,0 +1,7 @@
+.Token {
+  padding: 1em 2em 0 0;
+
+  &__Revoked {
+    text-decoration: line-through;
+  }
+}

@@ -1,32 +1,22 @@
 import React                     from 'react';
-import {useState}                from "react";
 import {Token}                   from "../types/Token";
 import {Token as TokenComponent} from './Token';
-import useAsyncEffect            from "use-async-effect";
-import {useToken}                from "../utils/TokenProvider";
+import {useApiCall}              from "../utils/useApi";
+import {Loader}                  from "./Loader";
 
 export function TokenLister() {
-    const { token } = useToken();
-    const [tokens, setTokens] = useState<Token[]>([]);
-
-    useAsyncEffect(async () => {
-        const response = await fetch('/api/account/tokens', {
-            headers: { Authorization: 'Bearer ' + token }
-        })
-
-        if (!response.ok) {
-            // @TODO something
-            console.log("nope! ", response.status)
-            return
-        }
-
-        const data = await response.json()
-        setTokens(data);
-    }, [])
+    const tokens = useApiCall<Token[]>({ url: '/api/account/tokens' });
 
     return <div className="tokenLister">
         {
-            tokens.map(token => <TokenComponent key={token.Token} token={token}/>)
+            tokens.status === 'pending'
+            &&
+                <Loader/>
+        }
+        {
+            tokens.status === 'success'
+            &&
+                tokens.data.map(token => <TokenComponent key={token.Token} token={token}/>)
         }
     </div>;
 }

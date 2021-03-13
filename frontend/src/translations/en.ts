@@ -23,7 +23,9 @@ export default {
         'fill_if_changed': 'Only fill those fields only if you want to change password',
         update: 'Mettre à jour',
         loggedAt: 'Logged in at ',
+        revokedAt: 'Revoked at',
         'last_seen': 'Last seen',
-        never: 'Never'
+        never: 'Never',
+        on: 'on'
     },
 };

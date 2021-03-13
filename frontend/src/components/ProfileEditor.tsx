@@ -31,6 +31,7 @@ export function ProfileEditor() {
 
     };
 
+    // @TODO: Fix, we can't use defaultValue since a F5 on the page will first show this then pull the user
     return <div className="profileEditor">
         <h1>{i18n.t('my_profile.title')}</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
