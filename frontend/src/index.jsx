@@ -1,21 +1,21 @@
-import React                from 'react';
-import ReactDOM             from 'react-dom';
-import App                  from './App';
-import {init as initTranslations}         from './translations';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import {init as initTranslations} from './translations';
 
 import './assets/scss/Index.scss';
-import TokenProvider        from "./utils/TokenProvider";
+import TokenProvider from "./utils/TokenProvider";
 import ServerConfigProvider from "./utils/ServerConfigProvider";
 
 initTranslations();
 
 ReactDOM.render(
     <React.StrictMode>
-        <ServerConfigProvider>
-            <TokenProvider>
+        <TokenProvider>
+            <ServerConfigProvider>
                 <App/>
-            </TokenProvider>
-        </ServerConfigProvider>
+            </ServerConfigProvider>
+        </TokenProvider>
     </React.StrictMode>,
     document.getElementById('root')
 );

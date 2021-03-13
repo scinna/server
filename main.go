@@ -21,11 +21,6 @@ import (
 	"github.com/scinna/server/utils"
 )
 
-const (
-	SCINNA_AUTHOR  = "Scinna Team"
-	SCINNA_VERSION = "0.1"
-	SCINNA_PATCH   = "0"
-)
 
 //go:embed frontend/build
 var frontend embed.FS
@@ -41,7 +36,7 @@ func main() {
 }
 
 func start() error {
-	fmt.Printf("Scinna [v%v.%v] by %v\n", SCINNA_VERSION, SCINNA_PATCH, SCINNA_AUTHOR)
+	fmt.Printf("Scinna [v%v.%v] by %v\n", utils.SCINNA_VERSION, utils.SCINNA_PATCH, utils.SCINNA_AUTHOR)
 
 	translations.Initialize()
 
@@ -61,10 +56,10 @@ func start() error {
 	}
 
 	if *generateDb {
-		fixtures.InitializeTable(prv, SCINNA_VERSION, *forceGenerateDb)
+		fixtures.InitializeTable(prv, utils.SCINNA_VERSION, *forceGenerateDb)
 	}
 
-	err = utils.CheckVersion(prv, SCINNA_VERSION)
+	err = utils.CheckVersion(prv, utils.SCINNA_VERSION)
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/dto"
+	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"net/http"
@@ -16,9 +17,15 @@ func Server(prv *services.Provider, r *mux.Router) {
 
 func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		user, _, _ := middlewares.GetUserFromRequest(prv, r)
+		isAdmin := false
+		if user != nil {
+			isAdmin = user.IsAdmin
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 
-		bytes, err := json.Marshal(dto.NewServerConfig(prv))
+		bytes, err := json.Marshal(dto.NewServerConfig(prv, isAdmin))
 		if serrors.WriteError(w, r, err) {
 			return
 		}

@@ -12,6 +12,7 @@ import {Browser}                                from "./views/Browser";
 import {ShowPicture}                            from "./views/ShowPicture";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
+import {useServerConfig} from "./utils/ServerConfigProvider";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
@@ -29,6 +30,7 @@ function App() {
         },
     });
     const {init} = useToken();
+
     // Yeah probably not what I'm supposed to do but meh it works for now
     useEffect(() => {
         init();

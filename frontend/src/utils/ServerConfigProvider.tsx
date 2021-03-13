@@ -1,12 +1,20 @@
 import React, {useContext}                  from 'react';
 import {createContext, ReactNode, useState} from "react";
 import useAsyncEffect                       from "use-async-effect";
+import {useToken} from "./TokenProvider";
 
 type Props = {
     children: ReactNode,
 }
 
-type ServerConfig = { RegistrationAllowed: boolean; Validation: string; WebURL: string; }
+type ServerConfig = {
+    RegistrationAllowed: boolean;
+    Validation: string;
+    WebURL: string;
+    CustomBranding: string;
+
+    ScinnaVersion: string;
+}
 type ServerConfigProps = {
     Loaded: boolean,
     Config: ServerConfig,
@@ -19,7 +27,9 @@ const defaultValues: ServerConfigContextProps = {
     Config: {
         RegistrationAllowed: false,
         Validation: 'email',
-        WebURL: ''
+        WebURL: '',
+        CustomBranding: '',
+        ScinnaVersion: '',
     },
 };
 
@@ -27,14 +37,19 @@ const ServerConfigContext = createContext<ServerConfigContextProps>(defaultValue
 
 export default function ServerConfigProvider({children}: Props) {
     const [context, setContext] = useState<ServerConfigProps>(defaultValues);
+    const { token } = useToken();
 
+    // Not doing what I want
+    // Should be called again when the token changes
     useAsyncEffect(async () => {
         if (!context.Loaded) {
-            const response = await fetch('/api/server/infos');
+            const response = await fetch('/api/server/infos',
+                token ? { headers: { Authorization: 'Bearer ' + token} } : {}
+            );
             const data = await response.json();
             setContext({ Loaded: true, Config: data });
         }
-    }, [context.Loaded])
+    }, [token])
 
     return (<ServerConfigContext.Provider value={{
         ...context
