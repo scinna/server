@@ -106,3 +106,15 @@ func (u *User) FetchUserTokens(user *models.User) ([]models.AuthToken, error){
 
 	return tokens, nil
 }
+
+func (u *User) UpdatePassword(user *models.User, hashedPassword string) {
+	_, _ = u.DB.Exec("UPDATE SCINNA_USER SET USER_PASSWORD = $2 WHERE USER_ID = $1", user.UserID, hashedPassword)
+}
+
+func (u *User) UpdateEmail(user *models.User, email string, autovalidate bool) {
+	if autovalidate {
+		_, _ = u.DB.Exec("UPDATE SCINNA_USER SET USER_EMAIL = $2 WHERE USER_ID = $1", user.UserID, email)
+	} else {
+		_, _ = u.DB.Exec("UPDATE SCINNA_USER SET USER_EMAIL = $2, VALIDATED = false WHERE USER_ID = $1", user.UserID, email)
+	}
+}

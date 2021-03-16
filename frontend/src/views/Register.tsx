@@ -18,7 +18,7 @@ interface IFormInputs {
 export function Register() {
     const {Config} = useServerConfig();
 
-    const {control, handleSubmit} = useForm<IFormInputs>();
+    const {control, handleSubmit, reset} = useForm<IFormInputs>();
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>();
     const [status, setStatus] = useState<null | 'error' | 'success' | 'pending'>(null);
     const [message, setMessage] = useState<null | String>(null);
@@ -41,6 +41,7 @@ export function Register() {
 
         if (!response.ok) {
             setStatus('error');
+            reset({...data, Password: '', Password2: ''});
             try {
                 const data = await response.json();
                 if (data.Violations) {
@@ -53,6 +54,7 @@ export function Register() {
             }
         } else {
             setStatus('success');
+            reset();
 
             const result = await response.json();
             setMessage(result.Message);
@@ -107,7 +109,7 @@ export function Register() {
                                                           fullWidth/>}
             />
 
-            <InputLabel htmlFor="Password2">{i18n.t('registration.repeatPassword')}</InputLabel>
+            <InputLabel htmlFor="Password2">{i18n.t('registration.repeat_password')}</InputLabel>
             <Controller
                 name="Password2"
                 control={control}
@@ -125,7 +127,7 @@ export function Register() {
                 !Config.RegistrationAllowed
                 &&
                 <>
-                    <InputLabel htmlFor="inviteCode">{i18n.t('registration.inviteCode')}</InputLabel>
+                    <InputLabel htmlFor="inviteCode">{i18n.t('registration.invite_code')}</InputLabel>
                     <Controller
                         name="InviteCode"
                         control={control}

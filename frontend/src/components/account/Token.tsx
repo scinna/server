@@ -11,11 +11,11 @@ type TokenProps = {
 
 export function Token({ token }: TokenProps) {
     return <div className={styles.Token + " " + (token.RevokedAt !== null ? styles.Token__Revoked : "")}>
-        <p>{i18n.t('my_profile.loggedAt')} {displayDate(token.CreatedAt)}</p>
-        <p>{i18n.t('my_profile.last_seen')}: {displayDate(token.LastSeen)}</p>
+        <p>{i18n.t('my_profile.tokens.logged_at')} {displayDate(token.CreatedAt)}</p>
+        <p>{i18n.t('my_profile.tokens.last_seen')}: {displayDate(token.LastSeen)}</p>
         {
             token.RevokedAt
-                && <p>{i18n.t('my_profile.revokedAt')} {displayDate(token.RevokedAt)}</p>
+                && <p>{i18n.t('my_profile.tokens.revoked_at')} {displayDate(token.RevokedAt)}</p>
         }
         <p>{token.LoginIP}</p>
         <a href="#">Logout</a>

@@ -8,8 +8,8 @@ export default {
         username: "Pseudo",
         email: "Email",
         password: "Mot de passe",
-        repeatPassword: "Répéter le mot de passe",
-        inviteCode: "Code d'invitation",
+        repeat_password: "Répéter le mot de passe",
+        invite_code: "Code d'invitation",
         button: "S'inscrire",
     },
     login: {
@@ -18,14 +18,23 @@ export default {
         password: 'Mot de passe',
         button: 'Connexion'
     },
-    'my_profile': {
-        title: 'Mon compte',
-        'fill_if_changed': 'Remplissez ces champs seulement si vous voulez changer de mot de passe',
-        update: 'Mettre à jour',
-        loggedAt: 'Connecté à',
-        revokedAt: 'Révoqué à',
-        'last_seen': 'Dernière utilisation',
-        never: 'Jamais',
-        on: 'le'
-    }
+    my_profile: {
+        account: {
+            tab_name: 'Mon compte',
+            current_password: "Mot de passe actuel",
+            new_password: "Nouveau mot de passe",
+            update: 'Sauvegarder',
+        },
+        tokens: {
+            tab_name: 'Appareils connectés',
+            logged_at: 'Connecté à',
+            revoked_at: 'Révoqué à',
+            last_seen: 'Dernière utilisation',
+            never: 'Jamais',
+            on: 'le',
+        },
+        sharex: {
+            tab_name: 'ShareX'
+        },
+    },
 };

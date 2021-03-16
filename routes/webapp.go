@@ -14,5 +14,5 @@ func WebApp(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/app/", http.StatusPermanentRedirect)
 	})
-	r.PathPrefix("/app").Handler(http.StripPrefix("/app/", http.FileServer(http.FS(*prv.Webapp))))
+	r.PathPrefix("/app").Handler(http.StripPrefix("/app/", http.FileServer(http.FS(*prv.EmbeddedAssets.Frontend))))
 }

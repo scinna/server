@@ -4,5 +4,5 @@ export const displayDate = (apiDate: string|null): string|null => {
     const parsedDate = apiDate ? new Date(Date.parse(apiDate)) : null;
     if (!parsedDate) return null;
 
-    return parsedDate.toLocaleTimeString() + " " + i18n.t('my_profile.on') + " " + parsedDate.toLocaleDateString();
+    return parsedDate.toLocaleTimeString() + " " + i18n.t('my_profile.tokens.on') + " " + parsedDate.toLocaleDateString();
 };
