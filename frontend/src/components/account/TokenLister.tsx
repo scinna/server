@@ -1,8 +1,8 @@
 import React                     from 'react';
-import {Token}                   from "../types/Token";
+import {Token}                   from "../../types/Token";
 import {Token as TokenComponent} from './Token';
-import {useApiCall}              from "../utils/useApi";
-import {Loader}                  from "./Loader";
+import {useApiCall}              from "../../utils/useApi";
+import {Loader}                  from "../Loader";
 
 export function TokenLister() {
     const tokens = useApiCall<Token[]>({ url: '/api/account/tokens' });

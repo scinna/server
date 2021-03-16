@@ -7,7 +7,7 @@ import Navigation                               from "./components/Navigation";
 import {Register}                               from "./views/Register";
 import {Login}                                  from "./views/Login";
 import {Logout}                                 from "./views/Logout";
-import {Profile}                                from "./views/Profile";
+import {Account}                                from "./views/Account";
 import {Browser}                                from "./views/Browser";
 import {ShowPicture}                            from "./views/ShowPicture";
 import {Home}                                   from "./views/Home";
@@ -26,6 +26,9 @@ function App() {
     const theme = createMuiTheme({
         palette: {
             type: 'dark',
+            primary: {
+                main: '#87E7E1',
+            },
         },
     });
     const {init} = useToken();
@@ -54,7 +57,7 @@ function App() {
                     </Route>
 
                     <Route exact path="/account">
-                        {AuthenticatedRoute(<Profile/>)}
+                        {AuthenticatedRoute(<Account/>)}
                     </Route>
 
                     {/* Meh but react router seems to work only like this*/}

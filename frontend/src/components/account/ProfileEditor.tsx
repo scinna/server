@@ -1,9 +1,11 @@
-import {useToken}            from "../utils/TokenProvider";
+import {useToken}            from "../../utils/TokenProvider";
 import React, {useState}     from "react";
-import {ValidationErrors}    from "../types/ValidationErrors";
+import {ValidationErrors}    from "../../types/ValidationErrors";
 import {Controller, useForm} from "react-hook-form";
 import i18n                            from "i18n-js";
 import {Button, InputLabel, TextField} from "@material-ui/core";
+
+import styles from '../../assets/scss/Profile.module.scss';
 
 interface IFormInputs {
     Email: string;
@@ -32,7 +34,7 @@ export function ProfileEditor() {
     };
 
     // @TODO: Fix, we can't use defaultValue since a F5 on the page will first show this then pull the user
-    return <div className="profileEditor">
+    return <div className={styles.TabProfile}>
         <h1>{i18n.t('my_profile.title')}</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel htmlFor="Username">{i18n.t('registration.username')}</InputLabel>

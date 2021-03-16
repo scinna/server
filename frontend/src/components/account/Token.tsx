@@ -1,9 +1,9 @@
 import React                from 'react';
 import i18n                 from 'i18n-js';
-import {Token as TokenType} from '../types/Token';
-import {displayDate}        from "../utils/DateUtils";
+import {Token as TokenType} from '../../types/Token';
+import {displayDate}        from "../../utils/DateUtils";
 
-import styles from '../assets/scss/_Token.module.scss';
+import styles from '../../assets/scss/_Token.module.scss';
 
 type TokenProps = {
     token: TokenType;

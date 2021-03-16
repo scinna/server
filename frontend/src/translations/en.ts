@@ -18,14 +18,22 @@ export default {
         password: 'Password',
         button: 'Login'
     },
-    'my_profile': {
-        title: 'My profile',
-        'fill_if_changed': 'Only fill those fields only if you want to change password',
-        update: 'Mettre à jour',
-        loggedAt: 'Logged in at ',
-        revokedAt: 'Revoked at',
-        'last_seen': 'Last seen',
-        never: 'Never',
-        on: 'on'
+    my_profile: {
+        account: {
+            tab_name: 'My account',
+            fill_if_changed: 'Only fill those fields only if you want to change password',
+            update: 'Save',
+        },
+        tokens: {
+            tab_name: 'Connected devices',
+            loggedAt: 'Logged in at ',
+            revokedAt: 'Revoked at',
+            'last_seen': 'Last seen',
+            never: 'Never',
+            on: 'on',
+        },
+        sharex: {
+            tab_name: 'ShareX'
+        }
     },
 };
