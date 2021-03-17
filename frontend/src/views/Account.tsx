@@ -7,28 +7,21 @@ import i18n from "i18n-js";
 import styles from '../assets/scss/Profile.module.scss';
 import ShareX from "../components/account/ShareX";
 
-function a11yProps(index: number) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
-
 export function Account() {
     const [currentTab, setCurrentTab] = useState<Number>(0);
 
-    return <div className={styles.Account}>
+    return <div className={styles.Tabbed}>
         <Tabs value={currentTab}
               onChange={(_, val) => setCurrentTab(val)}
               indicatorColor="primary"
               variant="scrollable"
               scrollButtons="auto">
-            <Tab label={i18n.t('my_profile.account.tab_name')} {...a11yProps(0)}/>
-            <Tab label={i18n.t('my_profile.tokens.tab_name')} {...a11yProps(1)}/>
-            <Tab label={i18n.t('my_profile.sharex.tab_name')} {...a11yProps(2)}/>
+            <Tab label={i18n.t('my_profile.account.tab_name')}/>
+            <Tab label={i18n.t('my_profile.tokens.tab_name')}/>
+            <Tab label={i18n.t('my_profile.sharex.tab_name')}/>
         </Tabs>
 
-        <div className={styles.Account__Tab}>
+        <div className={styles.Tabbed__Tab}>
             {
                 currentTab === 0
                 &&

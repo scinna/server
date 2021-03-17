@@ -70,6 +70,7 @@ export default function TokenProvider({children}: Props) {
 
             userInfos = await response.json();
         }
+
         setContext({...context, loaded: true, token, userInfos});
     }
 

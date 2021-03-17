@@ -112,7 +112,7 @@ func (r *Registration) GenerateInviteIfNeeded(inviteCode string) (string, error)
 	err = rowx.StructScan(&invite)
 
 	if err == sql.ErrNoRows {
-		_, err = r.DB.Exec("INSERT INTO invite_code (invite_code, invited_by) VALUES ($1, -1)", inviteCode)
+		_, err = r.DB.Exec("INSERT INTO invite_code (invite_code, invited_by) VALUES ($1, '')", inviteCode)
 		return inviteCode, err
 	}
 

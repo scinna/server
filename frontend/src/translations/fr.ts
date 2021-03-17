@@ -1,4 +1,11 @@
 export default {
+    menu: {
+        home: 'Accueil',
+        login: 'Connexion',
+        register: "S'inscrire",
+        server: 'Serveur',
+        logout: 'Déconnexion'
+    },
     errors: {
         unknown: 'Erreur inconnue',
         passwordNotMatching: 'Les mots de passes ne correspondent pas',
@@ -38,4 +45,9 @@ export default {
             tab_name: 'ShareX'
         },
     },
+    server_settings: {
+        invite: {
+            tab_name: "Code d'invitation"
+        }
+    }
 };

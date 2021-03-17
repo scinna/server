@@ -59,7 +59,7 @@ func (u *User) Login(user *models.User, ip string) (token string, err error) {
 
 func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
 	row := u.DB.QueryRowx(`
-		SELECT su.USER_ID, su.USER_NAME, su.USER_EMAIL, su.USER_PASSWORD, su.VALIDATED, su.VALIDATION_CODE
+		SELECT su.USER_ID, su.USER_NAME, su.USER_EMAIL, su.USER_PASSWORD, su.VALIDATED, su.VALIDATION_CODE, su.IS_ADMIN
 		FROM SCINNA_USER su
 		INNER JOIN LOGIN_TOKENS lt ON lt.USER_ID = su.USER_ID 
 		WHERE lt.LOGIN_TOKEN = $1

@@ -1,0 +1,12 @@
+.InviteCode {
+  &__Generator {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    &__Textfield {
+      margin-right: 1em;
+    }
+  }
+}

@@ -10,6 +10,7 @@ type Dal struct {
 	Registration Registration
 	Medias       Medias
 	Collections  Collections
+	Server       Server
 }
 
 func (d Dal) IsPostgresError(err error, constraint string) bool {
@@ -27,6 +28,7 @@ func NewDal(db *sqlx.DB) Dal {
 		User:         User{DB: db},
 		Registration: Registration{DB: db},
 		Medias:       Medias{DB: db},
-		Collections: Collections{DB: db},
+		Collections:  Collections{DB: db},
+		Server:       Server{DB: db},
 	}
 }

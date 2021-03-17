@@ -51,4 +51,9 @@ export default {
             tab_name: 'ShareX'
         }
     },
+    server_settings: {
+        invite: {
+            tab_name: "Invite code"
+        }
+    }
 };
