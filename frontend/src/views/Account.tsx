@@ -21,7 +21,8 @@ export function Account() {
         <Tabs value={currentTab}
               onChange={(_, val) => setCurrentTab(val)}
               indicatorColor="primary"
-              centered>
+              variant="scrollable"
+              scrollButtons="auto">
             <Tab label={i18n.t('my_profile.account.tab_name')} {...a11yProps(0)}/>
             <Tab label={i18n.t('my_profile.tokens.tab_name')} {...a11yProps(1)}/>
             <Tab label={i18n.t('my_profile.sharex.tab_name')} {...a11yProps(2)}/>

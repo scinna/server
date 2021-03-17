@@ -36,7 +36,7 @@ func (u *User) GetUserFromID(id int) (*models.User, error){
 
 // GetUserFromUsername returns a user from an id
 func (u *User) GetUserFromUsername(username string) (*models.User, error){
-	row := u.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
+	row := u.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, IS_ADMIN, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}

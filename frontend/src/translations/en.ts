@@ -1,4 +1,11 @@
 export default {
+    menu: {
+        home: 'Home',
+        login: 'Login',
+        register: 'Register',
+        server: 'Server',
+        logout: 'Logout'
+    },
     errors: {
         unknown: 'Unknown error',
         passwordNotMatching: 'Password do not match',

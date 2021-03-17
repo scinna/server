@@ -12,11 +12,26 @@ import {Browser}                                from "./views/Browser";
 import {ShowPicture}                            from "./views/ShowPicture";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
+import {ServerSettings}                         from "./views/ServerSettings";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
     if (!isAuthenticated) {
         return <Redirect to={{pathname: '/login'}}/>
+    }
+
+    return node;
+}
+
+/** Role will be used when a real role system will be implemented **/
+const AdminAuthenticatedRoute = (node: ReactNode, role: string) => {
+    const {isAuthenticated, userInfos} = useToken();
+    if (!isAuthenticated) {
+        return <Redirect to={{pathname: '/login'}}/>
+    }
+
+    if (!userInfos?.IsAdmin) {
+        return <Redirect to={{pathname: '/account'}}/>
     }
 
     return node;
@@ -58,6 +73,10 @@ function App() {
 
                     <Route exact path="/account">
                         {AuthenticatedRoute(<Account/>)}
+                    </Route>
+
+                    <Route exact path="/admin">
+                        {AdminAuthenticatedRoute(<ServerSettings />, 'ROLE_ADMIN')}
                     </Route>
 
                     {/* Meh but react router seems to work only like this*/}
