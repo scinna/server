@@ -10,6 +10,7 @@ import {ValidationErrors} from "../types/ValidationErrors";
 interface IFormInputs {
     Username: string;
     Email: string;
+    CurrentPassword: string;
     Password: string;
     Password2: string;
     InviteCode: string;
@@ -41,7 +42,7 @@ export function Register() {
 
         if (!response.ok) {
             setStatus('error');
-            reset({...data, Password: '', Password2: ''});
+            reset({...data, Password: '', Password2: '', CurrentPassword: ''});
             try {
                 const data = await response.json();
                 if (data.Violations) {
@@ -50,15 +51,17 @@ export function Register() {
                     setMessage(data.Message);
                 }
             } catch {
-                setMessage("Error occurred");
+                setMessage(i18n.t('errors.unknown'));
             }
-        } else {
-            setStatus('success');
-            reset();
 
-            const result = await response.json();
-            setMessage(result.Message);
+            return;
         }
+
+        setStatus('success');
+        reset({...data, Password: '', Password2: '', CurrentPassword: ''});
+
+        const result = await response.json();
+        setMessage(result.Message);
     }
 
     return <div className="centeredBlock register">

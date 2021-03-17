@@ -6,7 +6,6 @@ import i18n from "i18n-js";
 import {Button, InputLabel, TextField} from "@material-ui/core";
 
 import styles from '../../assets/scss/Profile.module.scss';
-import {apiCall} from "../../utils/useApi";
 
 interface IFormInputs {
     Email: string;
@@ -46,6 +45,8 @@ export function ProfileEditor() {
                 const responseData = await response.json();
                 if (responseData.Message) {
                     setMessage(responseData.Message);
+                } else if (responseData.Violations) {
+                    setValidationErrors(responseData);
                 } else {
                     setMessage(i18n.t('errors.unknown'))
                 }
@@ -57,7 +58,7 @@ export function ProfileEditor() {
         }
 
         setStatus('success');
-        console.log("Yep !")
+        setMessage(i18n.t('my_profile.account.success'));
 
     };
 
@@ -135,7 +136,14 @@ export function ProfileEditor() {
             {
                 message !== null
                 &&
-                <span className={status ?? ''}>{message}</span>
+                <span className={
+                    status === 'success'
+                        ? styles.TabProfile__Message__Success
+                        :
+                    status === 'error'
+                        ? styles.TabProfile__Message__Error
+                        : ''
+                }>{message}</span>
             }
 
             <Button type="submit" disabled={status === 'pending'}>

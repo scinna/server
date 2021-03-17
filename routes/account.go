@@ -63,22 +63,17 @@ func updateAccountInfos(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		hashPassword, err := prv.HashPassword(rq.CurrentPassword)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+		isValid, err := prv.VerifyPassword(rq.CurrentPassword, user.Password)
+		if err != nil || !isValid {
+			w.WriteHeader(http.StatusUnauthorized)
 			bytes, _ := json.Marshal(struct {
 				Violations map[string]string
 			}{
 				Violations: map[string]string{
-					"CurrentPassword": translations.T(r, "login.invalid_credentials"),
+					"CurrentPassword": translations.T(r, "errors.login.invalid_password"),
 				},
 			})
 			w.Write(bytes)
-			return
-		}
-
-		if hashPassword != user.Password {
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 

@@ -1,5 +1,6 @@
 {
   "errors": {
+    "unknown": "Unknown error",
     "invite": {
       "bad_code": "The server requires a valid invitation code",
       "used": "This invite code has already been used"
@@ -21,6 +22,7 @@
     },
     "login": {
       "invalid_credentials": "Invalid credentials",
+      "invalid_password": "Incorrect password",
       "not_validated": "This account is not validated"
     },
     "authorization": {

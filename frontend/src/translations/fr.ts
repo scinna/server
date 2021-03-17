@@ -24,6 +24,7 @@ export default {
             current_password: "Mot de passe actuel",
             new_password: "Nouveau mot de passe",
             update: 'Sauvegarder',
+            success: 'Votre compte à été mis à jour avec succès',
         },
         tokens: {
             tab_name: 'Appareils connectés',

@@ -15,6 +15,8 @@
 }
 
 .TabProfile {
+  padding: 2em 0;
+
   h1 {
     text-align: center;
   }
@@ -35,5 +37,20 @@
       display: block;
       margin: 2em auto 0 auto;
     }
+  }
+
+  &__Message__Error, &__Message__Success {
+    display: block;
+    width: 100%;
+    margin-top: .75em;
+    text-align: center;
+  }
+
+  &__Message__Error {
+    color: #f54d64;
+  }
+
+  &__Message__Success {
+    color: #59ff80;
   }
 }

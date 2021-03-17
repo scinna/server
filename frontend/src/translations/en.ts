@@ -24,6 +24,7 @@ export default {
             current_password: 'Current password',
             new_password: 'New password',
             update: 'Save',
+            success: 'Profile has been successfully updated',
         },
         tokens: {
             tab_name: 'Connected devices',
