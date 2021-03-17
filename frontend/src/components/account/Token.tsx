@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import i18n from 'i18n-js';
 import {Token as TokenType} from '../../types/Token';
 import {displayDate} from "../../utils/DateUtils";
@@ -9,9 +9,10 @@ import styles from '../../assets/scss/_Token.module.scss';
 
 type TokenProps = {
     token: TokenType;
+    revokeToken: () => void;
 }
 
-export function Token({token}: TokenProps) {
+export function Token({token, revokeToken}: TokenProps) {
     return <div className={styles.Token + " " + (token.RevokedAt !== null ? styles.Token__Revoked : "")}>
         <div className={styles.Token__Infos}>
             <p>{i18n.t('my_profile.tokens.logged_at')} {displayDate(token.CreatedAt)}</p>
@@ -22,7 +23,7 @@ export function Token({token}: TokenProps) {
             }
             <p>{token.LoginIP}</p>
         </div>
-        <IconButton color="primary" aria-label="logout picture" component="span" disabled={token.RevokedAt !== null}>
+        <IconButton color="primary" aria-label="logout picture" component="span" disabled={token.RevokedAt !== null} onClick={revokeToken}>
             <ExitToApp/>
         </IconButton>
     </div>;

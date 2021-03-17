@@ -33,6 +33,12 @@ export default {
             last_seen: 'Last seen',
             never: 'Never',
             on: 'on',
+            revoke_dialog: {
+                title: 'Revoke a token',
+                text: 'Revoking this token will disconnect you from all devices / app using it.',
+                revoke: 'Revoke',
+                cancel: 'Cancel'
+            }
         },
         sharex: {
             tab_name: 'ShareX'
