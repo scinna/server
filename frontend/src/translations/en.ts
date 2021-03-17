@@ -7,9 +7,9 @@ export default {
         title: "Register",
         username: "Username",
         email: "Email",
-        password: "Password",
-        repeatPassword: "Repeat password",
-        inviteCode: "Invite code",
+        password: "New password",
+        repeat_password: "Repeat password",
+        invite_code: "Invite code",
         button: "Register",
     },
     login: {
@@ -18,14 +18,30 @@ export default {
         password: 'Password',
         button: 'Login'
     },
-    'my_profile': {
-        title: 'My profile',
-        'fill_if_changed': 'Only fill those fields only if you want to change password',
-        update: 'Mettre à jour',
-        loggedAt: 'Logged in at ',
-        revokedAt: 'Revoked at',
-        'last_seen': 'Last seen',
-        never: 'Never',
-        on: 'on'
+    my_profile: {
+        account: {
+            tab_name: 'My account',
+            current_password: 'Current password',
+            new_password: 'New password',
+            update: 'Save',
+            success: 'Profile has been successfully updated',
+        },
+        tokens: {
+            tab_name: 'Connected devices',
+            logged_at: 'Logged in at ',
+            revoked_at: 'Revoked at',
+            last_seen: 'Last seen',
+            never: 'Never',
+            on: 'on',
+            revoke_dialog: {
+                title: 'Revoke a token',
+                text: 'Revoking this token will disconnect you from all devices / app using it.',
+                revoke: 'Revoke',
+                cancel: 'Cancel'
+            }
+        },
+        sharex: {
+            tab_name: 'ShareX'
+        }
     },
 };

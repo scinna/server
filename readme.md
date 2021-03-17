@@ -21,7 +21,7 @@ The first version will have the basic feature expected from a self-hosted image 
 
 ### Version 1.0
 
-- [~] Server management through config file (Private, public, custom naming, ...)
+- [ ] Server management through config file (Private, public, custom naming, ...)
 - [ ] Account management
 - [x] Uploading pictures
 - [x] Picture infos (Title, Description, Date, public/private/unlisted)
@@ -31,11 +31,12 @@ The first version will have the basic feature expected from a self-hosted image 
 - [x] Localization
 - [x] Collections to sort your pictures
 - [ ] Web UI
+- [ ] User roles (Simple user, admin, ...)
+- [ ] Server admin panel
+- [ ] ShareX compatibility
 
 ### Version 2.0
 
-- [ ] User roles (Simple user, admin, ...)
-- [ ] Server admin panel
 - [ ] Support for abstract filesystems (local, S3, ftp, ...)
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
 - [ ] 2FA

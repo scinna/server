@@ -15,7 +15,7 @@ interface IFormInputs {
 export function Login() {
     const [status, setStatus] = useState<null | 'error' | 'success' | 'pending'>(null);
     const [message, setMessage] = useState<null | String>(null);
-    const {control, handleSubmit} = useForm<IFormInputs>();
+    const {control, handleSubmit, reset} = useForm<IFormInputs>();
 
     const {isAuthenticated, setUserInfo} = useToken();
 
@@ -31,6 +31,7 @@ export function Login() {
 
         if (!response.ok) {
             setStatus('error');
+            reset({ ...data, Password: '' });
             try {
                 const responseData = await response.json();
                 if (responseData.Message) {

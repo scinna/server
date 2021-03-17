@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"flag"
 	"fmt"
 	"github.com/scinna/server/translations"
@@ -20,13 +19,6 @@ import (
 	"github.com/scinna/server/services"
 	"github.com/scinna/server/utils"
 )
-
-
-//go:embed frontend/build
-var frontend embed.FS
-
-//go:embed assets/logo.png
-var logoWide []byte
 
 func main() {
 	err := start()
@@ -50,7 +42,12 @@ func start() error {
 		return err
 	}
 
-	prv, err := services.NewProvider(cfg, &frontend, logoWide)
+	assets, err := GetEmbeddedAssets()
+	if err != nil {
+		panic(err)
+	}
+
+	prv, err := services.NewProvider(cfg, assets)
 	if err != nil {
 		return err
 	}

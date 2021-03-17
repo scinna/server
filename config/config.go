@@ -9,14 +9,15 @@ import (
 )
 
 type Config struct {
-	Mail           SMTP
-	Database       DB
-	Registration   Registration
-	WebURL         string
-	ListeningAddr  string
-	MediaPath      string
-	CustomLogo     string
-	CustomBranding string
+	Mail            SMTP
+	Database        DB
+	Registration    Registration
+	WebURL          string
+	ListeningAddr   string
+	MediaPath       string
+	CustomLogoWide  string
+	CustomLogoSmall string
+	CustomBranding  string
 }
 
 func (c *Config) Validate() error {
