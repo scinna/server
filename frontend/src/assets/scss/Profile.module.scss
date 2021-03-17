@@ -1,16 +1,23 @@
 @import './_Responsive';
 
+@mixin tab {
+  width: 400px;
+
+  margin: auto;
+
+  @media (max-width: 400px) {
+    width: 100%;
+  }
+}
+
 .Account {
   display: flex;
   flex-direction: column;
 
   &__Tab {
-    width: 400px;
-    margin: auto;
+    width: 100%;
 
-    @media (max-width: 400px) {
-      width: 100%;
-    }
+    overflow-y: scroll;
   }
 }
 
@@ -22,7 +29,9 @@
   }
 
   form {
+    @include tab;
     padding: 1em;
+    margin: auto;
 
     label {
       margin-top: .75em;
@@ -53,4 +62,8 @@
   &__Message__Success {
     color: #59ff80;
   }
+}
+
+.TabTokens {
+  @include tab;
 }

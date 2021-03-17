@@ -8,6 +8,8 @@ import {Dialog} from '@material-ui/core';
 import i18n from "i18n-js";
 import {useToken} from "../../utils/TokenProvider";
 
+import styles from '../../assets/scss/Profile.module.scss';
+
 type TokenRevocation = {
     RevokedAt: string
 }
@@ -32,7 +34,7 @@ export function TokenLister() {
         setRevokedToken(null);
     }
 
-    return <div className="tokenLister">
+    return <div className={styles.TabTokens}>
         {
             tokens.status === 'pending'
             &&
