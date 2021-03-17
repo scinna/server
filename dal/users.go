@@ -3,6 +3,7 @@ package dal
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/models"
+	"time"
 )
 
 type User struct {
@@ -75,8 +76,31 @@ func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
 	return &user, err
 }
 
-func (u *User) RevokeToken(authToken string) {
-	_, _ = u.DB.Exec("UPDATE LOGIN_TOKENS SET REVOKED_AT = NOW() WHERE LOGIN_TOKEN = $1", authToken)
+func (u *User) TokenBelongsToUser(user *models.User, token string) bool {
+	rq := u.DB.QueryRow("SELECT TRUE FROM LOGIN_TOKENS WHERE USER_ID = $1 AND LOGIN_TOKEN = $2", user.UserID, token)
+	if rq.Err() != nil {
+		return false
+	}
+
+	var belongsToUser bool
+	err := rq.Scan(&belongsToUser)
+	if err != nil || !belongsToUser {
+		return false
+	}
+
+	return true
+}
+
+func (u *User) RevokeToken(authToken string) (*time.Time, error){
+	rows := u.DB.QueryRowx("UPDATE LOGIN_TOKENS SET REVOKED_AT = NOW() WHERE LOGIN_TOKEN = $1 RETURNING REVOKED_AT", authToken)
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	var revokedAt time.Time
+	err := rows.Scan(&revokedAt)
+
+	return &revokedAt, err
 }
 
 func (u *User) FetchUserTokens(user *models.User) ([]models.AuthToken, error){
