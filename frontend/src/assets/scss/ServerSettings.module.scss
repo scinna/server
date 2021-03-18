@@ -1,1 +1,12 @@
 @import '_TabbedPane';
+
+.InviteCodesTab {
+
+  &__Generator {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+}

@@ -53,7 +53,9 @@ export default {
     },
     server_settings: {
         invite: {
-            tab_name: "Invite code"
+            tab_name: "Invite code",
+            code: "Invite code",
+            generate: "Generate"
         }
     }
 };

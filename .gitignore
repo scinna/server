@@ -1,6 +1,5 @@
 config.json
 .idea
-server
 !*.sql
 .vscode/
 vendor/
