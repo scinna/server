@@ -21,8 +21,8 @@ The first version will have the basic feature expected from a self-hosted image 
 
 ### Version 1.0
 
-- [ ] Server management through config file (Private, public, custom naming, ...)
-- [ ] Account management
+- [x] Server management through config file (Private, public, custom naming, ...)
+- [x] Account management
 - [x] Uploading pictures
 - [x] Picture infos (Title, Description, Date, public/private/unlisted)
 - [x] PostgreSQL
@@ -40,6 +40,7 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] Support for abstract filesystems (local, S3, ftp, ...)
 - [ ] OAuth from multiple service providers (Google, Facebook, Github)
 - [ ] 2FA
+- [ ] 2FA enforceability (Like if the admin want he can force everyone to use 2FA, like on Github) ?
 - [ ] LDAP ?
 
 ### Version 3.0
