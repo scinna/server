@@ -1,11 +1,5 @@
 package dto
 
-import (
-	"fmt"
-	"github.com/scinna/server/services"
-	"github.com/scinna/server/utils"
-)
-
 type ServerConfig struct {
 	RegistrationAllowed bool
 	Validation          string
@@ -14,17 +8,10 @@ type ServerConfig struct {
 	ScinnaVersion       string `json:",omitempty"`
 }
 
-func NewServerConfig(prv *services.Provider, isAdmin bool) ServerConfig {
-	cfg := ServerConfig{
-		RegistrationAllowed: prv.Config.Registration.Allowed,
-		Validation:          prv.Config.Registration.Validation,
-		WebURL:              prv.Config.WebURL,
-		CustomBranding:      prv.Config.CustomBranding,
-	}
 
-	if isAdmin {
-		cfg.ScinnaVersion = fmt.Sprintf("%v.%v", utils.SCINNA_VERSION, utils.SCINNA_PATCH)
-	}
-
-	return cfg
+type InviteCode struct {
+	Code        string `db:"invite_code"`
+	Author      string `db:"author"`
+	GeneratedAt string `db:"generated_at"`
+	Used        bool   `db:"used"`
 }

@@ -9,4 +9,20 @@
     justify-content: center;
   }
 
+  &__List {
+    width: 400px;
+    padding: 1em;
+    margin: auto;
+
+    &__Item {
+      & + & {
+        margin: .75em 0;
+      }
+
+      &__Used {
+        text-decoration: line-through;
+      }
+    }
+  }
+
 }

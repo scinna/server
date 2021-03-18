@@ -1,9 +1,12 @@
 package models
 
+import "time"
+
 type InviteCode struct {
-	InviteCode string `db:"invite_code"`
-	InvitedBy  int    `db:"invited_by"`
-	Used       bool   `db:"used"`
+	InviteCode  string    `db:"invite_code"`
+	InvitedBy   *string   `db:"invited_by"`
+	GeneratedAt time.Time `db:"generated_at"`
+	Used        bool      `db:"used"`
 }
 
 func (ic InviteCode) GetTableName() string {
@@ -15,7 +18,7 @@ func (ic InviteCode) GenerateTable() string {
 		CREATE TABLE INVITE_CODE
 		(
 			INVITE_CODE  VARCHAR(10) PRIMARY KEY NOT NULL,
-			INVITED_BY   VARCHAR,
+			INVITED_BY   uuid NULL,
 			GENERATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			USED         BOOL DEFAULT FALSE
 		);

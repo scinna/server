@@ -2,12 +2,14 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/middlewares"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
+	"github.com/scinna/server/utils"
 	"net/http"
 )
 
@@ -26,6 +28,22 @@ func Server(prv *services.Provider, r *mux.Router) {
 	admin.HandleFunc("/invite", generateInviteCode(prv)).Methods(http.MethodPost)
 }
 
+
+func newServerConfig(prv *services.Provider, isAdmin bool) dto.ServerConfig {
+	cfg := dto.ServerConfig{
+		RegistrationAllowed: prv.Config.Registration.Allowed,
+		Validation:          prv.Config.Registration.Validation,
+		WebURL:              prv.Config.WebURL,
+		CustomBranding:      prv.Config.CustomBranding,
+	}
+
+	if isAdmin {
+		cfg.ScinnaVersion = fmt.Sprintf("%v.%v", utils.SCINNA_VERSION, utils.SCINNA_PATCH)
+	}
+
+	return cfg
+}
+
 func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, _, _ := middlewares.GetUserFromRequest(prv, r)
@@ -36,7 +54,7 @@ func configRoute(prv *services.Provider) func(w http.ResponseWriter, r *http.Req
 
 		w.Header().Set("Content-Type", "application/json")
 
-		bytes, err := json.Marshal(dto.NewServerConfig(prv, isAdmin))
+		bytes, err := json.Marshal(newServerConfig(prv, isAdmin))
 		if serrors.WriteError(w, r, err) {
 			return
 		}
@@ -71,7 +89,20 @@ func logoSmall(prv *services.Provider) http.HandlerFunc {
 
 func listInviteCode(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("lol" + r.Method))
+		user := r.Context().Value("user").(*models.User)
+
+		if !user.IsAdmin {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		inviteCodes, err := prv.Dal.Server.ListInviteCode()
+		if serrors.WriteError(w, r, err){
+			return
+		}
+
+		bytes, _ := json.Marshal(inviteCodes)
+		w.Write(bytes)
 	}
 }
 
