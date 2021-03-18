@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/models"
@@ -43,4 +44,23 @@ func (s *Server) ListInviteCode() ([]dto.InviteCode, error) {
 func (s *Server) GenerateInviteCode(user *models.User, inviteCode string) error {
 	_, err := s.DB.Exec("INSERT INTO INVITE_CODE (INVITE_CODE, INVITED_BY) VALUES ($1, $2)", inviteCode, user.UserID)
 	return err
+}
+
+func (s *Server) Delete(code string) error {
+	result, err := s.DB.Exec("DELETE FROM INVITE_CODE WHERE INVITE_CODE = $1", code)
+	if err != nil {
+		return err
+	}
+
+	i, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if i != 1 {
+		// @TODO: translate blabla
+		return errors.New("not found")
+	}
+
+	return nil
 }

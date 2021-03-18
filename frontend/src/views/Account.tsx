@@ -4,7 +4,7 @@ import {TokenLister} from "../components/account/TokenLister";
 import {Tab, Tabs} from "@material-ui/core";
 import i18n from "i18n-js";
 
-import styles from '../assets/scss/Profile.module.scss';
+import styles from '../assets/scss/account/Profile.module.scss';
 import ShareX from "../components/account/ShareX";
 
 export function Account() {

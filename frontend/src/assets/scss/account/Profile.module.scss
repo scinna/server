@@ -1,5 +1,5 @@
-@import './_Responsive';
-@import './_TabbedPane';
+@import 'src/assets/scss/Responsive';
+@import 'src/assets/scss/TabbedPane';
 
 @mixin tab {
   width: 400px;

@@ -8,7 +8,7 @@ import {Dialog} from '@material-ui/core';
 import i18n from "i18n-js";
 import {useToken} from "../../utils/TokenProvider";
 
-import styles from '../../assets/scss/Profile.module.scss';
+import styles from '../../assets/scss/account/Profile.module.scss';
 
 type TokenRevocation = {
     RevokedAt: string

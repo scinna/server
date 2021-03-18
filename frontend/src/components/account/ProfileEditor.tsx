@@ -5,7 +5,7 @@ import {Controller, useForm} from "react-hook-form";
 import i18n from "i18n-js";
 import {Button, InputLabel, TextField} from "@material-ui/core";
 
-import styles from '../../assets/scss/Profile.module.scss';
+import styles from '../../assets/scss/account/Profile.module.scss';
 
 interface IFormInputs {
     Email: string;

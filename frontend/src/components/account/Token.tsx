@@ -5,7 +5,7 @@ import {displayDate} from "../../utils/DateUtils";
 import {IconButton} from "@material-ui/core";
 import ExitToApp from '@material-ui/icons/ExitToApp';
 
-import styles from '../../assets/scss/_Token.module.scss';
+import styles from '../../assets/scss/account/_Token.module.scss';
 
 type TokenProps = {
     token: TokenType;

@@ -55,7 +55,13 @@ export default {
         invite: {
             tab_name: "Invite code",
             code: "Invite code",
-            generate: "Generate"
+            generate: "Generate",
+            delete_dialog: {
+                title: 'Remove an invite code',
+                text: 'Removing this invite code will prevent anyone from using it to register.',
+                remove: 'Remove',
+                cancel: 'Cancel'
+            }
         }
     }
 };

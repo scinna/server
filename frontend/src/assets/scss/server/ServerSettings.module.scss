@@ -1,20 +1,19 @@
-@import '_TabbedPane';
+@import 'src/assets/scss/TabbedPane';
 
 .InviteCodesTab {
-
-  &__Generator {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
+  height: 100%;
 
   &__List {
     width: 400px;
     padding: 1em;
     margin: auto;
 
+    overflow-y: scroll;
+
     &__Item {
+      display: flex;
+      flex-direction: row;
+
       & + & {
         margin: .75em 0;
       }

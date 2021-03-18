@@ -2,6 +2,7 @@
   "errors": {
     "unknown": "Erreur inconnue",
     "invite": {
+      "not_found": "Code d'invitation non trouvé",
       "bad_code": "Le serveur nécessite un code d'invitation",
       "used": "Ce code d'invitation à déjà été utilisé"
     },
