@@ -6,7 +6,7 @@ import {InviteCodeGenerator} from "./InviteCodeGenerator";
 import React, {useState} from "react";
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
 import i18n from "i18n-js";
-import {useToken} from "../../utils/TokenProvider";
+import {useToken} from "../../context/TokenProvider";
 import {isScinnaError} from "../../types/Error";
 
 export function TabInviteCodes() {

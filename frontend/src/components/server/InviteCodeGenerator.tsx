@@ -2,7 +2,7 @@ import {apiCall} from "../../utils/useApi";
 import {isScinnaError} from "../../types/Error";
 import {Button, TextField} from "@material-ui/core";
 import i18n from "i18n-js";
-import {useToken} from "../../utils/TokenProvider";
+import {useToken} from "../../context/TokenProvider";
 import {useState} from "react";
 
 import styles from '../../assets/scss/server/_InviteGenerator.module.scss';

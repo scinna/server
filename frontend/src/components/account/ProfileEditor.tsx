@@ -1,4 +1,4 @@
-import {useToken} from "../../utils/TokenProvider";
+import {useToken} from "../../context/TokenProvider";
 import React, {useState} from "react";
 import {ValidationErrors} from "../../types/ValidationErrors";
 import {Controller, useForm} from "react-hook-form";

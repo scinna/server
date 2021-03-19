@@ -1,7 +1,7 @@
 import {Button, InputLabel, TextField} from "@material-ui/core";
 import React, {useState} from "react";
 import {Controller, useForm} from "react-hook-form";
-import {useServerConfig} from "../utils/ServerConfigProvider";
+import {useServerConfig} from "../context/ServerConfigProvider";
 
 import '../assets/scss/Register.scss';
 import i18n from "i18n-js";

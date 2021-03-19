@@ -6,7 +6,7 @@ import {Loader} from "../Loader";
 import {Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Modal} from "@material-ui/core";
 import {Dialog} from '@material-ui/core';
 import i18n from "i18n-js";
-import {useToken} from "../../utils/TokenProvider";
+import {useToken} from "../../context/TokenProvider";
 
 import styles from '../../assets/scss/account/Profile.module.scss';
 

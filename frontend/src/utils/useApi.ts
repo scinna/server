@@ -1,7 +1,7 @@
 import {isScinnaError, ScinnaError} from "../types/Error";
 import {DependencyList, useState}   from "react";
 import useAsyncEffect               from "use-async-effect";
-import {useToken}                   from "./TokenProvider";
+import {useToken}                   from "../context/TokenProvider";
 
 type Method = 'GET' | 'get' | 'POST' | 'post' | 'PUT' | 'put' | 'DELETE' | 'delete';
 
