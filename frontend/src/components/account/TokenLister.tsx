@@ -1,34 +1,22 @@
-import React, {useState} from 'react';
-import {Token} from "../../types/Token";
-import {Token as TokenComponent} from './Token';
-import {apiCall, useApiCall} from "../../utils/useApi";
-import {Loader} from "../Loader";
-import {Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Modal} from "@material-ui/core";
-import {Dialog} from '@material-ui/core';
-import i18n from "i18n-js";
-import {useToken} from "../../utils/TokenProvider";
+import React, {useState}                                                              from 'react';
+import {Token as TokenComponent}                                                      from './Token';
+import {Loader}                                                                       from "../Loader";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
+import i18n                                                                           from "i18n-js";
 
-import styles from '../../assets/scss/account/Profile.module.scss';
-
-type TokenRevocation = {
-    RevokedAt: string
-}
+import styles             from '../../assets/scss/account/Profile.module.scss';
+import {useAccountTokens} from "../../context/AccountTokenProvider";
 
 export function TokenLister() {
-    const {token} = useToken();
     const [isPending, setPending] = useState<boolean>(false);
     const [revokedToken, setRevokedToken] = useState<string | null>(null);
 
-    // Double the request but meh, no clue on how to do it better
-    const tokens = useApiCall<Token[]>({url: '/api/account/tokens'}, [isPending]);
+    const {tokens, revoke, status, refresh} = useAccountTokens();
 
     const revokeToken = async () => {
         setPending(true);
 
-        await apiCall<TokenRevocation>(token, {
-            url: '/api/account/tokens/' + revokedToken,
-            method: 'DELETE',
-        })
+        revoke(revokedToken ?? "");
 
         setPending(false);
         setRevokedToken(null);
@@ -36,15 +24,15 @@ export function TokenLister() {
 
     return <div className={styles.TabTokens}>
         {
-            tokens.status === 'pending'
+            status === 'pending'
             &&
             <Loader/>
         }
         {
-            tokens.status === 'success'
+            status === 'success'
             &&
-            tokens.data.map(token => <TokenComponent key={token.Token} token={token}
-                                                     revokeToken={() => setRevokedToken(token.Token)}/>)
+            tokens?.map(token => <TokenComponent key={token.Token} token={token}
+                                                 revokeToken={() => setRevokedToken(token.Token)}/>)
         }
 
         <Dialog open={revokedToken !== null} onClose={() => setRevokedToken(null)}>

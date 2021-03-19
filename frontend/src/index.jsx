@@ -4,8 +4,8 @@ import App from './App';
 import {init as initTranslations} from './translations';
 
 import './assets/scss/Index.scss';
-import TokenProvider from "./utils/TokenProvider";
-import ServerConfigProvider from "./utils/ServerConfigProvider";
+import TokenProvider from "./context/TokenProvider";
+import ServerConfigProvider from "./context/ServerConfigProvider";
 
 initTranslations();
 

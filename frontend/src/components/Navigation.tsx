@@ -1,6 +1,6 @@
 import {Link}                                                       from "react-router-dom";
 import React, {useState}                                            from "react";
-import {useToken}                                                   from "../utils/TokenProvider";
+import {useToken}                                                   from "../context/TokenProvider";
 import {Button, Drawer, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import i18n                                                         from 'i18n-js';
 import {

@@ -1,4 +1,4 @@
-import {useToken} from "../utils/TokenProvider";
+import {useToken} from "../context/TokenProvider";
 import {Redirect} from "react-router-dom";
 
 export function Logout() {

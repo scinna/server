@@ -1,5 +1,5 @@
 import './assets/scss/App.scss';
-import {useToken}                               from "./utils/TokenProvider";
+import {useToken}                               from "./context/TokenProvider";
 import React, {ReactNode, useEffect}            from "react";
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {MuiThemeProvider as ThemeProvider}      from "@material-ui/core";

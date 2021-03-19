@@ -3,7 +3,7 @@ import {Button, InputLabel, TextField} from "@material-ui/core";
 import React, {useState}               from "react";
 import {Redirect}                      from "react-router-dom";
 import i18n                            from "i18n-js";
-import {useToken}                      from "../utils/TokenProvider";
+import {useToken}                      from "../context/TokenProvider";
 
 import '../assets/scss/Login.scss';
 

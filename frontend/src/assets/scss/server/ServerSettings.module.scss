@@ -13,9 +13,10 @@
     &__Item {
       display: flex;
       flex-direction: row;
+      margin: .75em 0;
 
-      & + & {
-        margin: .75em 0;
+      &__Infos {
+        flex: 1;
       }
 
       &__Used {
