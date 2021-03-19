@@ -51,8 +51,6 @@ export default function AccountTokenProvider({children}: Props) {
         }
 
         setContext({...context, loaded: true, status: 'success', tokens: resp as Token[]})
-
-        await refresh();
     }
 
     const revoke = async (revokedToken: string) => {
@@ -60,6 +58,8 @@ export default function AccountTokenProvider({children}: Props) {
             url: '/api/account/tokens/' + revokedToken,
             method: 'DELETE',
         });
+
+        await refresh();
     }
 
     useAsyncEffect(async () => {

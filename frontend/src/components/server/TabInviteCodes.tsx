@@ -1,20 +1,18 @@
-import styles from '../../assets/scss/server/ServerSettings.module.scss';
-import {apiCall, useApiCall} from "../../utils/useApi";
-import {Loader} from "../Loader";
-import {InviteCode} from "./InviteCode";
-import {InviteCodeGenerator} from "./InviteCodeGenerator";
-import React, {useState} from "react";
+import styles                                                                         from '../../assets/scss/server/ServerSettings.module.scss';
+import {apiCall, useApiCall}                                                          from "../../utils/useApi";
+import {Loader}                                                                       from "../Loader";
+import {InviteCode}                                                                   from "./InviteCode";
+import {InviteCodeGenerator}                                                          from "./InviteCodeGenerator";
+import React, {useState}                                                              from "react";
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
-import i18n from "i18n-js";
-import {useToken} from "../../context/TokenProvider";
-import {isScinnaError} from "../../types/Error";
+import i18n                                                                           from "i18n-js";
+import {useToken}                                                                     from "../../context/TokenProvider";
+import {isScinnaError}                                                                from "../../types/Error";
+import {useInviteCode}                                                                from "../../context/InviteCodeProvider";
 
 export function TabInviteCodes() {
     const {token} = useToken();
-    const invites = useApiCall<InviteCode[]>({
-        method: 'GET',
-        url: '/api/server/admin/invite'
-    }, []);
+    const {invites, status} = useInviteCode();
 
     const [isPending, setPending] = useState<boolean>(false);
     const [toDeleteInvite, setToDeleteInvite] = useState<InviteCode | null>(null);
@@ -48,17 +46,17 @@ export function TabInviteCodes() {
 
         <div>
             {
-                invites.status === 'pending'
+                status === 'pending'
                 &&
                 <Loader/>
             }
             {
-                invites.status === 'success'
+                status === 'success'
                 &&
-                invites.data.map(invite => <InviteCode invite={invite} askForDeletion={() => setToDeleteInvite(invite)}/>)
+                invites?.map(invite => <InviteCode invite={invite} askForDeletion={() => setToDeleteInvite(invite)}/>)
             }
             {
-                invites.status === 'error'
+                status === 'error'
                 &&
                 <p>invites.error.Message</p>
             }
