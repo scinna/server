@@ -27,7 +27,8 @@ func (s *Server) ListInviteCode() ([]dto.InviteCode, error) {
 		return nil, err
 	}
 
-	var invites []dto.InviteCode
+	// Do not replace, we need a empty array and not nil
+	invites := []dto.InviteCode{}
 	for rows.Next() {
 		currInvite := dto.InviteCode{}
 		err = rows.StructScan(&currInvite)

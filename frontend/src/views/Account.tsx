@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {ProfileEditor} from "../components/account/ProfileEditor";
-import {TokenLister} from "../components/account/TokenLister";
-import {Tab, Tabs} from "@material-ui/core";
-import i18n from "i18n-js";
+import {ProfileEditor}   from "../components/account/ProfileEditor";
+import {TokenLister}     from "../components/account/TokenLister";
+import {Tab, Tabs}       from "@material-ui/core";
+import i18n              from "i18n-js";
 
-import styles from '../assets/scss/account/Profile.module.scss';
-import ShareX from "../components/account/ShareX";
+import styles               from '../assets/scss/account/Profile.module.scss';
+import ShareX               from "../components/account/ShareX";
+import AccountTokenProvider from "../context/AccountTokenProvider";
 
 export function Account() {
     const [currentTab, setCurrentTab] = useState<Number>(0);
@@ -31,13 +32,15 @@ export function Account() {
             {
                 currentTab === 1
                 &&
-                <TokenLister/>
+                <AccountTokenProvider>
+                    <TokenLister/>
+                </AccountTokenProvider>
             }
 
             {
                 currentTab === 2
                 &&
-                <ShareX />
+                <ShareX/>
             }
         </div>
 

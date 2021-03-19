@@ -1,8 +1,9 @@
-import {createContext, ReactNode, useContext, useState} from "react";
-import {Token} from "../types/Token";
-import {apiCall} from "../utils/useApi";
-import {useToken} from "./TokenProvider";
-import {isScinnaError, ScinnaError} from "../types/Error";
+import React, {createContext, ReactNode, useContext, useState} from "react";
+import {Token}                                                 from "../types/Token";
+import {apiCall}                                               from "../utils/useApi";
+import {useToken}                                              from "./TokenProvider";
+import {isScinnaError, ScinnaError}                            from "../types/Error";
+import useAsyncEffect                                          from "use-async-effect";
 
 type Props = {
     children: ReactNode;
@@ -10,53 +11,65 @@ type Props = {
 
 type TokenListProps = {
     loaded: boolean;
-    error: string|null;
-    tokens: Token[];
+    status: null | 'pending' | 'success' | 'error';
+    error?: string | null;
+    tokens?: Token[];
 }
 
 type TokenListContextProps = TokenListProps & {
-    init: () => void;
-    revoke: (token: Token) => void;
+    revoke: (revokedToken: string) => void;
     refresh: () => void;
 }
 
 const defaultState: TokenListProps = {
     loaded: false,
-    error:  null,
+    status: null,
+    error: null,
     tokens: [],
 };
 
 const TokenListContext = createContext<TokenListContextProps>({
     ...defaultState,
-    init: () => {},
-    revoke: (Token) => {},
-    refresh: () => {},
+    revoke: (Token) => {
+    },
+    refresh: () => {
+    },
 });
 
 export default function AccountTokenProvider({children}: Props) {
     const {token} = useToken();
     const [context, setContext] = useState<TokenListProps>(defaultState);
 
-    const refresh = async function refresh() {
+    const refresh = async () => {
         const resp = await apiCall<Token[]>(token, {
             url: '/api/account/tokens'
         })
 
         if (isScinnaError(resp)) {
-            setContext({...context, loaded: true, error: (resp as ScinnaError).Message})
+            setContext({...context, loaded: true, status: 'error', error: (resp as ScinnaError).Message})
             return;
         }
 
-        setContext({...context, loaded: true, tokens: resp as Token[]})
+        setContext({...context, loaded: true, status: 'success', tokens: resp as Token[]})
+
+        await refresh();
     }
 
-    const init = async () => await refresh();
+    const revoke = async (revokedToken: string) => {
+        await apiCall(token, {
+            url: '/api/account/tokens/' + revokedToken,
+            method: 'DELETE',
+        });
+    }
 
-    const revoke = async (token: Token) => {}
+    useAsyncEffect(async () => {
+        if (!context.loaded) {
+            await refresh();
+        }
+    }, [context.loaded])
 
     return <TokenListContext.Provider value={{
         ...context,
-        init,
         refresh,
         revoke
     }}>

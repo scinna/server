@@ -5,5 +5,5 @@ export type ScinnaError = {
 }
 
 export function isScinnaError(data: any): boolean {
-    return data.hasOwnProperty('Message') && data.hasOwnProperty('ErrCode');
+    return data && data.hasOwnProperty('Message') && data.hasOwnProperty('ErrCode');
 }
