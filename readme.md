@@ -1,19 +1,21 @@
 # Scinna - Server
+[![Shield](https://img.shields.io/website?down_color=%2387E7E1&down_message=Website&label=Our&up_color=%2387E7E1&up_message=Website&url=https%3A%2F%2Fscinna.app)](https://scinna.app)
 [![Shield](https://discordapp.com/api/guilds/806593726859837460/widget.png?style=shield)](https://discord.gg/EYdDb72fR2)
+[![Shield](https://img.shields.io/reddit/subreddit-subscribers/Scinna?color=%2387E7E1&label=Reddit%20r%2FScinna)](https://reddit.com/r/Scinna)
 
 ## What is it ?
 
-Scinna is a self-hosted picture sharing website focusing on screenshot.
+Scinna is a self-hosted picture sharing website focusing on screenshots.
 
 ## Installing
 
-Ready to setup your own scinna instance ? Go take at look at the [Wiki](https://github.com/scinna/server/wiki) where everything is explained.
+Ready to set your own Scinna instance up ? Go take at look at the [Wiki](https://github.com/scinna/server/wiki) where everything is explained.
 
-Versions 0.0.x are private indev version they should NOT be used in any way shape or form. Nothing is guarenteed on those and things WILL break.
+Versions 0.0.x are private in-dev version they should NOT be used in any way shape or form. Nothing is guaranteed on those and things WILL break.
 
 ## Our pledge
 
-We aim to build a stable and easy to use software. Thus we pledge to never break database compatibility across last digit version (e.g. 1.2.3 has the same database structure as 1.2.4 and will not break either upgrading it or downgrading it). The second digit shows an update in the database which will go painlessly (Migration are applied when needed for upgrade, can rollback manually with a flag). Most feature will bump the second number, large features (e.g. nested folder) will bump the first digit. This is more-or-less following the [semver](https://semver.org) standard.
+We aim to build a stable and easy to use software. Thus, we pledge to never break database compatibility across last digit version (e.g. 1.2.3 has the same database structure as 1.2.4 and will not break either upgrading it or downgrading it). The second digit shows an update in the database which will go painlessly (Migration are applied when needed for upgrade, can rollback manually with a flag). Most feature will bump the second number, large features (e.g. nested folder) will bump the first digit. This is more-or-less following the [semver](https://semver.org) standard.
 
 ## Roadmap
 
@@ -34,6 +36,8 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] User roles (Simple user, admin, ...)
 - [ ] Server admin panel
 - [ ] ShareX compatibility
+- [ ] URL Shortener
+- [ ] Pastebin
 
 ### Version 2.0
 
