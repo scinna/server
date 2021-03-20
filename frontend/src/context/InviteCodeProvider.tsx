@@ -15,7 +15,6 @@ type InviteListProps = {
     status: null | 'pending' | 'success' | 'error';
     error?: string | null;
     invites?: InviteCode[];
-    newlyGeneratedCode: string;
 }
 
 type InviteListContextProps = InviteListProps & {
@@ -29,7 +28,6 @@ const defaultState: InviteListProps = {
     status: null,
     error: null,
     invites: [],
-    newlyGeneratedCode: '',
 };
 
 const InviteListContext = createContext<InviteListContextProps>({
@@ -70,9 +68,6 @@ export default function InviteCodeProvider({children}: Props) {
             // @TODO: do thing to error thing blabla
             return;
         }
-
-        await refresh();
-        setContext({...context, newlyGeneratedCode: (code as InviteCode).Code});
     };
 
     const remove = async (code: string) => {

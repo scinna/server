@@ -47,7 +47,19 @@ export default {
     },
     server_settings: {
         invite: {
-            tab_name: "Code d'invitation"
+            tab_name: "Code d'invitation",
+            code: "Code d'invitation",
+            generate: "Générer",
+            list: {
+                generated_by: 'Généré par',
+                on: 'Le',
+            },
+            delete_dialog: {
+                title: "Supprimer un code d'invitation",
+                text: "La suppression de ce code d'invitation empêchera quiconque de s'inscrire avec",
+                remove: 'Supprimer',
+                cancel: 'Annuler'
+            }
         }
     }
 };

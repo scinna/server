@@ -16,7 +16,8 @@ export function TokenLister() {
     const revokeToken = async () => {
         setPending(true);
 
-        revoke(revokedToken ?? "");
+        await revoke(revokedToken ?? "");
+        await refresh();
 
         setPending(false);
         setRevokedToken(null);

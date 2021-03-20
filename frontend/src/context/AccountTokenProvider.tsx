@@ -58,8 +58,6 @@ export default function AccountTokenProvider({children}: Props) {
             url: '/api/account/tokens/' + revokedToken,
             method: 'DELETE',
         });
-
-        await refresh();
     }
 
     useAsyncEffect(async () => {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import i18n from 'i18n-js';
 import {Token as TokenType} from '../../types/Token';
 import {displayDate} from "../../utils/DateUtils";

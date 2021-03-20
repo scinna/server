@@ -7,7 +7,7 @@ export function Home() {
 
     if (userInfos) {
         return <Redirect to={{
-            pathname: "/browser/" + userInfos.Name
+            pathname: "/browse/" + userInfos.Name
         }} />
     }
 

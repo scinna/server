@@ -3,6 +3,10 @@
 .InviteCodesTab {
   height: 100%;
 
+  &__GenerateButton {
+    width: 100%;
+  }
+
   &__List {
     width: 400px;
     padding: 1em;
