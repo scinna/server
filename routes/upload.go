@@ -81,6 +81,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 
 		pict := models.Media{
 			MediaID:     uid,
+			MediaType:   models.MEDIA_PICTURE,
 			Title:       title,
 			Description: description,
 			Visibility:  visibility,
@@ -115,4 +116,3 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		_, _ = w.Write(str)
 	}
 }
-

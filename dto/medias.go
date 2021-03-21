@@ -6,7 +6,8 @@ import (
 )
 
 type MediaInfo struct {
-	MediaID string
+	MediaID   string
+	MediaType int
 
 	Title       string
 	Description string
@@ -21,6 +22,7 @@ type MediaInfo struct {
 func GetMediasInfos(media *models.Media) MediaInfo {
 	return MediaInfo{
 		MediaID:     media.MediaID,
+		MediaType:   media.MediaType,
 		Title:       media.Title,
 		Description: media.Description,
 		Visibility:  media.Visibility,

@@ -69,6 +69,7 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 
 	pict := models.Media{
 		MediaID:     uid,
+		MediaType:   models.MEDIA_PICTURE,
 		Title:       fmt.Sprintf("[%v] %v]", visibility, faker.Lorem().Sentence(3)),
 		Description: faker.Lorem().Sentence(15),
 		Visibility:  visibility,

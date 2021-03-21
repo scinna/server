@@ -39,11 +39,15 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 		if media.Visibility.IsPrivate() {
 			token, err := middlewares.GetTokenFromRequest(r)
 			if err != nil {
+				if err == serrors.NoToken {
+					serrors.WriteError(w, r, serrors.NotOwner)
+					return
+				}
 				serrors.WriteError(w, r, err)
 				return
 			}
 
-			if prv.Dal.Medias.MediaBelongsToToken(media, token) {
+			if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
 				serrors.NotOwner.Write(w, r)
 				return
 			}
@@ -68,11 +72,16 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 		if media.Visibility.IsPrivate() {
 			token, err := middlewares.GetTokenFromRequest(r)
 			if err != nil {
+				if err == serrors.NoToken {
+					serrors.WriteError(w, r, serrors.NotOwner)
+					return
+				}
+
 				serrors.WriteError(w, r, err)
 				return
 			}
 
-			if prv.Dal.Medias.MediaBelongsToToken(media, token) {
+			if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
 				serrors.NotOwner.Write(w, r)
 				return
 			}

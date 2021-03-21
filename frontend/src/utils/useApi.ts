@@ -8,6 +8,7 @@ type ApiParameter = {
     url: string;
     data?: object;
     method?: HttpMethod;
+    canBeUnauthed?: boolean;
 }
 
 export async function apiCall<T>(token: string | null, params: ApiParameter): Promise<T | ScinnaError> {
@@ -51,7 +52,7 @@ export function useApiCall<T>(params: ApiParameter, deps: DependencyList = []) {
     const [apiResponse, setApiResponse] = useState<ApiResponse<T>>({status: 'pending'});
 
     useAsyncEffect(async () => {
-        if (!loaded) {
+        if (!loaded && !params.canBeUnauthed) {
             return;
         }
 

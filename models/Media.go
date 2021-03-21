@@ -9,8 +9,18 @@ import (
 	"time"
 )
 
+type MediaType = int
+
+const (
+	MEDIA_PICTURE  = 0
+	MEDIA_VIDEO    = 1
+	MEDIA_TXTBIN   = 2
+	MEDIA_SHORTURL = 3
+)
+
 type Media struct {
-	MediaID string `db:"media_id"`
+	MediaID   string `db:"media_id"`
+	MediaType int    `db:"media_type"`
 
 	Title       string `db:"title"`
 	Description string `db:"description"`
@@ -56,8 +66,9 @@ func (m Media) GenerateTable() string {
 		CREATE TABLE MEDIA
 		(
 			MEDIA_ID    VARCHAR(10) PRIMARY KEY,
+			MEDIA_TYPE  INTEGER NOT NULL,
 			USER_ID     uuid REFERENCES SCINNA_USER (USER_ID) ON DELETE CASCADE NOT NULL,
-			CLC_ID      uuid REFERENCES COLLECTIONS (CLC_ID) ON DELETE CASCADE NOT NULL ,
+			CLC_ID      uuid REFERENCES COLLECTIONS (CLC_ID) ON DELETE CASCADE NOT NULL,
 			TITLE       VARCHAR,
 			DESCRIPTION VARCHAR,
 			PATH        VARCHAR,

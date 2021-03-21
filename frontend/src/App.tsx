@@ -9,7 +9,7 @@ import {Login}                                  from "./views/Login";
 import {Logout}                                 from "./views/Logout";
 import {Account}                                from "./views/Account";
 import {Browser}                                from "./views/Browser";
-import {ShowPicture}                            from "./views/ShowPicture";
+import {ShowMedia}                              from "./views/ShowMedia";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
 import {ServerSettings}                         from "./views/ServerSettings";
@@ -76,7 +76,7 @@ function App() {
                     </Route>
 
                     <Route exact path="/admin">
-                        {AdminAuthenticatedRoute(<ServerSettings />, 'ROLE_ADMIN')}
+                        {AdminAuthenticatedRoute(<ServerSettings/>, 'ROLE_ADMIN')}
                     </Route>
 
                     {/* Meh but react router seems to work only like this*/}
@@ -89,7 +89,7 @@ function App() {
                     </Route>
 
                     <Route path="/:pictureId">
-                        <ShowPicture/>
+                        <ShowMedia/>
                     </Route>
 
                     <Route path="/">
