@@ -67,5 +67,10 @@ export default {
                 cancel: 'Cancel'
             }
         }
+    },
+    show_media: {
+        picture: {
+
+        }
     }
 };

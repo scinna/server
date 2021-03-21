@@ -4,7 +4,7 @@ import {useApiCall}           from "../utils/useApi";
 import {Media, MEDIA_PICTURE} from "../types/Media";
 
 import '../types/scss.d.ts';
-import classes       from '../assets/scss/ShowPicture.module.scss';
+import styles       from '../assets/scss/ShowPicture.module.scss';
 import {Loader}      from "../components/Loader";
 import {ShowPicture} from "../components/medias/ShowPicture";
 
@@ -25,7 +25,19 @@ export function ShowMedia() {
     const {pictureId} = useParams<ShowPictureParams>();
     const info = useApiCall<Media>({url: '/' + pictureId + '/infos', canBeUnauthed: true})
 
-    return <div className={classes.ShowPicture}>
+    let clazz = '';
+    if (info.status === 'success' && info?.data) {
+        clazz = ' ';
+        switch (info.data.MediaType) {
+            case MEDIA_PICTURE:
+                clazz += styles.ShowPicture;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return <div className={styles.ShowMedia + clazz}>
         {
             info.status === 'success'
             &&

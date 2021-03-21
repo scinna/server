@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 import {Media}           from "../../types/Media";
-
-import classes        from "../../assets/scss/ShowPicture.module.scss";
 import useAsyncEffect from "use-async-effect";
 import {useToken}                   from "../../context/TokenProvider";
 import {isScinnaError, ScinnaError} from "../../types/Error";
 import {Loader}                     from "../Loader";
+import {getVisibilityFromNumber} from "../../utils/Mappings";
+import {MediaShare}              from "./Share";
+
+import classes                   from "../../assets/scss/ShowPicture.module.scss";
 
 type Props = {
     media: Media;
@@ -64,17 +66,19 @@ export function ShowPicture({media}: Props) {
             &&
             <img className={classes.ShowPicture__Picture} src={"/" + media.MediaID} alt=""/>
         }
-        <div className={classes.ShowPicture__Infos}>
-            <h1>{media.Title}</h1>
-            <p>{media.Description}</p>
-            <span>{media.Author}</span>
+        <>
+            <div className={classes.ShowPicture__Infos}>
+                <span className={classes.ShowPicture__Infos__Collection}>{'/' + media.Author + '/' + media.Collection}</span>
+                <h1>{media.Title}</h1>
+                <p>{media.Description}</p>
+                <span className={classes.ShowPicture__Infos__Visibility}>Visibility: {getVisibilityFromNumber(media.Visibility)}</span>
+            </div>
+
             {
                 media.Visibility !== 2
                 &&
-                <a href={window.location.protocol + '//' + window.location.hostname + '/' + media.MediaID}>
-                    Raw image URL
-                </a>
+                <MediaShare media={media}/>
             }
-        </div>
+        </>
     </>
 }
