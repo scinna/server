@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/middlewares"
@@ -38,6 +39,7 @@ func stripPrefix(uri, username string) string {
 }
 
 /** @TODO: Idea for nested => add a parent key to collection & primary key it along with the name & the username) **/
+/** @TODO: Learn about nestedset **/
 
 func list(prv *services.Provider) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +60,11 @@ func list(prv *services.Provider) http.Handler {
 		var user *models.User
 		if err == nil {
 			user, err = prv.Dal.User.FetchUserFromToken(token)
+			if err == sql.ErrNoRows  {
+				serrors.NoToken.Write(w, r)
+				return
+			}
+
 			if serrors.WriteError(w, r, err) {
 				return
 			}
