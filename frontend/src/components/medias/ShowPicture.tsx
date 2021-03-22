@@ -68,10 +68,12 @@ export function ShowPicture({media}: Props) {
         }
         <>
             <div className={classes.ShowPicture__Infos}>
-                <span className={classes.ShowPicture__Infos__Collection}>{'/' + media.Author + '/' + media.Collection}</span>
+                <span className={classes.ShowPicture__Infos__Visibility}>({getVisibilityFromNumber(media.Visibility)})</span>
+                <span className={classes.ShowPicture__Infos__Collection}>
+                    {'/' + media.Author + '/' + media.Collection}
+                </span>
                 <h1>{media.Title}</h1>
                 <p>{media.Description}</p>
-                <span className={classes.ShowPicture__Infos__Visibility}>Visibility: {getVisibilityFromNumber(media.Visibility)}</span>
             </div>
 
             {

@@ -33,6 +33,7 @@ The first version will have the basic feature expected from a self-hosted image 
 - [x] Localization
 - [x] Collections to sort your pictures
 - [ ] Web UI
+    - To fix: Forgotten password
 - [ ] User roles (Simple user, admin, ...)
 - [ ] Server admin panel
 - [ ] ShareX compatibility
