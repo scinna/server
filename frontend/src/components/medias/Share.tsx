@@ -1,9 +1,9 @@
-import {Media}           from "../../types/Media";
+import {Media} from "../../types/Media";
 import React, {useState} from "react";
 
-import classes     from "../../assets/scss/ShowPicture.module.scss";
+import classes from "../../assets/scss/ShowPicture.module.scss";
 import {Tab, Tabs} from "@material-ui/core";
-import i18n        from "i18n-js";
+import i18n from "i18n-js";
 
 type Props = {
     media: Media;
@@ -11,33 +11,54 @@ type Props = {
 
 export const MediaShare = ({media}: Props) => {
     const [tab, setTab] = useState<number>(0);
-    return <div className={classes.ShowPicture__Share}>
-        <a className={classes.ShowPicture__Share__RawURL}
-           href={window.location.protocol + '//' + window.location.hostname + '/' + media.MediaID}>Raw image URL</a>
 
+    const rootUrl = window.location.protocol + '//' + window.location.hostname + '/';
+    const rawUrl = rootUrl + media.MediaID;
+    const appUrl = rootUrl + 'app/' + media.MediaID;
+
+    return <div className={classes.ShowPicture__Share}>
         <Tabs value={tab}
               onChange={(_, val) => setTab(val)}
               indicatorColor="primary"
               variant="scrollable"
               scrollButtons="auto">
+            <Tab label={"Raw URL"}/>
             <Tab label={"Markdown"}/>
+            <Tab label={"HTML"}/>
             <Tab label={"Phpbb"}/>
         </Tabs>
 
-        <div>
+        <div className={classes.ShowPicture__Share__Content}>
             {
                 tab === 0
                 &&
-                <div>
-                    Markdown
-                </div>
+                <a className={classes.ShowPicture__Share__RawURL}
+                   href={rawUrl}>{rawUrl}</a>
             }
             {
                 tab === 1
                 &&
-                <div>
-                    Phpbb
-                </div>
+                <pre>
+                    <code>
+                        [![{media.Title}]({rawUrl})]({appUrl})
+                    </code>
+                </pre>
+            }
+            {
+                tab === 2
+                &&
+                <pre>
+                    &lt;a href="{rawUrl}"&gt;
+                        &lt;img src="{rawUrl}" alt="{media.Title}" /&gt;
+                    &lt;/a&gt;
+                </pre>
+            }
+            {
+                tab === 3
+                &&
+                <pre>
+                    [url={appUrl}][img]{rawUrl}[/img][/url]
+                </pre>
             }
         </div>
     </div>;

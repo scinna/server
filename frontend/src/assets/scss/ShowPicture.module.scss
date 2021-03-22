@@ -1,3 +1,5 @@
+@import '_Colors';
+
 .ShowMedia {
   display: grid;
 }
@@ -7,7 +9,7 @@
   justify-content: center;
   padding: 2em;
 
-  grid-template-areas: 'Picture Infos' 'RawURL Integrate';
+  grid-template-areas: 'Picture Infos' 'Share Share';
 
   &__Picture {
     display: block;
@@ -23,24 +25,50 @@
 
   &__Infos {
     margin-left: 2em;
-  }
 
-  &__Infos__Collection {
-    display: block;
-    margin-bottom: 1em;
-  }
+    &__Collection {
+      display: block;
+      margin-bottom: 1em;
 
-  &__Infos__Visibility {
-    display: block;
-    margin-top: 1em;
+      color: $text-lighter;
+    }
+
+    &__Description {
+      margin-top: 1em;
+    }
+
+    &__Visibility {
+      display: block;
+      margin-top: 1em;
+
+      color: $text-lighter;
+    }
   }
 
   &__Share {
     display: flex;
+    flex-direction: column;
+    grid-area: Share;
+
+    &__Content {
+      width: 100%;
+      padding: 1em;
+      margin-top: .25em;
+      background: $background-darker;
+    }
+
+    a {
+      color: $accent-color;
+    }
   }
 
   @media(max-width: 600px) {
-    grid-template-areas: 'Picture' 'Infos' 'RawURL' 'Integrate';
+    padding: .5em;
+    grid-template-areas: 'Picture' 'Infos' 'Share';
+
+    &__Picture {
+      max-width: 95vw;
+    }
 
     &__Infos {
       margin: 0;
