@@ -1,0 +1,40 @@
+.Browser {
+  display: flex;
+  flex-direction: column;
+
+  &__Pending {
+    display: flex;
+    flex: 1;
+
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__Header {
+    display: flex;
+
+    &__AddressBar {
+      flex: 1;
+      margin: auto !important;
+
+      input {
+        padding: 0;
+      }
+    }
+  }
+
+  &__IconList {
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    align-items: start;
+
+    margin: 1em;
+    gap: 3em;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+}

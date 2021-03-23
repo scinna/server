@@ -25,6 +25,10 @@ export default {
         password: 'Password',
         button: 'Login'
     },
+    validate: {
+        accountValidated: 'Your account is now validated',
+        connect: 'You can now login with the username'
+    },
     my_profile: {
         account: {
             tab_name: 'My account',
@@ -66,11 +70,6 @@ export default {
                 remove: 'Remove',
                 cancel: 'Cancel'
             }
-        }
-    },
-    show_media: {
-        picture: {
-
         }
     }
 };

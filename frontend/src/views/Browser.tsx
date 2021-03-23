@@ -5,6 +5,9 @@ import {Icon} from "../components/browser/Icon";
 import {useParams} from "react-router-dom";
 import useAsyncEffect from "use-async-effect";
 
+import styles from '../assets/scss/browser/Browser.module.scss';
+import {Loader} from "../components/Loader";
+
 type RouteParams = {
     username: string;
     path?: string;
@@ -15,23 +18,35 @@ export function Browser() {
     const ctx = useBrowser();
 
     useAsyncEffect(async () => {
-        console.log(username, path);
         await ctx.browse(username, path);
     }, [username, path])
 
-    return <div>
+    return <div className={styles.Browser + (ctx.pending ? ' ' + styles['Browser--Pending'] : '')}>
         <BrowserHeader/>
-        <div>
-            {
-                ctx.collection
-                &&
-                ctx.collection.Collections?.map(c => <Icon key={c.CollectionID} collection={c}/>)
-            }
-            {
-                ctx.collection
-                &&
-                ctx.collection.Medias?.map(m => <Icon key={m.MediaID} media={m}/>)
-            }
-        </div>
+        {
+            !ctx.pending
+            &&
+            <div className={styles.Browser__IconList}>
+                {
+                    ctx.collection
+                    &&
+                    ctx.collection.Collections?.map(c => <Icon key={c.CollectionID} collection={c}/>)
+                }
+                {
+                    ctx.collection
+                    &&
+                    ctx.collection.Medias?.map(m => <Icon key={m.MediaID} media={m}/>)
+                }
+            </div>
+
+        }
+
+        {
+            ctx.pending
+            &&
+            <div className={styles.Browser__Pending}>
+                <Loader/>
+            </div>
+        }
     </div>;
 }

@@ -25,6 +25,10 @@ export default {
         password: 'Mot de passe',
         button: 'Connexion'
     },
+    validate: {
+        accountValidated: 'Votre compte est validé',
+        connect: 'Vous pouvez maintenant vous connecter avec le pseudo'
+    },
     my_profile: {
         account: {
             tab_name: 'Mon compte',
@@ -60,6 +64,14 @@ export default {
                 remove: 'Supprimer',
                 cancel: 'Annuler'
             }
+        }
+    },
+    browser: {
+        create_folder: {
+            title: 'Créer un dossier',
+            folder_name: 'Nom',
+            create: 'Créer',
+            cancel: 'Annuler'
         }
     }
 };

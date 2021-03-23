@@ -11,11 +11,13 @@ type Props = {
 
 type BrowserProps = {
     loaded: boolean;
+    pending: boolean;
     status: null | 'pending' | 'success' | 'error';
     error?: string | null;
     username?: string;
     path?: string;
     collection?: Collection;
+    isMine: boolean;
 }
 
 type BrowserContextProps = BrowserProps & {
@@ -25,8 +27,10 @@ type BrowserContextProps = BrowserProps & {
 
 const defaultState: BrowserProps = {
     loaded: false,
+    pending: true,
     status: null,
     error: null,
+    isMine: false,
 };
 
 const TokenListContext = createContext<BrowserContextProps>({
@@ -37,10 +41,11 @@ const TokenListContext = createContext<BrowserContextProps>({
 });
 
 export default function BrowserProvider({children}: Props) {
-    const {token} = useToken();
+    const {token, userInfos} = useToken();
     const [context, setContext] = useState<BrowserProps>(defaultState);
 
     const refresh = async () => {
+        await setContext({...context, pending: true})
         const response = await apiCall<Collection>(token, {
             url: '/api/browse/' + context.username + '/' + context.path ?? '',
             method: 'GET',
@@ -48,11 +53,11 @@ export default function BrowserProvider({children}: Props) {
         });
 
         if (isScinnaError(response)) {
-            await setContext({...context, loaded: true, error: (response as ScinnaError).Message})
+            await setContext({...context, loaded: true, pending: false, error: (response as ScinnaError).Message, isMine: false})
             return
         }
 
-        await setContext({...context, loaded: true, collection: (response as Collection)})
+        await setContext({...context, loaded: true, pending: false, collection: (response as Collection), isMine: context.username?.toLowerCase() === userInfos?.Name.toLowerCase()})
     }
 
     const browse = async (username: string, path?: string) => {
@@ -61,7 +66,8 @@ export default function BrowserProvider({children}: Props) {
     }
 
     useAsyncEffect(async () => {
-        await refresh();
+        if (context.username)
+            await refresh();
     }, [context.loaded, context.username, context.path])
 
     return <TokenListContext.Provider value={{

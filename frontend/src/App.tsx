@@ -14,6 +14,7 @@ import {Home} from "./views/Home";
 import {createMuiTheme} from "@material-ui/core";
 import {ServerSettings} from "./views/ServerSettings";
 import BrowserProvider from "./context/BrowserProvider";
+import {ValidateAccount} from "./views/Validate";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
@@ -88,6 +89,10 @@ function App() {
 
                         <Route path="/browse/:username">
                             <Browser/>
+                        </Route>
+
+                        <Route path="/validate/:valCode">
+                            <ValidateAccount />
                         </Route>
 
                         <Route path="/:pictureId">

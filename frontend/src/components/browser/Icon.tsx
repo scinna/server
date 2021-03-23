@@ -3,28 +3,41 @@ import {Media} from "../../types/Media";
 import {Link} from 'react-router-dom';
 import {useBrowser} from "../../context/BrowserProvider";
 
+import FolderIcon from '../../assets/images/folder.svg';
+import styles from '../../assets/scss/browser/Icon.module.scss';
+
 export type IconProps = {
     media?: Media;
     collection?: Collection;
 };
 
+const cap = (title: string): string => {
+    if (title.length > 27) {
+        return title.substr(0, 24) + "...";
+    }
+
+    return title;
+}
+
 const MediaIcon = ({media}: { media: Media }) => {
-    return <div>
-        <img src="" alt=""/>
-        <span>MED: {media.Title}</span>
-    </div>
+    return <Link className={styles.Icon} to={"/"}>
+        <img className={styles.Icon__Image} src={"/"+media.MediaID} alt=""/>
+        <span className={styles.Icon__Text}>{cap(media.Title)}</span>
+    </Link>
 }
 
 const CollectionIcon = ({collection}: { collection: Collection }) => {
     const {username, path} = useBrowser();
-    return <Link to={"/browse/" + username + "/" + collection.Title}>
-        <img src="" alt=""/>
-        <span>COL: {collection.Title}</span>
+    const correctedPath = (path?.startsWith('/') ? '' : '/') + (path ? path : '');
+
+    return <Link className={styles.Icon} to={"/browse/" + username ?? '' + correctedPath }>
+        <img className={styles.Icon__Image} src={FolderIcon} alt={collection.Title} />
+        <span className={styles.Icon__Text}>{cap(collection.Title)}</span>
     </Link>
 }
 
 export const Icon = ({media, collection}: IconProps) => {
-    return <div>
+    return <>
         {
             media
             &&
@@ -35,5 +48,5 @@ export const Icon = ({media, collection}: IconProps) => {
             &&
             <CollectionIcon collection={collection}/>
         }
-    </div>;
+    </>;
 }

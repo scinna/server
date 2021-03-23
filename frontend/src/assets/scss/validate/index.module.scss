@@ -1,0 +1,10 @@
+@import '../_Colors';
+
+.Validate {
+  margin: auto;
+  text-align: center;
+
+  p span {
+    text-shadow: $accent-color 0 0 10px;
+  }
+}

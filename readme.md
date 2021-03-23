@@ -54,6 +54,10 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] Video sharing
 - More to come
 
+### Acknowledgement
+
+Thanks to my friend @cylgom for beta-testing it and for the awesome icons he made for the web-ui!
+
 ## Contributing
 
 Since there are no contributing.md yet, please act nice when creating PR, following the same code conventions as we do. We have a clear idea about how the software will grow in features so if you are not sure, please come by the discord to ask if the feature you want to implement is following our vision.
