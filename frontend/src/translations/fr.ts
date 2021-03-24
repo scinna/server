@@ -1,4 +1,9 @@
 export default {
+    visibility: {
+        public: 'Publique',
+        unlisted: 'Non listé',
+        private: 'Privé'
+    },
     menu: {
         home: 'Accueil',
         login: 'Connexion',
@@ -70,6 +75,7 @@ export default {
         create_folder: {
             title: 'Créer un dossier',
             folder_name: 'Nom',
+            visibility: 'Visibilité',
             create: 'Créer',
             cancel: 'Annuler'
         }

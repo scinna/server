@@ -3,7 +3,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent, DialogContentText,
-    DialogTitle, InputLabel,
+    DialogTitle, FormControl, InputLabel,
     TextField
 } from "@material-ui/core";
 import i18n from "i18n-js";
@@ -13,6 +13,9 @@ import {apiCall} from "../../utils/useApi";
 import {useToken} from "../../context/TokenProvider";
 import {useBrowser} from "../../context/BrowserProvider";
 import {isScinnaError, ScinnaError} from "../../types/Error";
+import {VisibilityDropDown} from "../VisibilityDropDown";
+
+import styles from '../../assets/scss/browser/Browser.module.scss';
 
 type Props = {
     shown: boolean;
@@ -21,6 +24,7 @@ type Props = {
 
 type IFormInputs = {
     name: string;
+    visibility: number;
 }
 
 export function FolderCreator({shown, onClose}: Props) {
@@ -37,7 +41,7 @@ export function FolderCreator({shown, onClose}: Props) {
             url: '/api/browse/' + username + '/' + path + (path && path?.length > 0 ? '/' : '') + data.name,
             method: 'POST',
             data: {
-                Visibility: 0,
+                Visibility: data.visibility,
             }
         });
 
@@ -57,17 +61,29 @@ export function FolderCreator({shown, onClose}: Props) {
         <form onSubmit={handleSubmit(onSubmit)}>
             <DialogTitle>{i18n.t('browser.create_folder.title')}</DialogTitle>
             <DialogContent>
-                <InputLabel htmlFor="name">{i18n.t('browser.create_folder.folder_name')}</InputLabel>
+                <InputLabel>{i18n.t('browser.create_folder.folder_name')}: </InputLabel>
                 <Controller
                     name={"name"}
                     control={control}
                     defaultValue=""
-                    render={({onChange, value}) => <TextField
-                                                        onChange={onChange}
-                                                        value={value}
-                                                        disabled={pending}
-                                                        required
-                                                    />}
+                    render={({onChange, value}) =>
+                        <TextField
+                            onChange={onChange}
+                            value={value}
+                            disabled={pending}
+                            required
+                        />}
+                />
+                <InputLabel className={styles.CreateFolder__VisibilityLabel}>{i18n.t('browser.create_folder.visibility')}: </InputLabel>
+                <Controller
+                    name={"visibility"}
+                    control={control}
+                    defaultValue={0}
+                    render={({onChange, value}) => <VisibilityDropDown
+                        selectedVisibility={value}
+                        setSelectedVisibility={onChange}
+                    />
+                    }
                 />
                 {
                     error.length > 0
@@ -77,7 +93,8 @@ export function FolderCreator({shown, onClose}: Props) {
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={pending}>{i18n.t('browser.create_folder.cancel')}</Button>
-                <Button color="primary" type="submit" disabled={pending}>{i18n.t('browser.create_folder.create')}</Button>
+                <Button color="primary" type="submit"
+                        disabled={pending}>{i18n.t('browser.create_folder.create')}</Button>
             </DialogActions>
         </form>
     </Dialog>;

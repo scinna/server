@@ -1,4 +1,9 @@
 export default {
+    visibility: {
+        public: 'Public',
+        unlisted: 'Unlisted',
+        private: 'Private'
+    },
     menu: {
         home: 'Home',
         login: 'Login',
@@ -70,6 +75,15 @@ export default {
                 remove: 'Remove',
                 cancel: 'Cancel'
             }
+        }
+    },
+    browser: {
+        create_folder: {
+            title: 'Create a folder',
+            folder_name: 'Name',
+            visibility: 'Visibility',
+            create: 'Create',
+            cancel: 'Cancel'
         }
     }
 };
