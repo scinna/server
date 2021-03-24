@@ -84,6 +84,14 @@ export default {
             visibility: 'Visibility',
             create: 'Create',
             cancel: 'Cancel'
+        },
+        file_uploader: {
+            title: 'Upload',
+            file_name: 'Name',
+            description: 'Description',
+            visibility: 'Visibility',
+            cancel: 'Cancel',
+            upload: 'Upload'
         }
     }
 };
