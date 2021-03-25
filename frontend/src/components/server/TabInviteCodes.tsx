@@ -41,7 +41,7 @@ export function TabInviteCodes() {
             <Dialog open={toDeleteInvite !== null} onClose={() => setToDeleteInvite(null)}>
                 <DialogTitle>{i18n.t('server_settings.invite.delete_dialog.title')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>{i18n.t('server_settings.invite.delete_dialog.text')}</DialogContentText>
+                    <DialogContentText>{i18n.t('server_settings.invite.delete_dialog.text')}.</DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setToDeleteInvite(null)} color="primary" disabled={status === 'pending'}>

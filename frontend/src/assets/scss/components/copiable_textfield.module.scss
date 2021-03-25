@@ -1,0 +1,10 @@
+.CopiableTextfield {
+  display: flex;
+  width: 100%;
+
+  align-items: center;
+
+  &__Button {
+    margin-left: .75em !important;
+  }
+}

@@ -80,6 +80,7 @@ export function FolderCreator({shown, onClose}: Props) {
                     control={control}
                     defaultValue={0}
                     render={({onChange, value}) => <VisibilityDropDown
+                        disabled={pending}
                         selectedVisibility={value}
                         setSelectedVisibility={onChange}
                     />

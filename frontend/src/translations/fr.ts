@@ -4,6 +4,9 @@ export default {
         unlisted: 'Non listé',
         private: 'Privé'
     },
+    dropzone: {
+      text: 'Cliquez ou lachez un fichier ici pour téléverser'
+    },
     menu: {
         home: 'Accueil',
         login: 'Connexion',
@@ -80,12 +83,21 @@ export default {
             cancel: 'Annuler'
         },
         file_uploader: {
-            title: 'Téléverser',
-            file_name: 'Nom',
-            description: 'Description',
-            visibility: 'Visibilité',
-            cancel: 'Annuler',
-            upload: 'Envoyer'
+            screen_1: {
+                title: 'Téléverser',
+                file_name: 'Nom',
+                description: 'Description',
+                visibility: 'Visibilité',
+                cancel: 'Annuler',
+                upload: 'Envoyer',
+            },
+            screen_2: {
+                title: 'Succès !',
+                text: 'Votre image à été téléversée.',
+                scinna_link: 'Lien Scinna',
+                raw_link: 'Lien direct',
+                close: 'Fermer'
+            }
         }
     }
 };

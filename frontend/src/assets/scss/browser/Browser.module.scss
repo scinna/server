@@ -1,3 +1,5 @@
+@import '../_Colors.scss';
+
 .Browser {
   display: flex;
   flex-direction: column;
@@ -49,4 +51,33 @@
   &__VisibilityLabel {
     margin-top: 1em;
   }
+
+  &__Description {
+    border: none;
+
+    background: $background;
+    color: #ffffff;
+  }
+
+  &__Progress {
+    margin-top: 1em;
+  }
+
+  &__Success, &__Error {
+    display: block;
+    width: 100%;
+    margin-top: 1em;
+    text-align: center;
+  }
+
+  &__Error {
+    color: #f54d64;
+  }
+
+  &__Success {
+    &__Link {
+      margin-top: 1em;
+    }
+  }
+
 }

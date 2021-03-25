@@ -46,6 +46,10 @@ function App() {
             primary: {
                 main: '#87E7E1',
             },
+            background: {
+                default: '#222d32',
+                paper: '#1e282c',
+            }
         },
     });
     const {init} = useToken();

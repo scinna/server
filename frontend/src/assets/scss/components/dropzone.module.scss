@@ -1,0 +1,33 @@
+@import '../_Colors';
+
+.Dropzone {
+  border: 2px dashed $accent-color;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 5em;
+
+  padding: 1em;
+  margin-top: 1em;
+
+  img {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 0;
+
+    object-fit: cover;
+    filter: blur(1px) brightness(50%);
+  }
+
+  p {
+    z-index: 1;
+  }
+}
