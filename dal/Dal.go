@@ -10,6 +10,7 @@ type Dal struct {
 	Registration Registration
 	Medias       Medias
 	Collections  Collections
+	Admin        Admin
 	Server       Server
 }
 
@@ -29,6 +30,7 @@ func NewDal(db *sqlx.DB) Dal {
 		Registration: Registration{DB: db},
 		Medias:       Medias{DB: db},
 		Collections:  Collections{DB: db},
+		Admin:        Admin{DB: db},
 		Server:       Server{DB: db},
 	}
 }

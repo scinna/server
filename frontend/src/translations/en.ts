@@ -77,6 +77,10 @@ export default {
             }
         }
     },
+    dial: {
+      textbin: 'Textbin',
+      url_shortener: 'URL shortener'
+    },
     browser: {
         create_folder: {
             title: 'Create a folder',

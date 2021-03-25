@@ -74,6 +74,10 @@ export default {
             }
         }
     },
+    dial: {
+        textbin: 'Textbin',
+        url_shortener: 'Minimiseur d\'URL'
+    },
     browser: {
         create_folder: {
             title: 'Créer un dossier',

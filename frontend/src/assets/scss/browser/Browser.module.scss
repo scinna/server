@@ -39,6 +39,12 @@
     overflow-x: hidden;
     overflow-y: scroll;
   }
+
+  &__SpeedDial {
+    position: absolute;
+    right: 2.5em;
+    bottom: 2.5em;
+  }
 }
 
 .CreateFolder {

@@ -15,6 +15,7 @@ import {createMuiTheme} from "@material-ui/core";
 import {ServerSettings} from "./views/ServerSettings";
 import BrowserProvider from "./context/BrowserProvider";
 import {ValidateAccount} from "./views/Validate";
+import {UrlShortnener} from "./views/UrlShortener";
 
 const AuthenticatedRoute = (node: ReactNode) => {
     const {isAuthenticated} = useToken();
@@ -80,6 +81,10 @@ function App() {
 
                         <Route exact path="/account">
                             {AuthenticatedRoute(<Account/>)}
+                        </Route>
+
+                        <Route exact path="/shortener">
+                            {AuthenticatedRoute(<UrlShortnener />)}
                         </Route>
 
                         <Route exact path="/admin">

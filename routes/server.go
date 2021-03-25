@@ -27,6 +27,8 @@ func Server(prv *services.Provider, r *mux.Router) {
 	admin.HandleFunc("/invite", listInviteCode(prv)).Methods(http.MethodGet)
 	admin.HandleFunc("/invite", generateInviteCode(prv)).Methods(http.MethodPost)
 	admin.HandleFunc("/invite/{code}", deleteInviteCode(prv)).Methods(http.MethodDelete)
+
+	admin.HandleFunc("/users", listUsers(prv)).Methods(http.MethodGet)
 }
 
 
@@ -158,5 +160,26 @@ func deleteInviteCode(prv *services.Provider) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusGone)
+	}
+}
+
+func listUsers(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := r.Context().Value("user").(*models.User)
+
+		/** @TODO: Replace with ROLE_USER_MANAGER, by default in the ROLE_ADMIN group **/
+		if !user.IsAdmin {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		users, err := prv.Dal.Admin.ListUsers()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		bytes, _ := json.Marshal(users)
+		w.Write(bytes)
 	}
 }
