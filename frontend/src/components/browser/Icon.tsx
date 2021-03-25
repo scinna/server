@@ -21,7 +21,7 @@ const cap = (title: string): string => {
 
 const MediaIcon = ({media}: { media: Media }) => {
     return <Link className={styles.Icon} to={"/"}>
-        <img className={styles.Icon__Image} src={"/"+media.MediaID} alt=""/>
+        <img className={styles.Icon__Image} src={media.Thumbnail} alt=""/>
         <span className={styles.Icon__Text}>{cap(media.Title)}</span>
     </Link>
 }

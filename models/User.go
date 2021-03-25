@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type User struct {
 	UserID string `db:"user_id"`
 	Name   string `db:"user_name"`
@@ -10,6 +12,8 @@ type User struct {
 	Password       string  `db:"user_password" json:"-"`
 	Validated      bool    `db:"validated" json:"-"`
 	ValidationCode *string `db:"validation_code" json:"-"`
+
+	RegisteredAt *time.Time `db:"registered_at"`
 }
 
 func (u User) GetTableName() string {

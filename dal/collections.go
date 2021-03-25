@@ -59,13 +59,17 @@ func (c *Collections) CreateDefault(user *models.User) (*models.Collection, erro
 }
 
 func (c *Collections) FetchRoot(user *models.User) (*models.Collection, error) {
-	row := c.DB.QueryRowx(`SELECT TITLE, USER_ID, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND DEFAULT_COLLECTION = true`, user.UserID)
+	row := c.DB.QueryRowx(`SELECT CLC_ID, TITLE, VISIBILITY, DEFAULT_COLLECTION FROM COLLECTIONS WHERE USER_ID = $1 AND DEFAULT_COLLECTION = true`, user.UserID)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
 
 	var collection models.Collection
 	err := row.StructScan(&collection)
+
+	if err == sql.ErrNoRows {
+		err = serrors.CollectionNotFound
+	}
 
 	return &collection, err
 }
@@ -148,7 +152,7 @@ func (c *Collections) FetchWithMedias(dalMedias Medias, user *models.User, name 
 		collection.Collections = []models.Collection{}
 	}
 
-	medias, err := dalMedias.FindFromCollection(collection.CollectionID, showHidden)
+	medias, err := dalMedias.FindFromCollection(collection.CollectionID, showHidden, false)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +196,7 @@ func (c *Collections) FetchFromUsernameWithMedias(dalMedias Medias, user string,
 		return nil, err
 	}
 
-	medias, err := dalMedias.FindFromCollection(collection.CollectionID, showHidden)
+	medias, err := dalMedias.FindFromCollection(collection.CollectionID, showHidden, false)
 	if err != nil {
 		return nil, err
 	}

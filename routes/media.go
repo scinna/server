@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/scinna/server/dto"
 	"github.com/scinna/server/middlewares"
+	"github.com/scinna/server/models"
 	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/services"
 	"net/http"
@@ -30,30 +31,38 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		file := prv.Config.MediaPath + media.Path
-		if _, err := os.Stat(file); os.IsNotExist(err) {
-			w.WriteHeader(http.StatusNotFound)
+		switch media.MediaType {
+		case models.MEDIA_SHORTURL:
+			http.Redirect(w, r, media.CustomData["url"].(string), 301)
 			return
-		}
 
-		if media.Visibility.IsPrivate() {
-			token, err := middlewares.GetTokenFromRequest(r)
-			if err != nil {
-				if err == serrors.NoToken {
-					serrors.WriteError(w, r, serrors.NotOwner)
+		case models.MEDIA_PICTURE:
+			file := prv.Config.MediaPath + media.Path
+			if _, err := os.Stat(file); os.IsNotExist(err) {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			if media.Visibility.IsPrivate() {
+				token, err := middlewares.GetTokenFromRequest(r)
+				if err != nil {
+					if err == serrors.NoToken {
+						serrors.WriteError(w, r, serrors.NotOwner)
+						return
+					}
+					serrors.WriteError(w, r, err)
 					return
 				}
-				serrors.WriteError(w, r, err)
-				return
+
+				if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
+					serrors.NotOwner.Write(w, r)
+					return
+				}
 			}
 
-			if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
-				serrors.NotOwner.Write(w, r)
-				return
-			}
+			http.ServeFile(w, r, file)
+			return
 		}
-
-		http.ServeFile(w, r, file)
 	}
 }
 
@@ -69,28 +78,39 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 		if serrors.WriteError(w, r, err) {
 			return
 		}
-		if media.Visibility.IsPrivate() {
-			token, err := middlewares.GetTokenFromRequest(r)
-			if err != nil {
-				if err == serrors.NoToken {
-					serrors.WriteError(w, r, serrors.NotOwner)
+
+		switch media.MediaType {
+		case models.MEDIA_SHORTURL:
+			jsonBytes, _ := json.Marshal(dto.GetShortenLinkInfo(media))
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write(jsonBytes)
+			return
+		case models.MEDIA_PICTURE:
+			if media.Visibility.IsPrivate() {
+				token, err := middlewares.GetTokenFromRequest(r)
+				if err != nil {
+					if err == serrors.NoToken {
+						serrors.WriteError(w, r, serrors.NotOwner)
+						return
+					}
+
+					serrors.WriteError(w, r, err)
 					return
 				}
 
-				serrors.WriteError(w, r, err)
-				return
+				if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
+					serrors.NotOwner.Write(w, r)
+					return
+				}
 			}
 
-			if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
-				serrors.NotOwner.Write(w, r)
-				return
-			}
+			mediaDto := dto.GetMediasInfos(media)
+
+			jsonBytes, _ := json.Marshal(mediaDto)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write(jsonBytes)
+
+			return
 		}
-
-		mediaDto := dto.GetMediasInfos(media)
-
-		jsonBytes, _ := json.Marshal(mediaDto)
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(jsonBytes)
 	}
 }

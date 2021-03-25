@@ -31,3 +31,21 @@ func GetMediasInfos(media *models.Media) MediaInfo {
 		Author:      media.User.Name,
 	}
 }
+
+type ShortenLinkInfo struct {
+	MediaID     string
+	MediaType   int
+	Url         string
+	PublishedAt time.Time
+	Author      string
+}
+
+func GetShortenLinkInfo(media *models.Media) ShortenLinkInfo {
+	return ShortenLinkInfo{
+		MediaID:     media.MediaID,
+		MediaType:   media.MediaType,
+		Url:         media.CustomData["url"].(string),
+		PublishedAt: media.PublishedAt,
+		Author:      media.User.Name,
+	}
+}

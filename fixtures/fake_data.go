@@ -93,12 +93,10 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 		return err
 	}
 
-	/*
-		err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
-		if err != nil {
-			return err
-		}
-	*/
+	err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
+	if err != nil {
+		return err
+	}
 
 	return prv.Dal.Medias.CreatePicture(&pict, collection.Title)
 }

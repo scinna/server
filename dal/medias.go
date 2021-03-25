@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"github.com/scinna/server/models"
 )
@@ -19,6 +20,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 		m.PATH,
 		m.THUMBNAIL,
 		m.VISIBILITY,
+	    m.CUSTOM_DATA,
 		su.USER_ID as "User.user_id",
 		su.user_name as "User.user_name",
 		'' as "User.user_email",
@@ -50,19 +52,25 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 	return &media, err
 }
 
-func (m *Medias) FindFromCollection(id string, withHidden bool) ([]models.Media, error) {
+func (m *Medias) FindFromCollection(id string, withHidden bool, showLinks bool) ([]models.Media, error) {
 	rows, err := m.DB.Queryx(`
-		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY
+		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA
 		FROM MEDIA
 		WHERE 
 			CLC_ID = $1
+		  AND
+		      (
+		          $3 = true
+		          OR
+		          MEDIA_TYPE <> 3
+		      )
 		  AND
 			(
 				(VISIBILITY = 0)
 				OR
 				$2
 			)
-	`, id, withHidden)
+	`, id, withHidden, showLinks)
 
 	if err != nil {
 		return nil, err
@@ -106,11 +114,25 @@ func (m *Medias) CreatePicture(pict *models.Media, collection string) error {
 	pict.Path = pict.User.UserID + "/" + pict.MediaID
 
 	_, err := m.DB.Exec(`
-		INSERT INTO MEDIA (MEDIA_ID, MEDIA_TYPE, USER_ID, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, MIMETYPE, CLC_ID)
+		INSERT INTO MEDIA (MEDIA_ID, MEDIA_TYPE, USER_ID, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, MIMETYPE, CLC_ID, CUSTOM_DATA)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
 		        CASE WHEN LENGTH($10) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $3 AND TITLE = $10)
 		        ELSE (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $3 AND DEFAULT_COLLECTION = true)
-		END)`, pict.MediaID, pict.MediaType, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Thumbnail, pict.Visibility, pict.Mimetype, collection)
+		END, '{}')`, pict.MediaID, pict.MediaType, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Thumbnail, pict.Visibility, pict.Mimetype, collection)
+
+	return err
+}
+
+func (m *Medias) CreateShortenUrl(shortenUrl *models.Media) error {
+	customData, err := json.Marshal(shortenUrl.CustomData)
+	if err != nil {
+		return err
+	}
+
+	_, err = m.DB.Exec(`
+		INSERT INTO MEDIA (MEDIA_ID, MEDIA_TYPE, USER_ID, CUSTOM_DATA, CLC_ID, visibility)
+		VALUES ($1, $2, $3, $4, $5, 0)
+`, shortenUrl.MediaID, shortenUrl.MediaType, shortenUrl.User.UserID, customData, shortenUrl.Collection.CollectionID)
 
 	return err
 }

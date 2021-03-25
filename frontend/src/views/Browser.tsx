@@ -41,7 +41,7 @@ export function Browser() {
                     {
                         ctx.collection
                         &&
-                        ctx.collection.Medias?.map(m => <Icon key={m.MediaID} media={m}/>)
+                        ctx.collection.Medias?.filter(m => m.MediaType !== 3).map(m => <Icon key={m.MediaID} media={m}/>)
                     }
                 </div>
 

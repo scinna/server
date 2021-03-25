@@ -12,4 +12,5 @@ export type Media = {
     PublishedAt: Date;
     Collection: string;
     Author: string;
+    Thumbnail: string;
 };

@@ -12,7 +12,7 @@ type Admin struct {
 func (a Admin) ListUsers() ([]dto.AdminUser, error){
 	users := []dto.AdminUser{}
 	rq, err := a.DB.Queryx(`
-		SELECT user_id, user_name, user_email, is_admin, validated
+		SELECT user_id, user_name, user_email, is_admin, validated, registered_at
 		FROM scinna_user
 	`)
 

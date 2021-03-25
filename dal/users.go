@@ -22,7 +22,7 @@ func (u *User) InsertUser(user *models.User) error {
 
 // GetUserFromID returns a user from an id
 func (u *User) GetUserFromID(id int) (*models.User, error){
-	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE, IS_ADMIN FROM SCINNA_USER WHERE USER_ID = $1`
+	rq := `SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, VALIDATED, VALIDATION_CODE, IS_ADMIN, REGISTERED_AT FROM SCINNA_USER WHERE USER_ID = $1`
 	row := u.DB.QueryRowx(rq, id)
 	if row.Err() != nil {
 		return nil, row.Err()
@@ -36,7 +36,7 @@ func (u *User) GetUserFromID(id int) (*models.User, error){
 
 // GetUserFromUsername returns a user from an id
 func (u *User) GetUserFromUsername(username string) (*models.User, error){
-	row := u.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, IS_ADMIN, VALIDATED, VALIDATION_CODE FROM SCINNA_USER WHERE USER_NAME = $1", username)
+	row := u.DB.QueryRowx("SELECT USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, IS_ADMIN, VALIDATED, VALIDATION_CODE, REGISTERED_AT FROM SCINNA_USER WHERE USER_NAME = $1", username)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -59,7 +59,7 @@ func (u *User) Login(user *models.User, ip string) (token string, err error) {
 
 func (u *User) FetchUserFromToken(authToken string) (*models.User, error) {
 	row := u.DB.QueryRowx(`
-		SELECT su.USER_ID, su.USER_NAME, su.USER_EMAIL, su.USER_PASSWORD, su.VALIDATED, su.VALIDATION_CODE, su.IS_ADMIN
+		SELECT su.USER_ID, su.USER_NAME, su.USER_EMAIL, su.USER_PASSWORD, su.VALIDATED, su.VALIDATION_CODE, su.IS_ADMIN, su.REGISTERED_AT
 		FROM SCINNA_USER su
 		INNER JOIN LOGIN_TOKENS lt ON lt.USER_ID = su.USER_ID 
 		WHERE lt.LOGIN_TOKEN = $1
