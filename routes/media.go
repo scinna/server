@@ -33,6 +33,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 
 		switch media.MediaType {
 		case models.MEDIA_SHORTURL:
+			_ = prv.Dal.Medias.IncrementViewCount(media)
 			http.Redirect(w, r, media.CustomData["url"].(string), 301)
 			return
 
@@ -60,6 +61,7 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 				}
 			}
 
+			_ = prv.Dal.Medias.IncrementViewCount(media)
 			http.ServeFile(w, r, file)
 			return
 		}

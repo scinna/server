@@ -97,5 +97,9 @@ export default {
             cancel: 'Cancel',
             upload: 'Upload'
         }
+    },
+    shortener: {
+        link: 'Link',
+        send: 'Minify!'
     }
 };

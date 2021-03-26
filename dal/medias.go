@@ -21,6 +21,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 		m.THUMBNAIL,
 		m.VISIBILITY,
 	    m.CUSTOM_DATA,
+	    m.VIEW_COUNT,
 		su.USER_ID as "User.user_id",
 		su.user_name as "User.user_name",
 		'' as "User.user_email",
@@ -54,7 +55,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 
 func (m *Medias) FindFromCollection(id string, withHidden bool, showLinks bool) ([]models.Media, error) {
 	rows, err := m.DB.Queryx(`
-		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA
+		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA, VIEW_COUNT
 		FROM MEDIA
 		WHERE 
 			CLC_ID = $1
@@ -140,4 +141,32 @@ func (m *Medias) CreateShortenUrl(shortenUrl *models.Media) error {
 func (m *Medias) DeleteMedia(pict *models.Media) error {
 	_, err := m.DB.Exec("DELETE FROM MEDIA WHERE media_id = $1", pict.MediaID)
 	return err
+}
+
+func (m *Medias) IncrementViewCount(media *models.Media) error {
+	_, err := m.DB.Exec("UPDATE MEDIA SET VIEW_COUNT = VIEW_COUNT + 1 WHERE MEDIA_ID = $1", media.MediaID)
+	return err
+}
+
+func (m *Medias) FindShortenLinks(user *models.User) ([]models.Media, error) {
+	rows, err := m.DB.Queryx(`
+		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA, VIEW_COUNT, PUBLISHED_AT
+		FROM media
+		WHERE user_id = $1
+		  AND MEDIA_TYPE = 3
+		ORDER BY PUBLISHED_AT DESC
+`)
+
+	links := []models.Media{}
+	if err != nil {
+		return links, err
+	}
+
+	for rows.Next() {
+		link := models.Media{}
+		_ = rows.StructScan(&link)
+		links = append(links, link)
+	}
+
+	return links, nil
 }

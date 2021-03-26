@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/scinna/server/forms"
 	"github.com/scinna/server/requests"
+	"github.com/scinna/server/serrors"
 	"github.com/scinna/server/translations"
 	"net/http"
 
@@ -22,6 +23,9 @@ func Accounts(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("", updateAccountInfos(prv)).Methods(http.MethodPut)
 	r.HandleFunc("/tokens", fetchTokens(prv)).Methods(http.MethodGet)
 	r.HandleFunc("/tokens/{token}", revokeToken(prv)).Methods(http.MethodDelete)
+
+	r.HandleFunc("/shorten_links", listShortenLinks(prv)).Methods(http.MethodGet)
+	r.HandleFunc("/shorten_links/{link}", removeShortenLink(prv)).Methods(http.MethodDelete)
 }
 
 func fetchAccountInfos(prv *services.Provider) http.HandlerFunc {
@@ -140,5 +144,29 @@ func updateAccountInfos(prv *services.Provider) http.HandlerFunc {
 			// based auth we'll simply invalidate the JWT token client-side and he'll refresh
 			// using new info.
 		}
+	}
+}
+
+func listShortenLinks(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := r.Context().Value("user").(*models.User)
+		links, err := prv.Dal.Medias.FindShortenLinks(user)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		bytes, err := json.Marshal(links)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, _ = w.Write(bytes)
+	}
+}
+
+func removeShortenLink(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }

@@ -103,5 +103,9 @@ export default {
                 close: 'Fermer'
             }
         }
+    },
+    shortener: {
+        link: 'Lien',
+        send: 'Minimifier !'
     }
 };

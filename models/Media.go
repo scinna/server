@@ -31,6 +31,7 @@ type Media struct {
 	Path        string     `db:"path" json:"-"`
 	Visibility  Visibility `db:"visibility"`
 	PublishedAt time.Time  `db:"published_at"`
+	ViewCount   int        `db:"view_count"`
 	Mimetype    string     `db:"mimetype" json:"-"`
 	CustomData  CustomData `db:"custom_data" json:"custom_data"`
 	Thumbnail   string     `db:"thumbnail" json:",omitempty"`
@@ -103,6 +104,8 @@ func (m Media) GenerateTable() string {
 			DESCRIPTION  VARCHAR DEFAULT '',
 			PATH         VARCHAR DEFAULT '',
 			VISIBILITY   INTEGER,
+			VIEW_COUNT   INTEGER NOT NULL DEFAULT 0,
+			PUBLISHED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			CUSTOM_DATA  JSONB,
 			THUMBNAIL    TEXT DEFAULT '',
 			MIMETYPE     VARCHAR DEFAULT ''

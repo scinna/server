@@ -1,0 +1,82 @@
+@import '../_Colors';
+
+.LinkShortener {
+  display: flex;
+  flex-direction: column;
+
+  &__List {
+    overflow-y: scroll;
+  }
+}
+
+.Shortener {
+  width: 300px;
+  padding: 1.5em;
+  margin: auto;
+
+  @media (max-width: 500px) {
+    width: 100%;
+  }
+
+  label {
+    margin-top: 1em;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+.Link {
+  display: grid;
+  width: 40%;
+  padding: 1em;
+  margin: auto;
+
+  background-color: $background;
+
+  grid-template-areas: 'scinna icons' 'real icons' 'views icons';
+  grid-template-columns: 1fr 3em;
+
+  &:nth-child(2n) {
+    background-color: $background-darker;
+  }
+
+  @media (max-width: 1000px) {
+    width: 60%;
+  }
+
+  @media (max-width: 500px) {
+    width: 100%;
+  }
+
+  &__Scinna {
+    grid-area: scinna;
+
+    a {
+      color: $accent-color;
+    }
+  }
+
+  &__Real {
+    overflow: hidden;
+    color: $accent-color;
+    grid-area: real;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__Views {
+    grid-area: views;
+  }
+
+  &__Icons {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: space-around;
+
+    grid-area: icons;
+  }
+}

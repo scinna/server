@@ -9,18 +9,21 @@ type ApiParameter = {
     data?: object;
     method?: HttpMethod;
     canBeUnauthed?: boolean;
+    mustNotBeStringified?: boolean;
 }
 
 export async function apiCall<T>(token: string | null, params: ApiParameter): Promise<T | ScinnaError> {
     let headers: HeadersInit = {};
-    let body: BodyInit | null = null;
+    let body: any = null;
 
     if (token) {
         headers.Authorization = "Bearer " + token;
     }
 
-    if (params.data) {
+    if (params.data && !params.mustNotBeStringified) {
         body = JSON.stringify(params.data);
+    } else {
+        body = params.data;
     }
 
     const resp = await fetch(params.url, {
