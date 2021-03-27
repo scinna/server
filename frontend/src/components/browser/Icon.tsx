@@ -69,9 +69,15 @@ const MediaIcon = ({media}: { media: Media }) => {
 
 const CollectionIcon = ({collection}: { collection: Collection }) => {
     const {username, path} = useBrowser();
-    const correctedPath = (path?.startsWith('/') ? '' : '/') + (path ? path : '');
+    let fullPath = "/browse/" + (username ?? '') + '/';
 
-    return <Link className={styles.Icon} to={"/browse/" + username ?? '' + correctedPath}>
+    if (path?.length === 0) {
+        fullPath += collection.Title;
+    } else {
+        fullPath += path + (!path?.endsWith('/') ? '/' : '') + collection.Title;
+    }
+
+    return <Link className={styles.Icon} to={fullPath}>
         <img className={styles.Icon__Image} src={FolderIcon} alt={collection.Title}/>
         <span className={styles.Icon__Text}>{cap(collection.Title)}</span>
     </Link>

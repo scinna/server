@@ -35,9 +35,9 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] Web UI
     - To fix: Forgotten password
 - [ ] User roles (Simple user, admin, ...)
-- [ ] Server admin panel
+- [ ] (WIP) Server admin panel
 - [ ] ShareX compatibility
-- [ ] URL Shortener
+- [x] URL Shortener
 - [ ] Pastebin
 
 ### Version 2.0

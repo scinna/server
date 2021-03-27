@@ -13,9 +13,10 @@ import (
 )
 
 func Medias(prv *services.Provider, r *mux.Router) {
-	r.HandleFunc("/{media_id}", getMedia(prv))
-	r.HandleFunc("/{media_id}/thumbnail", getThumbnail(prv))
-	r.HandleFunc("/{media_id}/infos", getMediaInfos(prv))
+	r.HandleFunc("/{media_id}", getMedia(prv)).Methods(http.MethodGet)
+	r.HandleFunc("/{media_id}", deleteMedia(prv)).Methods(http.MethodDelete)
+	r.HandleFunc("/{media_id}/thumbnail", getThumbnail(prv)).Methods(http.MethodGet)
+	r.HandleFunc("/{media_id}/infos", getMediaInfos(prv)).Methods(http.MethodGet)
 }
 
 func getMedia(prv *services.Provider) http.HandlerFunc {
@@ -162,5 +163,34 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 
 			return
 		}
+	}
+}
+
+func deleteMedia(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := r.Context().Value("user").(*models.User)
+
+		mediaID := mux.Vars(r)["media_id"]
+		if len(mediaID) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		media, err := prv.Dal.Medias.Find(mediaID)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		if media.User.UserID != user.UserID {
+			serrors.NotOwner.Write(w, r)
+			return
+		}
+
+		err = prv.Dal.Medias.DeleteMedia(media)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		w.WriteHeader(http.StatusGone)
 	}
 }

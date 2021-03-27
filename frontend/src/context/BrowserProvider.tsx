@@ -47,7 +47,7 @@ export default function BrowserProvider({children}: Props) {
     const refresh = async () => {
         await setContext({...context, pending: true})
         const response = await apiCall<Collection>(token, {
-            url: '/api/browse/' + context.username + '/' + context.path ?? '',
+            url: '/api/browse/' + context.username + '/' + (context.path ?? ''),
             method: 'GET',
             canBeUnauthed: true,
         });
@@ -62,7 +62,6 @@ export default function BrowserProvider({children}: Props) {
 
     const browse = async (username: string, path?: string) => {
         await setContext({...context, username, path: path ?? ''})
-        await refresh();
     }
 
     useAsyncEffect(async () => {

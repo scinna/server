@@ -22,6 +22,9 @@ export function Browser() {
     const [showSpeedDial, setShowSpeedDial] = React.useState<boolean>(false);
     const ctx = useBrowser();
 
+
+    console.log(username, path);
+
     useAsyncEffect(async () => {
         await ctx.browse(username, path);
     }, [username, path])

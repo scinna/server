@@ -165,9 +165,3 @@ func listShortenLinks(prv *services.Provider) http.HandlerFunc {
 		_, _ = w.Write(bytes)
 	}
 }
-
-func removeShortenLink(prv *services.Provider) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-	}
-}
