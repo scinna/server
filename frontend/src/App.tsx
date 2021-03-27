@@ -15,7 +15,7 @@ import {createMuiTheme} from "@material-ui/core";
 import {ServerSettings} from "./views/ServerSettings";
 import BrowserProvider from "./context/BrowserProvider";
 import {ValidateAccount} from "./views/Validate";
-import {UrlShortnener} from "./views/LinkShortener";
+import {LinkShortnener} from "./views/LinkShortener";
 import ShortenLinkProvider from "./context/ShortenLinkProvider";
 
 const AuthenticatedRoute = (node: ReactNode) => {
@@ -86,7 +86,7 @@ function App() {
 
                         <Route exact path="/shortener">
                             <ShortenLinkProvider>
-                                {AuthenticatedRoute(<UrlShortnener />)}
+                                {AuthenticatedRoute(<LinkShortnener />)}
                             </ShortenLinkProvider>
                         </Route>
 

@@ -14,6 +14,7 @@ import (
 
 func Medias(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/{media_id}", getMedia(prv))
+	r.HandleFunc("/{media_id}/thumbnail", getThumbnail(prv))
 	r.HandleFunc("/{media_id}/infos", getMediaInfos(prv))
 }
 
@@ -65,6 +66,53 @@ func getMedia(prv *services.Provider) http.HandlerFunc {
 			http.ServeFile(w, r, file)
 			return
 		}
+	}
+}
+
+func getThumbnail(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		mediaID := mux.Vars(r)["media_id"]
+		if len(mediaID) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		media, err := prv.Dal.Medias.Find(mediaID)
+		if err != nil {
+			serrors.WriteError(w, r, err)
+			return
+		}
+
+		if media.MediaType != models.MEDIA_PICTURE && media.MediaType != models.MEDIA_VIDEO {
+			serrors.MediaNoThumbnail.Write(w, r)
+			return
+		}
+
+		file := prv.Config.MediaPath + media.Path + "_thumb"
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if media.Visibility.IsPrivate() {
+			token, err := middlewares.GetTokenFromRequest(r)
+			if err != nil {
+				if err == serrors.NoToken {
+					serrors.WriteError(w, r, serrors.NotOwner)
+					return
+				}
+				serrors.WriteError(w, r, err)
+				return
+			}
+
+			if !prv.Dal.Medias.MediaBelongsToToken(media, token) {
+				serrors.NotOwner.Write(w, r)
+				return
+			}
+		}
+
+		http.ServeFile(w, r, file)
+		return
 	}
 }
 

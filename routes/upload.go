@@ -69,11 +69,13 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 		}
 
 		parentFolder := prv.Config.MediaPath + "/" + user.UserID + "/"
-		_ = os.MkdirAll(parentFolder, os.ModePerm)
+		err = os.MkdirAll(parentFolder, os.ModePerm)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
 
 		uid, err := prv.GenerateUID()
-		if err != nil {
-			serrors.WriteError(w, r, err)
+		if serrors.WriteError(w, r, err) {
 			return
 		}
 
@@ -109,7 +111,7 @@ func uploadMedia(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
+		err = utils.Thumbnailize(prv, user, &pict)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

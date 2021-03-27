@@ -80,10 +80,8 @@ export default function InviteCodeProvider({children}: Props) {
     }
 
     useAsyncEffect(async () => {
-        if (!context.loaded) {
-            await refresh();
-        }
-    }, [context.loaded])
+        await refresh();
+    }, [context.loaded, token])
 
     return <InviteListContext.Provider value={{
         ...context,

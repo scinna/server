@@ -18,7 +18,6 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 		m.TITLE,
 		m.DESCRIPTION,
 		m.PATH,
-		m.THUMBNAIL,
 		m.VISIBILITY,
 	    m.CUSTOM_DATA,
 	    m.VIEW_COUNT,
@@ -55,7 +54,7 @@ func (m *Medias) Find(mediaID string) (*models.Media, error) {
 
 func (m *Medias) FindFromCollection(id string, withHidden bool, showLinks bool) ([]models.Media, error) {
 	rows, err := m.DB.Queryx(`
-		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA, VIEW_COUNT
+		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, VISIBILITY, CUSTOM_DATA, VIEW_COUNT
 		FROM MEDIA
 		WHERE 
 			CLC_ID = $1
@@ -115,11 +114,11 @@ func (m *Medias) CreatePicture(pict *models.Media, collection string) error {
 	pict.Path = pict.User.UserID + "/" + pict.MediaID
 
 	_, err := m.DB.Exec(`
-		INSERT INTO MEDIA (MEDIA_ID, MEDIA_TYPE, USER_ID, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, MIMETYPE, CLC_ID, CUSTOM_DATA)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
-		        CASE WHEN LENGTH($10) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $3 AND TITLE = $10)
+		INSERT INTO MEDIA (MEDIA_ID, MEDIA_TYPE, USER_ID, TITLE, DESCRIPTION, PATH, VISIBILITY, MIMETYPE, CLC_ID, CUSTOM_DATA)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 
+		        CASE WHEN LENGTH($9) > 0 THEN (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $3 AND TITLE = $9)
 		        ELSE (SELECT CLC_ID FROM COLLECTIONS WHERE user_id = $3 AND DEFAULT_COLLECTION = true)
-		END, '{}')`, pict.MediaID, pict.MediaType, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Thumbnail, pict.Visibility, pict.Mimetype, collection)
+		END, '{}')`, pict.MediaID, pict.MediaType, pict.User.UserID, pict.Title, pict.Description, pict.Path, pict.Visibility, pict.Mimetype, collection)
 
 	return err
 }
@@ -150,12 +149,12 @@ func (m *Medias) IncrementViewCount(media *models.Media) error {
 
 func (m *Medias) FindShortenLinks(user *models.User) ([]models.Media, error) {
 	rows, err := m.DB.Queryx(`
-		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, THUMBNAIL, VISIBILITY, CUSTOM_DATA, VIEW_COUNT, PUBLISHED_AT
+		SELECT MEDIA_ID, MEDIA_TYPE, TITLE, DESCRIPTION, PATH, VISIBILITY, CUSTOM_DATA, VIEW_COUNT, PUBLISHED_AT
 		FROM media
 		WHERE user_id = $1
 		  AND MEDIA_TYPE = 3
 		ORDER BY PUBLISHED_AT DESC
-`)
+`, user.UserID)
 
 	links := []models.Media{}
 	if err != nil {
@@ -165,6 +164,7 @@ func (m *Medias) FindShortenLinks(user *models.User) ([]models.Media, error) {
 	for rows.Next() {
 		link := models.Media{}
 		_ = rows.StructScan(&link)
+		link.User = user
 		links = append(links, link)
 	}
 

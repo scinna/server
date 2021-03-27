@@ -15,9 +15,10 @@ import {Controller, useForm} from 'react-hook-form';
 import {VisibilityDropDown} from '../VisibilityDropDown';
 import {Dropzone} from '../Dropzone';
 
-import styles from '../../assets/scss/browser/Browser.module.scss';
+import styles              from '../../assets/scss/browser/Browser.module.scss';
 import {CopiableTextfield} from "../CopiableTextfield";
-import {useServerConfig} from "../../context/ServerConfigProvider";
+import {useServerConfig}   from "../../context/ServerConfigProvider";
+import {useBrowser}        from "../../context/BrowserProvider";
 
 type Props = {
     shown: boolean;
@@ -33,6 +34,7 @@ type IFormInputs = {
 export function FileUploader({shown, onClose}: Props) {
     const {token} = useToken();
     const {Config} = useServerConfig();
+    const {refresh} = useBrowser();
     const [status, setStatus] = useState<string>('');
     const [progress, setProgress] = useState<number>(0);
     const {control, handleSubmit, reset} = useForm<IFormInputs>();
@@ -88,6 +90,7 @@ export function FileUploader({shown, onClose}: Props) {
             setUploadedId(id);
 
             reset();
+            refresh();
             setSelectedFile(undefined);
             setStatus('success');
         });

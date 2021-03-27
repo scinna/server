@@ -61,10 +61,8 @@ export default function AccountTokenProvider({children}: Props) {
     }
 
     useAsyncEffect(async () => {
-        if (!context.loaded) {
-            await refresh();
-        }
-    }, [context.loaded])
+        await refresh();
+    }, [context.loaded, token])
 
     return <TokenListContext.Provider value={{
         ...context,

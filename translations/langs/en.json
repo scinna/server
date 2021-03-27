@@ -34,6 +34,9 @@
       "not_found": "Collection not found",
       "already_exists": "This collection already exists"
     },
+    "media": {
+      "no_thumbnail": "This media doesn't have thumbnail",
+    },
     "invalid_filetype": "Please upload a PICTURE file only"
   }
 }

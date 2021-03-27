@@ -1,9 +1,14 @@
-import {Collection} from "../../types/Collection";
-import {Media} from "../../types/Media";
-import {Link} from 'react-router-dom';
-import {useBrowser} from "../../context/BrowserProvider";
+import {useState}                   from "react";
+import {Collection}                 from "../../types/Collection";
+import {Media}                      from "../../types/Media";
+import {Link}                       from 'react-router-dom';
+import {useBrowser}                 from "../../context/BrowserProvider";
+import FolderIcon                   from '../../assets/images/folder.svg';
+import InaccessibleIcon             from '../../assets/images/inaccessible_icon.png';
+import {useToken}                   from "../../context/TokenProvider";
+import {isScinnaError, ScinnaError} from "../../types/Error";
+import useAsyncEffect               from "use-async-effect";
 
-import FolderIcon from '../../assets/images/folder.svg';
 import styles from '../../assets/scss/browser/Icon.module.scss';
 
 export type IconProps = {
@@ -20,8 +25,44 @@ const cap = (title: string): string => {
 }
 
 const MediaIcon = ({media}: { media: Media }) => {
+    const thumbnailRawUrl = "/" + media.MediaID + "/thumbnail";
+    const {token} = useToken();
+    const [thumbnailUrl, setThumbnailUrl] = useState<'pending' | ScinnaError | string>('pending');
+
+    useAsyncEffect(async () => {
+        if (media.Visibility !== 2) {
+            await setThumbnailUrl(thumbnailRawUrl);
+            return;
+        }
+
+        setThumbnailUrl('pending');
+        try {
+            const resp = await fetch(thumbnailRawUrl, {
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                }
+            });
+
+            const img = await resp.blob();
+            setThumbnailUrl(URL.createObjectURL(img));
+        } catch (e) {
+            console.log(e);
+        }
+    }, []);
+
+    const isErr = isScinnaError(thumbnailUrl);
+
     return <Link className={styles.Icon} to={"/"}>
-        <img className={styles.Icon__Image} src={media.Thumbnail} alt=""/>
+        {
+            isErr
+            &&
+            <img className={styles.Icon__Image} src={InaccessibleIcon} alt=""/>
+        }
+        {
+            !isErr
+            &&
+            <img className={styles.Icon__Image} src={thumbnailUrl as string} alt=""/>
+        }
         <span className={styles.Icon__Text}>{cap(media.Title)}</span>
     </Link>
 }
@@ -30,8 +71,8 @@ const CollectionIcon = ({collection}: { collection: Collection }) => {
     const {username, path} = useBrowser();
     const correctedPath = (path?.startsWith('/') ? '' : '/') + (path ? path : '');
 
-    return <Link className={styles.Icon} to={"/browse/" + username ?? '' + correctedPath }>
-        <img className={styles.Icon__Image} src={FolderIcon} alt={collection.Title} />
+    return <Link className={styles.Icon} to={"/browse/" + username ?? '' + correctedPath}>
+        <img className={styles.Icon__Image} src={FolderIcon} alt={collection.Title}/>
         <span className={styles.Icon__Text}>{cap(collection.Title)}</span>
     </Link>
 }

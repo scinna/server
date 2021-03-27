@@ -5,6 +5,7 @@ import (
 	"github.com/scinna/server/log"
 	"github.com/scinna/server/models"
 	"github.com/scinna/server/services"
+	"github.com/scinna/server/utils"
 	"io"
 	"math/rand"
 	"os"
@@ -77,6 +78,11 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 		Mimetype:    "image/jpeg",
 	}
 
+	err := prv.Dal.Medias.CreatePicture(&pict, collection.Title)
+	if err != nil {
+		return err
+	}
+
 	outputFile, err := os.Create(parentFolder + pict.MediaID)
 	if err != nil {
 		return err
@@ -93,12 +99,7 @@ func generatePicture(prv *services.Provider, user *models.User, collection *mode
 		return err
 	}
 
-	err = pict.GenerateThumbnail(parentFolder + pict.MediaID)
-	if err != nil {
-		return err
-	}
-
-	return prv.Dal.Medias.CreatePicture(&pict, collection.Title)
+	return utils.Thumbnailize(prv, user, &pict)
 }
 
 func findRandomPicture() (*os.File, error) {

@@ -5,12 +5,14 @@
   flex-direction: column;
 
   &__List {
+    flex: 1;
     overflow-y: scroll;
   }
 }
 
 .Shortener {
   width: 300px;
+  flex: 0;
   padding: 1.5em;
   margin: auto;
 

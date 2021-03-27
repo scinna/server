@@ -1,14 +1,9 @@
 package models
 
 import (
-	"bufio"
 	"database/sql/driver"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"os"
 	"time"
 )
 
@@ -28,13 +23,12 @@ type Media struct {
 	Title       string `db:"title" json:",omitempty"`
 	Description string `db:"description" json:",omitempty"`
 
-	Path        string     `db:"path" json:"-"`
-	Visibility  Visibility `db:"visibility"`
-	PublishedAt time.Time  `db:"published_at"`
-	ViewCount   int        `db:"view_count"`
-	Mimetype    string     `db:"mimetype" json:"-"`
-	CustomData  CustomData `db:"custom_data" json:"custom_data"`
-	Thumbnail   string     `db:"thumbnail" json:",omitempty"`
+	Path          string     `db:"path" json:"-"`
+	Visibility    Visibility `db:"visibility"`
+	PublishedAt   time.Time  `db:"published_at"`
+	ViewCount     int        `db:"view_count"`
+	Mimetype      string     `db:"mimetype" json:"-"`
+	CustomData    CustomData `db:"custom_data" json:"custom_data"`
 
 	Collection *Collection `db:"collection" json:",omitempty"`
 
@@ -67,27 +61,6 @@ func (cd *CustomData) Scan(src interface{}) error {
 	return nil
 }
 
-// GenerateThumbnail takes a source path for the picture and generates it's thumnail attribute. Only works for pictures for now
-func (m *Media) GenerateThumbnail(source string) error {
-	/**
-	 * @TODO: Thumbnailise it
-	 */
-	f, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-
-	reader := bufio.NewReader(f)
-	content, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return err
-	}
-
-	m.Thumbnail = fmt.Sprintf("data:%v;base64,%v", m.Mimetype, base64.StdEncoding.EncodeToString(content))
-
-	return nil
-}
-
 func (m Media) GetTableName() string {
 	return "MEDIA"
 }
@@ -107,7 +80,6 @@ func (m Media) GenerateTable() string {
 			VIEW_COUNT   INTEGER NOT NULL DEFAULT 0,
 			PUBLISHED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			CUSTOM_DATA  JSONB,
-			THUMBNAIL    TEXT DEFAULT '',
 			MIMETYPE     VARCHAR DEFAULT ''
 		);
 	`

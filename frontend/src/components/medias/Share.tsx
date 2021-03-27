@@ -3,7 +3,6 @@ import React, {useState} from "react";
 
 import classes from "../../assets/scss/ShowPicture.module.scss";
 import {Tab, Tabs} from "@material-ui/core";
-import i18n from "i18n-js";
 
 type Props = {
     media: Media;

@@ -17,6 +17,9 @@ RUN go mod download
 RUN go build -o server
 
 FROM alpine
+
+RUN apk update && apk add imagemagick && rm -rf /var/cache/apk/*
+
 WORKDIR /app
 COPY --from=BUILDBACK /app/server /app/server
 

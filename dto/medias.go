@@ -53,3 +53,12 @@ func GetShortenLinkInfo(media *models.Media) ShortenLinkInfo {
 		Author:      media.User.Name,
 	}
 }
+
+func GetShortenLinksInfo(medias []models.Media) []ShortenLinkInfo {
+	shortenLinks := []ShortenLinkInfo{}
+	for _, m := range medias {
+		shortenLinks = append(shortenLinks, GetShortenLinkInfo(&m))
+	}
+
+	return shortenLinks
+}

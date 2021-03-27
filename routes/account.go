@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/scinna/server/dto"
 	"github.com/scinna/server/forms"
 	"github.com/scinna/server/requests"
 	"github.com/scinna/server/serrors"
@@ -155,7 +156,7 @@ func listShortenLinks(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		bytes, err := json.Marshal(links)
+		bytes, err := json.Marshal(dto.GetShortenLinksInfo(links))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

@@ -51,10 +51,8 @@ export default function ShortenLinkProvider({children}: Props) {
     }
 
     useAsyncEffect(async () => {
-        if (!context.loaded) {
-            await refresh();
-        }
-    }, [context.loaded])
+        await refresh();
+    }, [context.loaded, token])
 
     return <ShortenLinkContext.Provider value={{
         ...context,

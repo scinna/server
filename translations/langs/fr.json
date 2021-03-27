@@ -34,6 +34,9 @@
       "not_found": "Collection non trouvée",
       "already_exists": "Cette collection existe déjà"
     },
+    "media": {
+      "no_thumbnail": "Ce média n'a pas de miniatures",
+    },
     "invalid_filetype": "Merci de téléverser uniquement des IMAGES"
   }
 }

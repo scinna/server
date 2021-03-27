@@ -5,14 +5,13 @@ import styles from '../assets/scss/linkshortener/shortener.module.scss';
 import {useShortenLink} from "../context/ShortenLinkProvider";
 import {Loader} from "../components/Loader";
 
-export function UrlShortnener() {
+export function LinkShortnener() {
     const {status, links, error} = useShortenLink();
 
     return <div className={styles.LinkShortener}>
         <LinkShortener/>
 
         <div className={styles.LinkShortener__List}>
-            { status }
             {
                 status === 'pending'
                 &&

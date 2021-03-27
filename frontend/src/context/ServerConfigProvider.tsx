@@ -39,16 +39,12 @@ export default function ServerConfigProvider({children}: Props) {
     const [context, setContext] = useState<ServerConfigProps>(defaultValues);
     const { token } = useToken();
 
-    // Not doing what I want
-    // Should be called again when the token changes
     useAsyncEffect(async () => {
-        if (!context.Loaded) {
-            const response = await fetch('/api/server/infos',
-                token ? { headers: { Authorization: 'Bearer ' + token} } : {}
-            );
-            const data = await response.json();
-            setContext({ Loaded: true, Config: data });
-        }
+        const response = await fetch('/api/server/infos',
+            token ? { headers: { Authorization: 'Bearer ' + token} } : {}
+        );
+        const data = await response.json();
+        setContext({ Loaded: true, Config: data });
     }, [token])
 
     return (<ServerConfigContext.Provider value={{

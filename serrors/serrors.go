@@ -113,3 +113,6 @@ var NotOwner = New("authorization.not_owner", 403, 403)
 
 var CollectionNotFound = New("collection.not_found", 400, 404)
 var CollectionAlreadyExists = New("collection.already_exists", 401, 400)
+
+
+var MediaNoThumbnail = New("media.no_thumbnail", 405, 400)
