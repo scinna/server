@@ -39,6 +39,9 @@ The first version will have the basic feature expected from a self-hosted image 
 - [ ] ShareX compatibility
 - [x] URL Shortener
 - [ ] Pastebin
+- [ ] Clean-up
+    - [ ] Make a ModalContext so that the modals are at the correct place in the DOM
+    - [ ] Hide ALL golang errors behind custom scinna errors so that the user never have a "pq: no rows"-like error
 
 ### Version 2.0
 

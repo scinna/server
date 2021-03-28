@@ -1,9 +1,10 @@
 import React, {createContext, ReactNode, useContext, useState} from "react";
-import {apiCall} from "../utils/useApi";
-import {useToken} from "./TokenProvider";
-import {isScinnaError, ScinnaError} from "../types/Error";
-import useAsyncEffect from "use-async-effect";
-import {Collection} from "../types/Collection";
+import {apiCall}                                               from "../utils/useApi";
+import {useToken}                                              from "./TokenProvider";
+import {isScinnaError, ScinnaError}                            from "../types/Error";
+import useAsyncEffect                                          from "use-async-effect";
+import {Collection}                                            from "../types/Collection";
+import IconContextProvider                                     from "./IconContextProvider";
 
 type Props = {
     children: ReactNode;
@@ -36,8 +37,7 @@ const defaultState: BrowserProps = {
 const TokenListContext = createContext<BrowserContextProps>({
     ...defaultState,
     browse: (username, path) => {},
-    refresh: () => {
-    },
+    refresh: () => {},
 });
 
 export default function BrowserProvider({children}: Props) {
@@ -74,7 +74,9 @@ export default function BrowserProvider({children}: Props) {
         browse,
         refresh,
     }}>
-        {children}
+        <IconContextProvider>
+            {children}
+        </IconContextProvider>
     </TokenListContext.Provider>
 }
 
