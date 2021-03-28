@@ -29,12 +29,13 @@ type IFormInputs = {
     title: string;
     description: string;
     visibility: number;
+    collection: string;
 }
 
 export function FileUploader({shown, onClose}: Props) {
     const {token} = useToken();
     const {Config} = useServerConfig();
-    const {refresh} = useBrowser();
+    const {path, refresh} = useBrowser();
     const [status, setStatus] = useState<string>('');
     const [progress, setProgress] = useState<number>(0);
     const {control, handleSubmit, reset} = useForm<IFormInputs>();
@@ -147,6 +148,13 @@ export function FileUploader({shown, onClose}: Props) {
                             setSelectedVisibility={onChange}
                             disabled={status === 'pending'}
                         />
+                        }
+                    />
+                    <Controller
+                        name={"collection"}
+                        control={control}
+                        defaultValue={path ?? ''}
+                        render={({onChange, value}) => <input type="hidden" value={value} onChange={onChange}/>
                         }
                     />
                     <Dropzone onFileSelected={f => setSelectedFile(f)}/>

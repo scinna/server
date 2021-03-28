@@ -26,7 +26,6 @@ func Accounts(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/tokens/{token}", revokeToken(prv)).Methods(http.MethodDelete)
 
 	r.HandleFunc("/shorten_links", listShortenLinks(prv)).Methods(http.MethodGet)
-	r.HandleFunc("/shorten_links/{link}", removeShortenLink(prv)).Methods(http.MethodDelete)
 }
 
 func fetchAccountInfos(prv *services.Provider) http.HandlerFunc {

@@ -17,13 +17,13 @@ export const BrowserHeader = () => {
     const [folderCreationShown, setFolderCreationShown] = useState<boolean>(false);
     const [fileUploaderShown, setFileUploaderShown] = useState<boolean>(false);
     const { username, path, pending, refresh } = useBrowser();
-    const fullpath = `/${username}/${path ? path : ''}`
+    const fullPath = `/${username}/${path ? path : ''}`
 
     return <div className={styles.Browser__Header}>
-        <IconButton disabled={pending}>
+        <IconButton disabled={pending} onClick={() => window.history.back()}>
             <BackButton/>
         </IconButton>
-        <IconButton disabled={pending}>
+        <IconButton disabled={pending} onClick={() => window.history.forward()}>
             <ForwardButton/>
         </IconButton>
         <IconButton disabled={pending} onClick={() => refresh()}>
@@ -31,7 +31,7 @@ export const BrowserHeader = () => {
         </IconButton>
         <TextField
             className={styles.Browser__Header__AddressBar}
-            value={fullpath}
+            value={fullPath}
             disabled={true}
         />
         {/**

@@ -4,12 +4,12 @@ import {useBrowser} from "../context/BrowserProvider";
 import {Icon} from "../components/browser/Icon";
 import {useHistory, useParams} from "react-router-dom";
 import useAsyncEffect from "use-async-effect";
-
-import styles from '../assets/scss/browser/Browser.module.scss';
 import {Loader} from "../components/Loader";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon} from "@material-ui/lab";
 import {Description, Link} from "@material-ui/icons";
 import i18n from "i18n-js";
+
+import styles from '../assets/scss/browser/Browser.module.scss';
 
 type RouteParams = {
     username: string;
@@ -21,9 +21,6 @@ export function Browser() {
     const {username, path} = useParams<RouteParams>();
     const [showSpeedDial, setShowSpeedDial] = React.useState<boolean>(false);
     const ctx = useBrowser();
-
-
-    console.log(username, path);
 
     useAsyncEffect(async () => {
         await ctx.browse(username, path);
