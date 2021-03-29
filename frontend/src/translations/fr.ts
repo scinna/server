@@ -115,6 +115,18 @@ export default {
                 text: 'Êtes-vous sur de vouloir supprimer cette collection et son contenu ?',
                 cancel: 'Annuler',
                 delete: 'Supprimer'
+            },
+            remove_media: {
+                title: 'Suppression du media',
+                text: 'Êtes-vous sûr de vouloir supprimer ce media ?',
+                cancel: 'Annuler',
+                delete: 'Supprimer'
+            },
+            edit_media: {
+                title: 'Édition du media',
+                media_title: 'Titre',
+                description: 'Description',
+                visibility: 'Visibilité'
             }
         }
     },

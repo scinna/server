@@ -29,7 +29,7 @@ type IFormInputs = {
     visibility: number;
 }
 
-export function FolderEditor({collection, closeCallback = () => {}}: Props) {
+export function EditFolder({collection, closeCallback = () => {}}: Props) {
     const {hide} = useModal();
 
     const {username, path, refresh} = useBrowser();
@@ -38,7 +38,7 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
     const [error, setError] = useState<String>("");
     const {control, handleSubmit} = useForm<IFormInputs>();
 
-    const fullyHide = async () => {
+    const close = async () => {
         closeCallback();
         await hide();
     }
@@ -76,10 +76,10 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
         await setPending(false);
         await setError('');
         await refresh();
-        await fullyHide();
+        await close();
     };
 
-    return <Dialog open={true} onClose={fullyHide}>
+    return <Dialog open={true} onClose={close}>
         <form onSubmit={handleSubmit(onSubmit)}>
             <DialogTitle>{
                 collection ?
@@ -121,7 +121,7 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
                 }
             </DialogContent>
             <DialogActions>
-                <Button onClick={fullyHide} disabled={pending}>{i18n.t('browser.folder_editor.cancel')}</Button>
+                <Button onClick={close} disabled={pending}>{i18n.t('browser.folder_editor.cancel')}</Button>
                 <Button color="primary" type="submit"
                         disabled={pending}>{
                     collection ?

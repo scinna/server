@@ -18,10 +18,9 @@ import {Media}                      from "../../types/Media";
 
 type Props = {
     media: Media;
-    successCallback: () => void;
 }
 
-export function DeleteMedia({media, successCallback}: Props) {
+export function DeleteMedia({media}: Props) {
     const {token} = useToken();
     const {refresh} = useBrowser();
     const [pending, setPending] = useState<boolean>(false);
@@ -39,7 +38,7 @@ export function DeleteMedia({media, successCallback}: Props) {
 
         if (isScinnaError(response)) {
             let err = response as ScinnaError;
-            if (err.status != 410) {
+            if (err.status !== 410) {
                 await setError((response as ScinnaError).Message);
                 await setPending(false);
 
@@ -49,8 +48,6 @@ export function DeleteMedia({media, successCallback}: Props) {
 
         await refresh();
         await hide();
-
-        successCallback();
     };
 
     return <Dialog open={true} onClose={hide}>

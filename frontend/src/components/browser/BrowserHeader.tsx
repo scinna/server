@@ -6,13 +6,13 @@ import {
     CreateNewFolder,
     CloudUpload as Upload
 }                              from '@material-ui/icons';
+import {useBrowser}   from '../../context/BrowserProvider';
+import {EditFolder}   from '../modals/EditFolder';
+import {useState}     from 'react';
+import {FileUploader} from './FileUploader';
+import {useModal}     from '../../context/ModalProvider';
 
 import styles         from '../../assets/scss/browser/Browser.module.scss';
-import {useBrowser}   from "../../context/BrowserProvider";
-import {FolderEditor} from "../modals/FolderEditor";
-import {useState}     from "react";
-import {FileUploader} from "./FileUploader";
-import {useModal}     from "../../context/ModalProvider";
 
 export const BrowserHeader = () => {
     const modal = useModal();
@@ -22,8 +22,8 @@ export const BrowserHeader = () => {
 
     return <div className={styles.Browser__Header}>
         {/**
-             Temporary, should be implemented as an internal  history handling
-             so that it only works for the file browser
+         Temporary, should be implemented as an internal  history handling
+         so that it only works for the file browser
          **/}
         <IconButton disabled={pending} onClick={() => window.history.back()}>
             <BackButton/>
@@ -42,7 +42,8 @@ export const BrowserHeader = () => {
         {/**
          Temporary, just so we can't create nested collections
          **/}
-        <IconButton onClick={() => modal.show(<FolderEditor closeCallback={() => {}}/>)} disabled={pending || (path !== undefined && path?.length > 0)}>
+        <IconButton onClick={() => modal.show(<EditFolder closeCallback={() => {
+        }}/>)} disabled={pending || (path !== undefined && path?.length > 0)}>
             <CreateNewFolder/>
         </IconButton>
         <IconButton onClick={() => setFileUploaderShown(true)} disabled={pending}>

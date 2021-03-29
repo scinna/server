@@ -113,6 +113,12 @@ export default {
                 text: 'Are you sure you want to delete this media?',
                 cancel: 'Cancel',
                 delete: 'Delete'
+            },
+            edit_media: {
+                title: 'Editing media',
+                media_title: 'Title',
+                description: 'Description',
+                visibility: 'Visibility'
             }
         }
     },

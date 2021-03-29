@@ -18,10 +18,9 @@ import i18n                         from "i18n-js";
 
 type Props = {
     collection: Collection;
-    successCallback: () => void;
 }
 
-export function DeleteCollection({collection, successCallback = () => {}}: Props) {
+export function DeleteCollection({collection}: Props) {
     const {token} = useToken();
     const {getCurrentPath, refresh} = useBrowser();
     const [pending, setPending] = useState<boolean>(false);
@@ -39,7 +38,7 @@ export function DeleteCollection({collection, successCallback = () => {}}: Props
 
         if (isScinnaError(response)) {
             let err = response as ScinnaError;
-            if (err.status != 410) {
+            if (err.status !== 410) {
                 await setError((response as ScinnaError).Message);
                 await setPending(false);
 
@@ -49,8 +48,6 @@ export function DeleteCollection({collection, successCallback = () => {}}: Props
 
         await refresh();
         await hide();
-
-        successCallback();
     };
 
     return <Dialog open={true} onClose={hide}>
