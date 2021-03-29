@@ -10,10 +10,12 @@ import (
 	"github.com/scinna/server/services"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func Medias(prv *services.Provider, r *mux.Router) {
 	r.HandleFunc("/{media_id}", getMedia(prv)).Methods(http.MethodGet)
+	r.HandleFunc("/{media_id}", editMedia(prv)).Methods(http.MethodPut)
 	r.HandleFunc("/{media_id}", deleteMedia(prv)).Methods(http.MethodDelete)
 	r.HandleFunc("/{media_id}/thumbnail", getThumbnail(prv)).Methods(http.MethodGet)
 	r.HandleFunc("/{media_id}/infos", getMediaInfos(prv)).Methods(http.MethodGet)
@@ -162,6 +164,77 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 			_, _ = w.Write(jsonBytes)
 
 			return
+		}
+	}
+}
+
+func editMedia(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, _, err := middlewares.GetUserFromRequest(prv, r)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		mediaID := mux.Vars(r)["media_id"]
+		if len(mediaID) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		media, err := prv.Dal.Medias.Find(mediaID)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		if media.User.UserID != user.UserID {
+			serrors.NotOwner.Write(w, r)
+			return
+		}
+
+		switch media.MediaType {
+		case models.MEDIA_SHORTURL:
+			// Shortened URL should not be modifiable
+			// We don't want users to edit where they're pointing to after creation
+			// And they do not have title nor description
+			return
+		case models.MEDIA_PICTURE:
+			fallthrough
+		case models.MEDIA_VIDEO:
+			title := r.FormValue("title")
+			description := r.FormValue("description")
+
+			visibilityStr := r.FormValue("visibility")
+			visibilityInt, err := strconv.Atoi(visibilityStr)
+
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			if len(title) == 0 {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			visibility := models.VisibilityFromInt(visibilityInt)
+			if !visibility.IsValid() {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			media.Title = title
+			media.Description = description
+			media.Visibility = visibility
+
+			err = prv.Dal.Medias.UpdateMedia(media)
+			if serrors.WriteError(w, r, err) {
+				return
+			}
+
+			bytes, _ := json.Marshal(dto.GetMediasInfos(media))
+
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(bytes)
 		}
 	}
 }

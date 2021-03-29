@@ -61,12 +61,13 @@ export function Browser() {
                         key={'upload-textbin'}
                         icon={<Description/>}
                         tooltipTitle={i18n.t('dial.textbin')}
-                    />
+                        title={i18n.t('dial.textbin')}/>
 
                     <SpeedDialAction
                         key={'url-shortener'}
                         icon={<Link/>}
                         tooltipTitle={i18n.t('dial.url_shortener')}
+                        title={i18n.t('dial.url_shortener')}
                         onClick={() => history.push('/shortener')}
                     />
 

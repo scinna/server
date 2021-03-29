@@ -137,6 +137,20 @@ func (m *Medias) CreateShortenUrl(shortenUrl *models.Media) error {
 	return err
 }
 
+func (m *Medias) UpdateMedia(media *models.Media) error {
+	_, err := m.DB.Exec(`UPDATE MEDIA 
+		SET TITLE = $1,
+		    DESCRIPTION = $2,
+		    VISIBILITY = $3
+		WHERE MEDIA_ID = $4`,
+			media.Title,
+			media.Description,
+			media.Visibility,
+			media.MediaID,
+		)
+	return err
+}
+
 func (m *Medias) DeleteMedia(pict *models.Media) error {
 	_, err := m.DB.Exec("DELETE FROM MEDIA WHERE media_id = $1", pict.MediaID)
 	return err

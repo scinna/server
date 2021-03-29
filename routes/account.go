@@ -102,7 +102,7 @@ func updateAccountInfos(prv *services.Provider) http.HandlerFunc {
 					"CurrentPassword": translations.T(r, "errors.login.invalid_password"),
 				},
 			})
-			w.Write(bytes)
+			_, _ = w.Write(bytes)
 			return
 		}
 

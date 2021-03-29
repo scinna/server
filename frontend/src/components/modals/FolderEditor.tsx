@@ -25,7 +25,7 @@ type Props = {
 }
 
 type IFormInputs = {
-    name: string;
+    title: string;
     visibility: number;
 }
 
@@ -49,7 +49,7 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
         let response;
         if (!collection) {
             response = await apiCall(token, {
-                url: '/api/browse/' + username + '/' + path + (path && path?.length > 0 ? '/' : '') + data.name,
+                url: '/api/browse/' + username + '/' + path + (path && path?.length > 0 ? '/' : '') + data.title,
                 method: 'POST',
                 data: {
                     Visibility: data.visibility,
@@ -60,7 +60,7 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
                 url: '/api/browse/' + username + '/' + path + (path && path?.length > 0 ? '/' : '') + collection.Title,
                 method: 'PUT',
                 data: {
-                    Name: data.name,
+                    Title: data.title,
                     Visibility: data.visibility,
                 }
             })
@@ -90,7 +90,7 @@ export function FolderEditor({collection, closeCallback = () => {}}: Props) {
             <DialogContent>
                 <InputLabel>{i18n.t('browser.folder_editor.folder_name')}: </InputLabel>
                 <Controller
-                    name={"name"}
+                    name={"title"}
                     control={control}
                     defaultValue={collection?.Title}
                     render={({onChange, value}) =>

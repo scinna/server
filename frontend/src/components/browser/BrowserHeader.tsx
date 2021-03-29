@@ -21,6 +21,10 @@ export const BrowserHeader = () => {
     const fullPath = `/${username}/${path ? path : ''}`
 
     return <div className={styles.Browser__Header}>
+        {/**
+             Temporary, should be implemented as an internal  history handling
+             so that it only works for the file browser
+         **/}
         <IconButton disabled={pending} onClick={() => window.history.back()}>
             <BackButton/>
         </IconButton>
