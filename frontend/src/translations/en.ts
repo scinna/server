@@ -99,13 +99,18 @@ export default {
         },
         context: {
             edit: 'Edit',
-            rename: 'Rename',
             remove: 'Delete',
         },
         modals: {
             remove_collection: {
                 title: 'Deleting collection',
                 text: 'Are you sure you want to remove this collection? It will remove any files in it.',
+                cancel: 'Cancel',
+                delete: 'Delete'
+            },
+            remove_media: {
+                title: 'Deleting media',
+                text: 'Are you sure you want to delete this media?',
                 cancel: 'Cancel',
                 delete: 'Delete'
             }

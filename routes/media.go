@@ -168,7 +168,10 @@ func getMediaInfos(prv *services.Provider) http.HandlerFunc {
 
 func deleteMedia(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user := r.Context().Value("user").(*models.User)
+		user, _, err := middlewares.GetUserFromRequest(prv, r)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
 
 		mediaID := mux.Vars(r)["media_id"]
 		if len(mediaID) == 0 {

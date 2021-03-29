@@ -9,31 +9,31 @@ import {
 }                                   from "@material-ui/core";
 import React, {useState}            from "react";
 import {useModal}                   from "../../context/ModalProvider";
-import {Collection}                 from "../../types/Collection";
 import {apiCall}                    from "../../utils/useApi";
 import {useToken}                   from "../../context/TokenProvider";
 import {isScinnaError, ScinnaError} from "../../types/Error";
 import {useBrowser}                 from "../../context/BrowserProvider";
 import i18n                         from "i18n-js";
+import {Media}                      from "../../types/Media";
 
 type Props = {
-    collection: Collection;
+    media: Media;
     successCallback: () => void;
 }
 
-export function DeleteCollection({collection, successCallback = () => {}}: Props) {
+export function DeleteMedia({media, successCallback}: Props) {
     const {token} = useToken();
-    const {getCurrentPath, refresh} = useBrowser();
+    const {refresh} = useBrowser();
     const [pending, setPending] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const {hide} = useModal();
 
-    const deleteCollection = async () => {
+    const deleteMedia = async () => {
         await setPending(true);
         await setError('');
 
         const response = await apiCall(token, {
-            url: '/api/browse/' + getCurrentPath() + collection.Title,
+            url: '/' + media.MediaID,
             method: 'DELETE',
         });
 
@@ -54,9 +54,9 @@ export function DeleteCollection({collection, successCallback = () => {}}: Props
     };
 
     return <Dialog open={true} onClose={hide}>
-        <DialogTitle>{i18n.t('browser.modals.remove_collection.title')} {collection.Title}</DialogTitle>
+        <DialogTitle>{i18n.t('browser.modals.remove_media.title')} {media.Title}</DialogTitle>
         <DialogContent>
-            <DialogContentText>{i18n.t('browser.modals.remove_collection.text')}</DialogContentText>
+            <DialogContentText>{i18n.t('browser.modals.remove_media.text')}</DialogContentText>
             {
                 error.length > 0
                 &&
@@ -65,10 +65,10 @@ export function DeleteCollection({collection, successCallback = () => {}}: Props
         </DialogContent>
         <DialogActions>
             <Button onClick={hide} color="primary" disabled={pending}>
-                {i18n.t('browser.modals.remove_collection.cancel')}
+                {i18n.t('browser.modals.remove_media.cancel')}
             </Button>
-            <Button onClick={deleteCollection} color="secondary" disabled={pending}>
-                {i18n.t('browser.modals.remove_collection.delete')}
+            <Button onClick={deleteMedia} color="secondary" disabled={pending}>
+                {i18n.t('browser.modals.remove_media.delete')}
             </Button>
         </DialogActions>
     </Dialog>

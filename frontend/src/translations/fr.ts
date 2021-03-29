@@ -79,11 +79,13 @@ export default {
         url_shortener: 'Minimiseur d\'URL'
     },
     browser: {
-        create_folder: {
-            title: 'Créer un dossier',
+        folder_editor: {
+            create_title: 'Créer un dossier',
+            edit_title: 'Modifier un dossier',
             folder_name: 'Nom',
             visibility: 'Visibilité',
             create: 'Créer',
+            save: 'Sauvegarder',
             cancel: 'Annuler'
         },
         file_uploader: {
@@ -105,7 +107,6 @@ export default {
         },
         context: {
             edit: 'Éditer',
-            rename: 'Renommer',
             remove: 'Supprimer',
         },
         modals: {

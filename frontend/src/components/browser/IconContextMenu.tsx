@@ -5,6 +5,8 @@ import {useIconContextMenu}                       from "../../context/IconContex
 import {useModal}                                 from "../../context/ModalProvider";
 import {DeleteCollection}                         from "../modals/DeleteCollection";
 import i18n                                       from "i18n-js";
+import {DeleteMedia}                              from "../modals/DeleteMedia";
+import {FolderEditor}                             from "../modals/FolderEditor";
 
 
 export function IconContextMenu() {
@@ -22,10 +24,6 @@ export function IconContextMenu() {
         return null;
     }
 
-    const editElement = async () => {
-        hide();
-    };
-
     return <Menu
         keepMounted
         open={mouseY !== null}
@@ -33,16 +31,24 @@ export function IconContextMenu() {
         anchorReference="anchorPosition"
         anchorPosition={{top: mouseY ?? 0, left: mouseX ?? 0}}
     >
-        <MenuItem onClick={hide}>
+        <MenuItem onClick={() => modal.show(
+            collection !== null
+                ? <FolderEditor collection={collection} closeCallback={hide} />
+                : media !== null
+                    ? null
+                    : null
+        )}>
             <ListItemIcon>
                 <EditIcon fontSize="small"/>
             </ListItemIcon>
-            <Typography variant="inherit">{collection !== null ? i18n.t('browser.context.rename') : i18n.t('browser.context.edit')}</Typography>
+            <Typography variant="inherit">{i18n.t('browser.context.edit')}</Typography>
         </MenuItem>
         <MenuItem onClick={() => modal.show(
             collection !== null ?
                 <DeleteCollection collection={collection} successCallback={hide}/>
-                : null
+                : media !== null ?
+                    <DeleteMedia media={media} successCallback={hide}/>
+                    : null
             )}>
             <ListItemIcon>
                 <DeleteIcon fontSize="small" color="secondary"/>
