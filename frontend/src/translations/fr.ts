@@ -102,6 +102,19 @@ export default {
                 raw_link: 'Lien direct',
                 close: 'Fermer'
             }
+        },
+        context: {
+            edit: 'Éditer',
+            rename: 'Renommer',
+            remove: 'Supprimer',
+        },
+        modals: {
+            remove_collection: {
+                title: 'Supprimer la collection',
+                text: 'Êtes-vous sur de vouloir supprimer cette collection et son contenu ?',
+                cancel: 'Annuler',
+                delete: 'Supprimer'
+            }
         }
     },
     shortener: {

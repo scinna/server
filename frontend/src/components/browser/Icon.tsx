@@ -9,8 +9,8 @@ import {useToken}                   from "../../context/TokenProvider";
 import {isScinnaError, ScinnaError} from "../../types/Error";
 import useAsyncEffect               from "use-async-effect";
 
-import styles           from '../../assets/scss/browser/Icon.module.scss';
-import {useIconContext} from "../../context/IconContextProvider";
+import styles               from '../../assets/scss/browser/Icon.module.scss';
+import {useIconContextMenu} from "../../context/IconContextMenuProvider";
 
 export type IconProps = {
     media?: Media;
@@ -26,7 +26,7 @@ const cap = (title: string): string => {
 }
 
 const MediaIcon = ({media}: { media: Media }) => {
-    const {show} = useIconContext();
+    const {show} = useIconContextMenu();
     const thumbnailRawUrl = "/" + media.MediaID + "/thumbnail";
     const {token} = useToken();
     const [thumbnailUrl, setThumbnailUrl] = useState<'pending' | ScinnaError | string>('pending');
@@ -70,7 +70,7 @@ const MediaIcon = ({media}: { media: Media }) => {
 }
 
 const CollectionIcon = ({collection}: { collection: Collection }) => {
-    const {show} = useIconContext();
+    const {show} = useIconContextMenu();
     const {username, path} = useBrowser();
     let fullPath = "/browse/" + (username ?? '') + '/';
 

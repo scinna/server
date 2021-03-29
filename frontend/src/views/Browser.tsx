@@ -8,12 +8,9 @@ import {Loader}                                    from "../components/Loader";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon} from "@material-ui/lab";
 import {Description, Link}                         from "@material-ui/icons";
 import i18n                                        from "i18n-js";
+import {IconContextMenu}                           from "../components/browser/IconContextMenu";
 
-import styles                                     from '../assets/scss/browser/Browser.module.scss';
-import {useIconContext}                           from "../context/IconContextProvider";
-import {ListItemIcon, Menu, MenuItem, Typography} from "@material-ui/core";
-
-import {Edit as EditIcon, Delete as DeleteIcon} from '@material-ui/icons';
+import styles from '../assets/scss/browser/Browser.module.scss';
 
 type RouteParams = {
     username: string;
@@ -22,7 +19,6 @@ type RouteParams = {
 
 export function Browser() {
     const history = useHistory();
-    const iconContext = useIconContext();
     const {username, path} = useParams<RouteParams>();
     const [showSpeedDial, setShowSpeedDial] = React.useState<boolean>(false);
     const ctx = useBrowser();
@@ -86,30 +82,6 @@ export function Browser() {
             </div>
         }
 
-        {
-            iconContext.isVisible()
-            &&
-            <Menu
-                keepMounted
-                open={iconContext.mouseY !== null}
-                onClose={iconContext.hide}
-                anchorReference="anchorPosition"
-                anchorPosition={{top: iconContext.mouseY ?? 0, left: iconContext.mouseX ?? 0}}
-            >
-                <MenuItem onClick={iconContext.hide}>
-                    <ListItemIcon>
-                        <EditIcon fontSize="small"/>
-                    </ListItemIcon>
-                    <Typography variant="inherit">{iconContext.collection !== null ? 'Rename' : 'Edit' }</Typography>
-                </MenuItem>
-                <MenuItem onClick={iconContext.hide}>
-                    <ListItemIcon>
-                        <DeleteIcon fontSize="small" color="secondary"/>
-                    </ListItemIcon>
-                    <Typography variant="inherit" color="secondary">Delete</Typography>
-                </MenuItem>
-            </Menu>
-        }
-
+        <IconContextMenu/>
     </div>;
 }

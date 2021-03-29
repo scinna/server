@@ -20,13 +20,13 @@ const initialState = {
     media: null,
 }
 
-type IconContextContextProps = IconContextProps & {
+type IconContextMenuContextProps = IconContextProps & {
     show: (collection: Collection|null, media: Media|null) => (mouseEvent: React.MouseEvent) => void;
     hide: () => void;
     isVisible: () => boolean;
 }
 
-const IconContextContext = createContext<IconContextContextProps>({
+const IconContextMenuContext = createContext<IconContextMenuContextProps>({
     ...initialState,
     show: (c, m) => (e) => {
     },
@@ -35,7 +35,7 @@ const IconContextContext = createContext<IconContextContextProps>({
     isVisible: () => false,
 })
 
-export default function IconContextProvider({children}: Props) {
+export default function IconContextMenuProvider({children}: Props) {
     const [context, setContext] = useState<IconContextProps>(initialState);
 
     const show = (collection: Collection|null, media: Media|null = null) => (mouseEvent: React.MouseEvent) => {
@@ -49,16 +49,16 @@ export default function IconContextProvider({children}: Props) {
 
     const isVisible = () => context.mouseX !== null && context.mouseY !== null && (context.collection !== null || context.media !== null);
 
-    return <IconContextContext.Provider value={{
+    return <IconContextMenuContext.Provider value={{
         ...context,
         show,
         hide,
         isVisible,
     }}>
         {children}
-    </IconContextContext.Provider>
+    </IconContextMenuContext.Provider>
 }
 
-export function useIconContext(): IconContextContextProps{
-    return useContext<IconContextContextProps>(IconContextContext);
+export function useIconContextMenu(): IconContextMenuContextProps{
+    return useContext<IconContextMenuContextProps>(IconContextMenuContext);
 }

@@ -3,8 +3,8 @@ import {apiCall}                                               from "../utils/us
 import {useToken}                                              from "./TokenProvider";
 import {isScinnaError, ScinnaError}                            from "../types/Error";
 import useAsyncEffect                                          from "use-async-effect";
-import {Collection}                                            from "../types/Collection";
-import IconContextProvider                                     from "./IconContextProvider";
+import {Collection}            from "../types/Collection";
+import IconContextMenuProvider from "./IconContextMenuProvider";
 
 type Props = {
     children: ReactNode;
@@ -24,6 +24,7 @@ type BrowserProps = {
 type BrowserContextProps = BrowserProps & {
     browse: (username: string, path?: string) => void;
     refresh: () => void;
+    getCurrentPath: () => string;
 }
 
 const defaultState: BrowserProps = {
@@ -38,6 +39,7 @@ const TokenListContext = createContext<BrowserContextProps>({
     ...defaultState,
     browse: (username, path) => {},
     refresh: () => {},
+    getCurrentPath: () => '',
 });
 
 export default function BrowserProvider({children}: Props) {
@@ -64,6 +66,8 @@ export default function BrowserProvider({children}: Props) {
         await setContext({...context, username, path: path ?? ''})
     }
 
+    const getCurrentPath = () => context.username + '/' + (context.path ?? '') + (context.path ? '/' : '');
+
     useAsyncEffect(async () => {
         if (context.username)
             await refresh();
@@ -73,10 +77,11 @@ export default function BrowserProvider({children}: Props) {
         ...context,
         browse,
         refresh,
+        getCurrentPath
     }}>
-        <IconContextProvider>
+        <IconContextMenuProvider>
             {children}
-        </IconContextProvider>
+        </IconContextMenuProvider>
     </TokenListContext.Provider>
 }
 
