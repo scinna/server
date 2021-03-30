@@ -127,11 +127,17 @@ export default {
                 media_title: 'Titre',
                 description: 'Description',
                 visibility: 'Visibilité'
+            },
+            remove_link: {
+                title: 'Suppression du lien',
+                text: 'Cela va supprimer votre lien menant vers'
             }
         }
     },
     shortener: {
         link: 'Lien',
-        send: 'Minimifier !'
+        send: 'Minimifier !',
+        scinna_link: 'Lien Scinna',
+        amt_views: 'Nombre de visites'
     }
 };

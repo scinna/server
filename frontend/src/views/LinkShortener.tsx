@@ -27,7 +27,7 @@ export function LinkShortnener() {
             {
                 status === 'success' && links
                 &&
-                links.map(l => <Link link={l} />)
+                links.map(l => <Link key={l.MediaID} link={l} />)
             }
         </div>
     </div>;

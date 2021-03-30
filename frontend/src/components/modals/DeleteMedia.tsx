@@ -15,12 +15,14 @@ import {isScinnaError, ScinnaError} from "../../types/Error";
 import {useBrowser}                 from "../../context/BrowserProvider";
 import i18n                         from "i18n-js";
 import {Media}                      from "../../types/Media";
+import {ShortenLink}                from "../../types/ShortenLink";
 
 type Props = {
-    media: Media;
+    media: Media | ShortenLink;
+    successCallback?: () => void;
 }
 
-export function DeleteMedia({media}: Props) {
+export function DeleteMedia({media, successCallback}: Props) {
     const {token} = useToken();
     const {refresh} = useBrowser();
     const [pending, setPending] = useState<boolean>(false);
@@ -48,12 +50,36 @@ export function DeleteMedia({media}: Props) {
 
         await refresh();
         await hide();
+
+        if (successCallback) {
+            successCallback();
+        }
     };
 
+    const isShortenLink = !media.hasOwnProperty('Title');
+
     return <Dialog open={true} onClose={hide}>
-        <DialogTitle>{i18n.t('browser.modals.remove_media.title')} {media.Title}</DialogTitle>
+        {
+            !isShortenLink
+            &&
+            <DialogTitle>{i18n.t('browser.modals.remove_media.title')} {(media as Media).Title}</DialogTitle>
+        }
+        {
+            isShortenLink
+            &&
+            <DialogTitle>{i18n.t('browser.modals.remove_link.title')}</DialogTitle>
+        }
         <DialogContent>
-            <DialogContentText>{i18n.t('browser.modals.remove_media.text')}</DialogContentText>
+            {
+                !isShortenLink
+                &&
+                <DialogContentText>{i18n.t('browser.modals.remove_media.text')}</DialogContentText>
+            }
+            {
+                isShortenLink
+                &&
+                <DialogContentText>{i18n.t('browser.modals.remove_link.text')} {(media as ShortenLink).Url}</DialogContentText>
+            }
             {
                 error.length > 0
                 &&

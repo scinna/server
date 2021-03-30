@@ -119,11 +119,17 @@ export default {
                 media_title: 'Title',
                 description: 'Description',
                 visibility: 'Visibility'
+            },
+            remove_link: {
+                title: 'Removing link',
+                text: 'This will remove your link pointing to '
             }
         }
     },
     shortener: {
         link: 'Link',
-        send: 'Minify!'
+        send: 'Minify!',
+        scinna_link: 'Scinna link',
+        amt_views: 'Views'
     }
 };

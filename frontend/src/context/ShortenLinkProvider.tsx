@@ -29,8 +29,7 @@ const defaultState: ShortenLinkProps = {
 
 const ShortenLinkContext = createContext<ShortenLinkContextProps>({
     ...defaultState,
-    refresh: () => {
-    },
+    refresh: () => {},
 });
 
 export default function ShortenLinkProvider({children}: Props) {
