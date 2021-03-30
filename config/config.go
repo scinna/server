@@ -12,6 +12,7 @@ type Config struct {
 	Mail            SMTP
 	Database        DB
 	Registration    Registration
+	RateLimiter     RateLimiter
 	WebURL          string
 	ListeningAddr   string
 	MediaPath       string
@@ -25,10 +26,15 @@ func (c *Config) Validate() error {
 		c.Mail.Validate(),
 		c.Database.Validate(),
 		c.Registration.Validate(),
+		c.RateLimiter.Validate(),
 	}
 
 	if len(c.WebURL) == 0 {
 		err = append(err, errors.New("WebURL can't be empty"))
+	} else {
+		if c.WebURL[len(c.WebURL)-1:] != "/" {
+			c.WebURL = c.WebURL + "/"
+		}
 	}
 
 	if len(c.ListeningAddr) == 0 {

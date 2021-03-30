@@ -22,6 +22,8 @@ type Provider struct {
 	MailClient  smtp.Auth
 	Config      *config.Config
 
+	RateLimiting RateLimiting
+
 	languageMatcher language.Matcher
 }
 
@@ -42,12 +44,19 @@ func NewProvider(cfg *config.Config, embededAssets *Assets) (*Provider, error) {
 
 	dalObject := dal.NewDal(sqlxDb)
 
+	rateLimiting, err := NewRateLimiting(cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Provider{
 		EmbeddedAssets: embededAssets,
-		DB:          sqlxDb,
-		Dal:         &dalObject,
-		ArgonParams: defaultArgonParams(),
-		Config:      cfg,
+		DB:             sqlxDb,
+		Dal:            &dalObject,
+		ArgonParams:    defaultArgonParams(),
+		Config:         cfg,
+
+		RateLimiting: *rateLimiting,
 
 		languageMatcher: language.NewMatcher([]language.Tag{
 			language.English,

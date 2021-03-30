@@ -1,6 +1,7 @@
 {
   "errors": {
     "unknown": "Erreur inconnue",
+    "rate_limited": "Trop de tentatives. Merci de réessayer plus tard",
     "invite": {
       "not_found": "Code d'invitation non trouvé",
       "bad_code": "Le serveur nécessite un code d'invitation",

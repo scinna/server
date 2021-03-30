@@ -13,6 +13,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.3 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
+	github.com/sethvargo/go-limiter v0.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.3

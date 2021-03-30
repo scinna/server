@@ -24,12 +24,13 @@ func Authentication(prv *services.Provider, r *mux.Router) {
 	/**
 	 * Maybe we will switch to JWT at some point, but not now, there are few enough users that it doesn't matter
 	 */
-	r.HandleFunc("", authenticate(prv)).Methods(http.MethodPost)
+	r.Handle("", prv.RateLimiting.LoginMiddleware.Handle(authenticate(prv))).Methods(http.MethodPost)
 	r.Handle("", middlewares.LoggedInMiddleware(prv)(logout(prv))).Methods(http.MethodDelete)
 
-
-	r.HandleFunc("/register", register(prv)).Methods(http.MethodPost)
+	r.Handle("/register", prv.RateLimiting.RegistrationMiddleware.Handle(register(prv))).Methods(http.MethodPost)
 	r.HandleFunc("/register/{validation_code}", validateAccount(prv)).Methods(http.MethodGet)
+	r.Handle("/forgotten_password", prv.RateLimiting.ForgottenPasswordMiddleware.Handle(forgottenPassword(prv))).Methods(http.MethodGet)
+	r.HandleFunc("/forgotten_password/{validation_code}", setNewPassword(prv)).Methods(http.MethodPost)
 }
 
 func register(prv *services.Provider) http.HandlerFunc {
@@ -73,7 +74,7 @@ func register(prv *services.Provider) http.HandlerFunc {
 		}
 
 		// Maybe one day I'll have the motivation to rewrite this with golang's tag
-		violations := []forms.Constraint {
+		violations := []forms.Constraint{
 			forms.ConstraintUniqueString(prv, "Email", "SCINNA_USER", "user_email", registerBody.Email, translations.T(r, "errors.registration.email_exists")),
 			forms.ConstraintUniqueString(prv, "Username", "SCINNA_USER", "user_name", registerBody.Username, translations.T(r, "errors.registration.username_exists")),
 		}
@@ -189,5 +190,39 @@ func logout(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := r.Context().Value("token").(string)
 		prv.Dal.User.RevokeToken(token)
+	}
+}
+
+func forgottenPassword(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !prv.Config.Mail.Enabled {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		username := r.FormValue("username")
+		user, err := prv.Dal.User.GetUserFromUsername(username)
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
+		valCode, err := prv.Dal.User.RequestPasswordReset(user)
+		if err != nil {
+			// @TODO do something better
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err = prv.SendForgottenPasswordMail(r, user.Email, valCode)
+		if err != nil {
+			// @TODO Add a warning for the user
+			log.Warn(err.Error())
+		}
+	}
+}
+
+func setNewPassword(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }

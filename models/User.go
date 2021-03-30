@@ -12,6 +12,7 @@ type User struct {
 	Password       string  `db:"user_password" json:"-"`
 	Validated      bool    `db:"validated" json:"-"`
 	ValidationCode *string `db:"validation_code" json:"-"`
+	ResetPasswordCode *string `db:"reset_pwd_code" json:"-"`
 
 	RegisteredAt *time.Time `db:"registered_at"`
 }
@@ -35,6 +36,7 @@ func (u User) GenerateTable() string {
 
 			VALIDATED       BOOL                 NOT NULL DEFAULT FALSE,
 			VALIDATION_CODE VARCHAR              NULL     DEFAULT gen_random_uuid(),
+			RESET_PWD_CODE  VARCHAR              NULL,
 			REGISTERED_AT   TIMESTAMP                     DEFAULT NOW()
 		);
 	`
