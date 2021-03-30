@@ -8,9 +8,14 @@ import InaccessibleIcon             from '../../assets/images/inaccessible_icon.
 import {useToken}                   from "../../context/TokenProvider";
 import {isScinnaError, ScinnaError} from "../../types/Error";
 import useAsyncEffect               from "use-async-effect";
+import {useIconContextMenu}         from "../../context/IconContextMenuProvider";
 
-import styles               from '../../assets/scss/browser/Icon.module.scss';
-import {useIconContextMenu} from "../../context/IconContextMenuProvider";
+import PrivateIcon  from '../../assets/images/private.svg';
+import UnlistedIcon from '../../assets/images/unlisted.svg';
+import PublicIcon   from '../../assets/images/public.svg';
+
+import styles                    from '../../assets/scss/browser/Icon.module.scss';
+import {getVisibilityFromNumber} from "../../utils/Mappings";
 
 export type IconProps = {
     media?: Media;
@@ -23,6 +28,21 @@ const cap = (title: string): string => {
     }
 
     return title;
+}
+
+const VisibilityBadge = ({visibility}: { visibility: number }) => {
+    const getIcon = () => {
+        switch (visibility) {
+            case 2:
+                return PrivateIcon;
+            case 1:
+                return UnlistedIcon;
+            default:
+                return PublicIcon;
+        }
+    }
+
+    return <img className={styles.Icon__Badge} src={getIcon()} alt={getVisibilityFromNumber(visibility)}/>;
 }
 
 const MediaIcon = ({media}: { media: Media }) => {
@@ -66,6 +86,7 @@ const MediaIcon = ({media}: { media: Media }) => {
             <img className={styles.Icon__Image} src={thumbnailUrl as string} alt=""/>
         }
         <span className={styles.Icon__Text}>{cap(media.Title)}</span>
+        <VisibilityBadge visibility={media.Visibility}/>
     </Link>
 }
 
@@ -83,6 +104,7 @@ const CollectionIcon = ({collection}: { collection: Collection }) => {
     return <Link className={styles.Icon} to={fullPath} onContextMenu={show(collection, null)}>
         <img className={styles.Icon__Image} src={FolderIcon} alt={collection.Title}/>
         <span className={styles.Icon__Text}>{cap(collection.Title)}</span>
+        <VisibilityBadge visibility={collection.Visibility}/>
     </Link>
 }
 

@@ -1,6 +1,8 @@
 @import '../_Colors';
 
 .Icon {
+  position: relative;
+
   display: flex;
   width: 4em;
   flex-direction: column;
@@ -21,5 +23,13 @@
 
     color: $accent-color;
     text-align: center;
+  }
+
+  &__Badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.75em;
+    height: 1.75em;
   }
 }
