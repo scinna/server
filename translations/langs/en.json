@@ -19,13 +19,16 @@
         "admin": "You have been registered. The admin now needs to validate your account"
       },
       "validation_email": {
-        "subject": "Scinna: Activate your account"
+        "subject": "Activate your account"
       }
     },
     "login": {
       "invalid_credentials": "Invalid credentials",
       "invalid_password": "Incorrect password",
       "not_validated": "This account is not validated"
+    },
+    "forgotten_password": {
+      "sent_if_exists": "If this account exists, an email has been sent to reset your password"
     },
     "authorization": {
       "no_token": "You can't access this resource without a valid authentication token",

@@ -78,6 +78,7 @@ func NewUnknown(err error) *SError {
 
 var ErrorRateLimited = New("rate_limited", -1, 500)
 
+
 // ErrorBadInviteCode is shown when the user tries to register with no invitation code or an invalid one
 var ErrorBadInviteCode = New("invite.bad_code", 10, 400)
 

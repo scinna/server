@@ -19,13 +19,16 @@
         "admin": "Vous avez été inscrit. Un administrateur doit activer votre compte"
       },
       "validation_email": {
-        "subject": "Scinna: Activate your account"
+        "subject": "Activate your account"
       }
     },
     "login": {
       "invalid_credentials": "Pseudo ou mot de passe invalide",
       "invalid_password": "Mot de passe incorrect",
       "not_validated": "Ce compte n'est pas activé"
+    },
+    "forgotten_password": {
+      "sent_if_exists": "Si ce compte existe, un email a été envoyé pour remettre à zéro votre mot de passe"
     },
     "authorization": {
       "no_token": "Vous ne pouvez pas accéder à cette ressource sans un jeton d'authentification valide",

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -200,9 +201,24 @@ func forgottenPassword(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
+		sentIfExists, err := json.Marshal(struct{
+			Message string
+		}{
+			Message: translations.T(r, "forgotten_password.sent_if_exists"),
+		})
+		if serrors.WriteError(w, r, err) {
+			return
+		}
+
 		username := r.FormValue("username")
 		user, err := prv.Dal.User.GetUserFromUsername(username)
-		if serrors.WriteError(w, r, err) {
+		if err != nil {
+			if err == sql.ErrNoRows {
+				_, _ = w.Write(sentIfExists)
+				return
+			}
+
+			serrors.WriteError(w, r, err)
 			return
 		}
 
@@ -217,7 +233,12 @@ func forgottenPassword(prv *services.Provider) http.HandlerFunc {
 		if err != nil {
 			// @TODO Add a warning for the user
 			log.Warn(err.Error())
+
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
+
+		_, _ = w.Write(sentIfExists)
 	}
 }
 

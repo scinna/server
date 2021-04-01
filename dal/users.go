@@ -144,7 +144,7 @@ func (u *User) UpdateEmail(user *models.User, email string, autovalidate bool) {
 }
 
 func (u *User) RequestPasswordReset(user *models.User) (string, error) {
-	row := u.DB.QueryRowx(`
+	row := u.DB.QueryRow(`
 		UPDATE SCINNA_USER 
 		SET RESET_PWD_CODE = gen_random_uuid()
 		WHERE
@@ -156,7 +156,7 @@ func (u *User) RequestPasswordReset(user *models.User) (string, error) {
 	}
 
 	var valCode string
-	err := row.StructScan(&valCode)
+	err := row.Scan(&valCode)
 
 	return valCode, err
 }

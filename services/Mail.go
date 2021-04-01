@@ -74,9 +74,11 @@ func (prv *Provider) SendValidationMail(r *http.Request, dest, validationCode st
 	// so yeah we'll fallback for now. >:(
 
 	//return prv.SendMail(dest, translations.TLang(tag.String(), "registration.validation_email.subject"), tag.String(), struct {
-	return prv.SendMail(dest, "Scinna: Activate your account", tag.String(), "validation_email", struct {
+	return prv.SendMail(dest, prv.Config.CustomBranding + ": Activate your account", tag.String(), "validation_email", struct {
+		Branding string
 		Url string
 	}{
+		Branding: prv.Config.CustomBranding,
 		Url: url,
 	})
 }
@@ -94,9 +96,11 @@ func (prv *Provider) SendForgottenPasswordMail(r *http.Request, dest, validation
 	// so yeah we'll fallback for now. >:(
 
 	//return prv.SendMail(dest, translations.TLang(tag.String(), "registration.validation_email.subject"), tag.String(), struct {
-	return prv.SendMail(dest, "Scinna: Reset your password", tag.String(), "reset_email", struct {
+	return prv.SendMail(dest, prv.Config.CustomBranding + ": Reset your password", tag.String(), "reset_email", struct {
+		Branding string
 		Url string
 	}{
+		Branding: prv.Config.CustomBranding,
 		Url: url,
 	})
 }

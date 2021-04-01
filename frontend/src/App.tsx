@@ -4,6 +4,7 @@ import React, {ReactNode, useEffect}            from "react";
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {MuiThemeProvider as ThemeProvider}      from "@material-ui/core";
 import Navigation                               from "./components/Navigation";
+import BrowserProvider                          from "./context/BrowserProvider";
 import {Register}                               from "./views/Register";
 import {Login}                                  from "./views/Login";
 import {Logout}                                 from "./views/Logout";
@@ -13,9 +14,9 @@ import {ShowMedia}                              from "./views/ShowMedia";
 import {Home}                                   from "./views/Home";
 import {createMuiTheme}                         from "@material-ui/core";
 import {ServerSettings}                         from "./views/ServerSettings";
-import BrowserProvider                          from "./context/BrowserProvider";
 import {ValidateAccount}                        from "./views/Validate";
 import {LinkShortnener}                         from "./views/LinkShortener";
+import {PasswordReset}                          from "./views/PasswordReset";
 import ShortenLinkProvider                      from "./context/ShortenLinkProvider";
 import ModalProvider                            from "./context/ModalProvider";
 
@@ -65,60 +66,65 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <BrowserRouter basename={process.env.PUBLIC_URL}>
-                <BrowserProvider>
-                    <ModalProvider>
-                        <Navigation/>
+                <ModalProvider>
+                    <Navigation/>
 
-                        <Switch>
-                            <Route exact path="/register">
-                                <Register/>
-                            </Route>
+                    <Switch>
+                        <Route exact path="/register">
+                            <Register/>
+                        </Route>
 
-                            <Route exact path="/login">
-                                <Login/>
-                            </Route>
+                        <Route exact path="/login">
+                            <Login/>
+                        </Route>
 
-                            <Route exact path="/logout">
-                                {AuthenticatedRoute(<Logout/>)}
-                            </Route>
+                        <Route exact path="/logout">
+                            {AuthenticatedRoute(<Logout/>)}
+                        </Route>
 
-                            <Route exact path="/account">
-                                {AuthenticatedRoute(<Account/>)}
-                            </Route>
+                        <Route path="/validate/:valCode">
+                            <ValidateAccount/>
+                        </Route>
 
-                            <Route exact path="/shortener">
-                                <ShortenLinkProvider>
-                                    {AuthenticatedRoute(<LinkShortnener/>)}
-                                </ShortenLinkProvider>
-                            </Route>
+                        <Route path="/forgotten_password/:valCode">
+                            <PasswordReset/>
+                        </Route>
 
-                            <Route exact path="/admin">
-                                {AdminAuthenticatedRoute(<ServerSettings/>, 'ROLE_ADMIN')}
-                            </Route>
+                        <Route exact path="/account">
+                            {AuthenticatedRoute(<Account/>)}
+                        </Route>
+
+                        <Route exact path="/shortener">
+                            <ShortenLinkProvider>
+                                {AuthenticatedRoute(<LinkShortnener/>)}
+                            </ShortenLinkProvider>
+                        </Route>
+
+                        <Route exact path="/admin">
+                            {AdminAuthenticatedRoute(<ServerSettings/>, 'ROLE_ADMIN')}
+                        </Route>
 
                             {/* Meh but react router seems to work only like this*/}
                             <Route path="/browse/:username/:path+">
-                                <Browser/>
+                                <BrowserProvider>
+                                    <Browser/>
+                                </BrowserProvider>
                             </Route>
 
                             <Route path="/browse/:username">
                                 <Browser/>
                             </Route>
 
-                            <Route path="/validate/:valCode">
-                                <ValidateAccount/>
-                            </Route>
 
-                            <Route path="/:pictureId">
-                                <ShowMedia/>
-                            </Route>
+                        <Route path="/:pictureId">
+                            <ShowMedia/>
+                        </Route>
 
-                            <Route path="/">
-                                <Home/>
-                            </Route>
-                        </Switch>
-                    </ModalProvider>
-                </BrowserProvider>
+                        <Route path="/">
+                            <Home/>
+                        </Route>
+                    </Switch>
+                </ModalProvider>
             </BrowserRouter>
         </ThemeProvider>
     );
